@@ -4,6 +4,7 @@ export type Brand = {
   name: string;
   slug: string;
   brandStatus: string;
+  isActive: boolean;
   websiteUrl?: string;
   description?: string;
   bannerImageId?: string;

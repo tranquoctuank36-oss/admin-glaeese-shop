@@ -82,4 +82,6 @@ export interface  Product {
   deletedAt?: string | null;
 
   productStatus: string | null;
+  viewCount: number;
+  thumbnailUrl?: string;
 }

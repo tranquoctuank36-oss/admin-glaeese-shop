@@ -29,7 +29,7 @@ export type BrandFormValues = {
   slug: string;
   websiteUrl?: string;
   description?: string;
-  brandStatus: "active" | "hidden" | "archived";
+  isActive: boolean;
   bannerImageId?: string;
   bannerImage?: {
     id: string;
@@ -56,9 +56,9 @@ export default function BrandForm({
 
   const [websiteUrl, setWebsiteUrl] = useState(initial.websiteUrl ?? "");
   const [description, setDescription] = useState(initial.description ?? "");
-  const [brandStatus, setBrandStatus] = useState<
-    "active" | "hidden" | "archived"
-  >(initial.brandStatus ?? "active");
+  const [isActive, setIsActive] = useState<"yes" | "no">(
+    initial.isActive ? "yes" : "no"
+  );
 
   const [banner, setBanner] = useState<{
     publicUrl: string;
@@ -106,7 +106,7 @@ export default function BrandForm({
         slug: displaySlug,
         websiteUrl: websiteUrl.trim() || null,
         description: description.trim() || null,
-        status: brandStatus.trim(),
+        isActive: isActive === "yes",
         priority: isPriorityValid ? priority : 100,
       };
       if (banner?.id) payload.bannerImageId = banner.id;
@@ -162,22 +162,21 @@ export default function BrandForm({
         </div>
 
         <FloatingInput
-          id="brandStatus"
-          label="Status"
+          id="isActive"
+          label="Active"
           as="select"
-          value={brandStatus}
+          value={isActive}
           onChange={(v) =>
-            setBrandStatus(
-              (["active", "hidden", "archived"].includes(v)
+            setIsActive(
+              (["yes", "no"].includes(v)
                 ? v
-                : "active") as any
+                : "yes") as any
             )
           }
           disabled={loading}
           options={[
-            { value: "active", label: "Active" },
-            { value: "hidden", label: "Hidden" },
-            { value: "archived", label: "Archived" },
+            { value: "yes", label: "Yes" },
+            { value: "no", label: "No" },
           ]}
         />
 

@@ -84,7 +84,7 @@ export default function AddVariantDialog({
 
   const handleOpenImageSelector = () => {
     if (selectedImages.length >= MAX_IMAGES) {
-      toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+      toast.error(`You are only allowed to select a maximum of ${MAX_IMAGES} images.`);
       return;
     }
     setShowImageSelector(true);
@@ -201,9 +201,55 @@ export default function AddVariantDialog({
   }, [variant]);
 
   const handleImageSelect = async (imageIds: string[]) => {
+    const previousIds = productImagesIds;
+    
+    // Update state first
     setProductImagesIds(imageIds);
 
-    // Load full image data for preview
+    // If editing existing variant with variantId, update images on backend immediately
+    if (variantId) {
+      try {
+        // Find images to add (in new but not in previous)
+        const imagesToAdd = imageIds.filter(id => !previousIds.includes(id));
+        
+        // Find images to remove (in previous but not in new)
+        const imagesToRemove = previousIds.filter(id => !imageIds.includes(id));
+
+        // Smart update order
+        const currentCount = previousIds.length;
+        const totalAfterAdding = currentCount + imagesToAdd.length;
+        const removingAll = imagesToRemove.length === previousIds.length;
+        
+        if (totalAfterAdding > MAX_IMAGES || !removingAll) {
+          // Remove first to avoid exceeding limit
+          if (imagesToRemove.length > 0) {
+            await removeImagesFromVariant(variantId, imagesToRemove);
+          }
+          if (imagesToAdd.length > 0) {
+            await addImagesToVariant(variantId, imagesToAdd);
+          }
+        } else {
+          // Add first to maintain at least 1 image
+          if (imagesToAdd.length > 0) {
+            await addImagesToVariant(variantId, imagesToAdd);
+          }
+          if (imagesToRemove.length > 0) {
+            await removeImagesFromVariant(variantId, imagesToRemove);
+          }
+        }
+        toast.success("Images updated successfully!");
+      } catch (error: any) {
+        console.error("Error updating images:", error);
+        toast.error(error?.response?.data?.detail || "Failed to update images");
+        // Revert on error
+        setProductImagesIds(previousIds);
+        return;
+      }
+    }
+    // If creating new variant (no variantId yet), just update local state
+    // Images will be saved when form is submitted
+
+    // Load full image data for preview (for both cases)
     if (imageIds.length > 0) {
       try {
         // Get existing images that are already loaded
@@ -214,21 +260,25 @@ export default function AddVariantDialog({
         const newImageIds = imageIds.filter(id => !existingImageIds.includes(id));
         
         if (newImageIds.length > 0) {
-          // Fetch only new images without status filter to get all images
+          // Fetch images without filters to get all selected images
           const res = await getImages({
-            limit: 100,
-            ownerType: "product_variant",
+            limit: 500, // Increase limit to ensure we get all images
           });
           
           const newImages = (res.data || []).filter((img) =>
             newImageIds.includes(img.id)
           );
           
-          // Combine existing and new images
-          const allImages = [...existingImages, ...newImages];
-          setSelectedImages(allImages);
+          // Combine existing and new images, preserve order based on imageIds
+          const allImagesMap = new Map([...existingImages, ...newImages].map(img => [img.id, img]));
+          const orderedImages = imageIds.map(id => allImagesMap.get(id)).filter(Boolean) as ImageItem[];
+          setSelectedImages(orderedImages);
         } else {
-          setSelectedImages(existingImages);
+          // Preserve order based on imageIds
+          const orderedImages = imageIds.map(id => 
+            existingImages.find(img => img.id === id)
+          ).filter(Boolean) as ImageItem[];
+          setSelectedImages(orderedImages);
         }
       } catch (error) {
         console.error("Error loading selected images:", error);
@@ -238,7 +288,22 @@ export default function AddVariantDialog({
     }
   };
 
-  const removeImage = (imageId: string) => {
+  const removeImage = async (imageId: string) => {
+    // If editing existing variant with variantId, remove from backend immediately
+    if (variantId) {
+      try {
+        await removeImagesFromVariant(variantId, [imageId]);
+        toast.success("Image removed successfully!");
+      } catch (error: any) {
+        console.error("Error removing image:", error);
+        toast.error(error?.response?.data?.detail || "Failed to remove image");
+        return; // Don't update UI if API call failed
+      }
+    }
+    // If creating new variant (no variantId yet), just update local state
+    // Images will be saved when form is submitted
+    
+    // Update local state for both cases
     setProductImagesIds((prev) => prev.filter((id) => id !== imageId));
     setSelectedImages((prev) => prev.filter((img) => img.id !== imageId));
   };
@@ -299,26 +364,9 @@ export default function AddVariantDialog({
         };
 
         await updateVariant(variantId, updatePayload);
-
-        // Handle images separately
-        const originalImageIds = variant?.productImagesIds || [];
-        const newImageIds = productImagesIds;
-
-        // Find images to add (in new but not in original)
-        const imagesToAdd = newImageIds.filter(id => !originalImageIds.includes(id));
         
-        // Find images to remove (in original but not in new)
-        const imagesToRemove = originalImageIds.filter(id => !newImageIds.includes(id));
-
-        // Add new images
-        if (imagesToAdd.length > 0) {
-          await addImagesToVariant(variantId, imagesToAdd);
-        }
-
-        // Remove old images
-        if (imagesToRemove.length > 0) {
-          await removeImagesFromVariant(variantId, imagesToRemove);
-        }
+        // Images are already updated via handleImageSelect and removeImage
+        // No need to update images here since they're updated immediately on each action
       } else if (productId) {
         // Creating new variant - call API to create
         const createPayload = {

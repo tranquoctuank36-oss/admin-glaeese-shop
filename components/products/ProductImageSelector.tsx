@@ -140,13 +140,16 @@ export default function ProductImageSelector({
                         : "border-gray-200 hover:border-blue-500"
                     }`}
                   >
-                    <div className={`h-30 relative ${isSelected ? "bg-gray-200" : "bg-white"}`}>
+                    <div className={`h-30 relative ${isSelected ? "bg-white" : "bg-white"}`}>
                       <img
                         src={img.publicUrl}
                         alt={img.altText || "Product image"}
                         className={`w-full h-full object-contain group-hover:scale-105 transition-transform ${
                           isSelected ? "brightness-90" : ""
                         }`}
+                        style={{
+                filter: 'brightness(1.05) contrast(1.1)',
+              }}
                       />
                       {isSelected && (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -168,11 +171,11 @@ export default function ProductImageSelector({
                         </div>
                       )}
                     </div>
-                    {img.altText && (
+                    {/* {img.altText && (
                       <div className={`p-2 ${isSelected ? "bg-gray-200" : "bg-white"}`}>
                         <p className="text-xs text-gray-600 truncate">{img.altText}</p>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 );
               })}

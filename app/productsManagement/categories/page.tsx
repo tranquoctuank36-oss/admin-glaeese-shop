@@ -447,10 +447,10 @@ export default function CategoriesPage() {
                         <td className="px-6 py-4 text-gray-600">
                           {fmt(c.createdAt)}
                         </td>
-                        <td className="px-6 py-4 text-gray-600">
+                        <td className="px-6 py-4 text-center text-gray-600">
                           {c.priority ?? "-"}
                         </td>
-                        <td className="px-6 py-4 text-gray-600">{c.level}</td>
+                        <td className="px-6 py-4 text-center text-gray-600">{c.level}</td>
                         <td className="px-6 py-3">
                           <div className="flex items-center gap-2">
                             <Button

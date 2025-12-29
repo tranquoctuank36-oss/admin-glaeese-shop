@@ -169,7 +169,7 @@ export default function TagsTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Tags
+                  Trash Bin – Tags List
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Restore or permanently delete removed tags

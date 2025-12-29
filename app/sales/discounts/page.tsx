@@ -48,7 +48,10 @@ function formatDate(iso?: string) {
 const formatDateTime = (dateString?: string) => {
   if (!dateString) return "-";
   try {
-    return dayjs.utc(dateString).tz("Asia/Ho_Chi_Minh").format("DD/MM/YYYY HH:mm");
+    return dayjs
+      .utc(dateString)
+      .tz("Asia/Ho_Chi_Minh")
+      .format("DD/MM/YYYY HH:mm");
   } catch {
     return "-";
   }
@@ -67,16 +70,23 @@ function DiscountsPage() {
   const [status, setStatus] = useState<string>("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [sortField, setSortField] = useState<"createdAt" | "startAt" | "endAt">("createdAt");
+  const [sortField, setSortField] = useState<"createdAt" | "startAt" | "endAt">(
+    "createdAt"
+  );
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC");
   const [trashCount, setTrashCount] = useState(0);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState<{ url: string; alt: string } | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{
+    url: string;
+    alt: string;
+  } | null>(null);
 
   // Get current Vietnam time for min validation
-  const currentVietnamTime = dayjs().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DDTHH:mm");
+  const currentVietnamTime = dayjs()
+    .tz("Asia/Ho_Chi_Minh")
+    .format("YYYY-MM-DDTHH:mm");
 
   const fetchDiscounts = async () => {
     try {
@@ -87,8 +97,12 @@ function DiscountsPage() {
         limit,
         type: type as any,
         status: status as any,
-        startDate: startDate ? dayjs.tz(startDate, "Asia/Ho_Chi_Minh").utc().toISOString() : undefined,
-        endDate: endDate ? dayjs.tz(endDate, "Asia/Ho_Chi_Minh").utc().toISOString() : undefined,
+        startDate: startDate
+          ? dayjs.tz(startDate, "Asia/Ho_Chi_Minh").utc().toISOString()
+          : undefined,
+        endDate: endDate
+          ? dayjs.tz(endDate, "Asia/Ho_Chi_Minh").utc().toISOString()
+          : undefined,
         sortField: sortField as any,
         sortOrder,
         isDeleted: false,
@@ -118,7 +132,17 @@ function DiscountsPage() {
 
   useEffect(() => {
     fetchDiscounts();
-  }, [page, limit, search, type, status, startDate, endDate, sortField, sortOrder]);
+  }, [
+    page,
+    limit,
+    search,
+    type,
+    status,
+    startDate,
+    endDate,
+    sortField,
+    sortOrder,
+  ]);
 
   useEffect(() => {
     fetchTrashCount();
@@ -201,7 +225,6 @@ function DiscountsPage() {
     setPage(1);
   };
 
-
   const getTypeBadge = (type: string) => {
     switch (type) {
       case "percentage":
@@ -279,14 +302,14 @@ function DiscountsPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Discount Management
+                  Discount List {totalItems > 0 && `(${totalItems})`}
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Create and manage product discounts and promotional pricing
                 </p>
               </div>
             </div>
-            
+
             <div className="flex gap-2">
               <Button
                 className="flex h-12 items-center gap-2 bg-red-500 hover:bg-red-700 text-white text-base"
@@ -321,7 +344,10 @@ function DiscountsPage() {
             {/* Search Bar */}
             <div className="flex items-center gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
@@ -457,346 +483,324 @@ function DiscountsPage() {
             transition={{ delay: 0.1 }}
             className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200"
           >
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-100 border-b border-gray-300">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                  Slug
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                  Description
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                  Type
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                  Value
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                  Banner Image
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                  <div className="flex items-center justify-center gap-2">
-                    <span>Start Date</span>
-                    <button
-                      type="button"
-                      onClick={toggleStartAtSort}
-                      className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                      title={
-                        sortField === "startAt"
-                          ? `Sorting: ${sortOrder} (click to change)`
-                          : "No sorting (click to sort by Start Date)"
-                      }
-                    >
-                      {sortField === "startAt" ? (
-                        sortOrder === "ASC" ? (
-                          <ArrowUpAZ className="size-5" />
-                        ) : (
-                          <ArrowDownAZ className="size-5" />
-                        )
-                      ) : (
-                        <ArrowUpDown className="size-5" />
-                      )}
-                    </button>
-                  </div>
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                  <div className="flex items-center justify-center gap-2">
-                    <span>End Date</span>
-                    <button
-                      type="button"
-                      onClick={toggleEndAtSort}
-                      className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                      title={
-                        sortField === "endAt"
-                          ? `Sorting: ${sortOrder} (click to change)`
-                          : "No sorting (click to sort by End Date)"
-                      }
-                    >
-                      {sortField === "endAt" ? (
-                        sortOrder === "ASC" ? (
-                          <ArrowUpAZ className="size-5" />
-                        ) : (
-                          <ArrowDownAZ className="size-5" />
-                        )
-                      ) : (
-                        <ArrowUpDown className="size-5" />
-                      )}
-                    </button>
-                  </div>
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                  <div className="flex items-center justify-center gap-2">
-                    <span>Created At</span>
-                    <button
-                      type="button"
-                      onClick={toggleCreatedAtSort}
-                      className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                      title={
-                        sortField === "createdAt"
-                          ? `Sorting: ${sortOrder} (click to change)`
-                          : "No sorting (click to sort by Created At)"
-                      }
-                    >
-                      {sortField === "createdAt" ? (
-                        sortOrder === "ASC" ? (
-                          <ArrowUpAZ className="size-5" />
-                        ) : (
-                          <ArrowDownAZ className="size-5" />
-                        )
-                      ) : (
-                        <ArrowUpDown className="size-5" />
-                      )}
-                    </button>
-                  </div>
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                  Canceled At
-                </th>
-                <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {loading ? (
-                <tr>
-                  <td colSpan={12} className="px-6 py-8 text-center text-gray-500">
-                    Loading discounts...
-                  </td>
-                </tr>
-              ) : discounts.length === 0 ? (
-                <tr>
-                  <td colSpan={12} className="px-6 py-8 text-center text-gray-500">
-                    No discounts found
-                  </td>
-                </tr>
-              ) : (
-                discounts.map((discount, idx) => (
-                  <motion.tr
-                    key={discount.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.03 }}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm font-medium text-gray-900">
-                        {discount.name}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <code className="text-gray-600">
-                        {discount.slug || "-"}
-                      </code>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="text-sm text-gray-800">
-                        {discount.description || "-"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      {getTypeBadge(discount.type)}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      <span className="text-base font-bold text-green-600">
-                        {discount.type === "percentage"
-                          ? `${parseFloat(discount.value)}%`
-                          : `${parseFloat(discount.value).toLocaleString("en-US")}đ`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      {getStatusBadge(discount.status)}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      {discount.bannerImage?.publicUrl ? (
-                        <div className="flex justify-center">
-                          <img
-                            src={discount.bannerImage.publicUrl}
-                            alt={discount.bannerImage.altText || "Banner"}
-                            className="h-12 w-20 object-cover rounded border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
-                            onClick={() => setLightboxImage({
-                              url: discount.bannerImage!.publicUrl,
-                              alt: discount.bannerImage!.altText || "Banner Image"
-                            })}
-                          />
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 text-sm">-</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      <span className="text-gray-600">
-                        {formatDateTime(discount.startAt)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      <span className="text-gray-600">
-                        {formatDateTime(discount.endAt)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      <span className="text-gray-600">
-                        {formatDate(discount.createdAt)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap">
-                      <span className="text-gray-600">
-                        {discount.canceledAt ? formatDate(discount.canceledAt) : "-"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-end whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          size="icon-sm"
-                          className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                          title="View Details"
-                          onClick={() =>
-                            router.push(Routes.sales.discounts.details(discount.id))
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-100 border-b border-gray-300">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      Slug
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      Type
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      Value
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      Max Discount
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-2">
+                        <span>Start Date</span>
+                        <button
+                          type="button"
+                          onClick={toggleStartAtSort}
+                          className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                          title={
+                            sortField === "startAt"
+                              ? `Sorting: ${sortOrder} (click to change)`
+                              : "No sorting (click to sort by Start Date)"
                           }
                         >
-                          <Eye className="text-blue-600 size-5" />
-                        </Button>
-                        {(discount.status === "scheduled" || discount.status === "draft") && (
-                          <>
-                            <span className="text-gray-500 text-sm leading-none">
-                              |
+                          {sortField === "startAt" ? (
+                            sortOrder === "ASC" ? (
+                              <ArrowUpAZ className="size-5" />
+                            ) : (
+                              <ArrowDownAZ className="size-5" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="size-5" />
+                          )}
+                        </button>
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-2">
+                        <span>End Date</span>
+                        <button
+                          type="button"
+                          onClick={toggleEndAtSort}
+                          className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                          title={
+                            sortField === "endAt"
+                              ? `Sorting: ${sortOrder} (click to change)`
+                              : "No sorting (click to sort by End Date)"
+                          }
+                        >
+                          {sortField === "endAt" ? (
+                            sortOrder === "ASC" ? (
+                              <ArrowUpAZ className="size-5" />
+                            ) : (
+                              <ArrowDownAZ className="size-5" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="size-5" />
+                          )}
+                        </button>
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-2">
+                        <span>Created At</span>
+                        <button
+                          type="button"
+                          onClick={toggleCreatedAtSort}
+                          className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                          title={
+                            sortField === "createdAt"
+                              ? `Sorting: ${sortOrder} (click to change)`
+                              : "No sorting (click to sort by Created At)"
+                          }
+                        >
+                          {sortField === "createdAt" ? (
+                            sortOrder === "ASC" ? (
+                              <ArrowUpAZ className="size-5" />
+                            ) : (
+                              <ArrowDownAZ className="size-5" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="size-5" />
+                          )}
+                        </button>
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      Canceled At
+                    </th>
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {loading ? (
+                    <tr>
+                      <td
+                        colSpan={13}
+                        className="px-6 py-8 text-center text-gray-500"
+                      >
+                        Loading discounts...
+                      </td>
+                    </tr>
+                  ) : discounts.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={13}
+                        className="px-6 py-8 text-center text-gray-500"
+                      >
+                        No discounts found
+                      </td>
+                    </tr>
+                  ) : (
+                    discounts.map((discount, idx) => (
+                      <motion.tr
+                        key={discount.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.03 }}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-gray-900">
+                            {discount.name}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <code className="text-gray-600">
+                            {discount.slug || "-"}
+                          </code>
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          {getTypeBadge(discount.type)}
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <span className="text-base font-bold text-green-600">
+                            {discount.type === "percentage"
+                              ? `${parseFloat(discount.value)}%`
+                              : `${parseFloat(discount.value).toLocaleString(
+                                  "en-US"
+                                )}đ`}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          {discount.maxDiscountValue ? (
+                            <span className="text-sm font-semibold text-gray-600">
+                              {Number(discount.maxDiscountValue).toLocaleString(
+                                "en-US"
+                              )}
+                              đ
                             </span>
+                          ) : (
+                            <span className="text-gray-400 text-sm">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          {getStatusBadge(discount.status)}
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <span className="text-gray-600">
+                            {formatDateTime(discount.startAt)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <span className="text-gray-600">
+                            {formatDateTime(discount.endAt)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <span className="text-gray-600">
+                            {formatDate(discount.createdAt)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <span className="text-gray-600">
+                            {discount.canceledAt
+                              ? formatDate(discount.canceledAt)
+                              : "-"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-end whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
                             <Button
                               size="icon-sm"
-                              className="p-2 hover:bg-green-100 rounded-lg transition-colors"
+                              className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                              title="View Details"
                               onClick={() =>
-                                router.push(Routes.sales.discounts.edit(discount.id))
+                                router.push(
+                                  Routes.sales.discounts.details(discount.id)
+                                )
                               }
                             >
-                              <Edit className="text-green-600 size-5" />
+                              <Eye className="text-blue-600 size-5" />
                             </Button>
                             <span className="text-gray-500 text-sm leading-none">
                               |
                             </span>
-                          </>
-                        )}
-                        <ConfirmPopover
-                          title="Cancel Discount"
-                          message={
-                            <div>
-                              Are you sure you want to cancel{" "}
-                              <strong>
-                                {discount.name || "this discount"}
-                              </strong>
-                              ?
-                            </div>
-                          }
-                          confirmText="Cancel Discount"
-                          onConfirm={() => handleCancel(discount.id)}
-                        >
-                          <Button
-                            size="icon-sm"
-                            className="p-2 hover:bg-orange-100 rounded-lg transition-colors"
-                            title="Cancel"
-                          >
-                            <XCircle className="text-orange-600 size-5" />
-                          </Button>
-                        </ConfirmPopover>
-                        <span className="text-gray-500 text-sm leading-none">
-                          |
-                        </span>
-                        <ConfirmPopover
-                          title="Remove Discount"
-                          message={
-                            <div>
-                              Are you sure you want to delete{" "}
-                              <strong>
-                                {discount.name || "this discount"}
-                              </strong>
-                              ?
-                            </div>
-                          }
-                          confirmText="Delete"
-                          onConfirm={() => handleDelete(discount.id)}
-                        >
-                          <Button
-                            size="icon-sm"
-                            className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                            title="Delete"
-                          >
-                            <Trash2 className="text-red-600 size-5" />
-                          </Button>
-                        </ConfirmPopover>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {!loading && discounts.length > 0 && (
-          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-            {/* Rows per page (left) */}
-            <div className="flex items-center gap-3 text-sm text-gray-700">
-              <span>Rows per page:</span>
-              <select
-                className="h-9 rounded-md border border-gray-300 px-2 bg-white"
-                value={limit}
-                onChange={(e) => {
-                  setLimit(Number(e.target.value));
-                  setPage(1);
-                }}
-              >
-                {[10, 20, 30, 50].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
+                            {(discount.status === "scheduled" ||
+                              discount.status === "draft") && (
+                              <>
+                                <Button
+                                  size="icon-sm"
+                                  className="p-2 hover:bg-green-100 rounded-lg transition-colors"
+                                  onClick={() =>
+                                    router.push(
+                                      Routes.sales.discounts.edit(discount.id)
+                                    )
+                                  }
+                                >
+                                  <Edit className="text-green-600 size-5" />
+                                </Button>
+                                <span className="text-gray-500 text-sm leading-none">
+                                  |
+                                </span>
+                              </>
+                            )}
+                            <ConfirmPopover
+                              title="Cancel Discount"
+                              message={
+                                <div>
+                                  Are you sure you want to cancel{" "}
+                                  <strong>
+                                    {discount.name || "this discount"}
+                                  </strong>
+                                  ?
+                                </div>
+                              }
+                              confirmText="Cancel Discount"
+                              onConfirm={() => handleCancel(discount.id)}
+                            >
+                              <Button
+                                size="icon-sm"
+                                className="p-2 hover:bg-orange-100 rounded-lg transition-colors"
+                                title="Cancel"
+                              >
+                                <XCircle className="text-orange-600 size-5" />
+                              </Button>
+                            </ConfirmPopover>
+                            <span className="text-gray-500 text-sm leading-none">
+                              |
+                            </span>
+                            <ConfirmPopover
+                              title="Remove Discount"
+                              message={
+                                <div>
+                                  Are you sure you want to delete{" "}
+                                  <strong>
+                                    {discount.name || "this discount"}
+                                  </strong>
+                                  ?
+                                </div>
+                              }
+                              confirmText="Delete"
+                              onConfirm={() => handleDelete(discount.id)}
+                            >
+                              <Button
+                                size="icon-sm"
+                                className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+                                title="Delete"
+                              >
+                                <Trash2 className="text-red-600 size-5" />
+                              </Button>
+                            </ConfirmPopover>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
 
-            {/* Controls (right) */}
-            <div className="flex items-center gap-4">
-              <Pagination
-                page={page}
-                totalPages={totalPages}
-                hasPrev={page > 1}
-                hasNext={page < totalPages}
-                onChange={setPage}
-              />
-            </div>
-          </div>
-        )}
-      </motion.div>
+            {!loading && discounts.length > 0 && (
+              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                {/* Rows per page (left) */}
+                <div className="flex items-center gap-3 text-sm text-gray-700">
+                  <span>Rows per page:</span>
+                  <select
+                    className="h-9 rounded-md border border-gray-300 px-2 bg-white"
+                    value={limit}
+                    onChange={(e) => {
+                      setLimit(Number(e.target.value));
+                      setPage(1);
+                    }}
+                  >
+                    {[10, 20, 30, 50].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-          {/* Lightbox Modal */}
-          {lightboxImage && (
-            <div
-              className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
-              onClick={() => setLightboxImage(null)}
-            >
-              <Button
-                className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
-                onClick={() => setLightboxImage(null)}
-                title="Close"
-              >
-                <X className="w-6 h-6 text-gray-800" />
-              </Button>
-              <div className="max-w-7xl max-h-[90vh] p-4">
-                <img
-                  src={lightboxImage.url}
-                  alt={lightboxImage.alt}
-                  className="max-w-full max-h-full object-contain"
-                  onClick={(e) => e.stopPropagation()}
-                />
+                {/* Controls (right) */}
+                <div className="flex items-center gap-4">
+                  <Pagination
+                    page={page}
+                    totalPages={totalPages}
+                    hasPrev={page > 1}
+                    hasNext={page < totalPages}
+                    onChange={setPage}
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </motion.div>
         </motion.div>
       </main>
     </div>

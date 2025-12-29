@@ -208,8 +208,8 @@ export default function BrandsTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Brands
-                </h1>
+                  Trash Bin – Brands List
+                </h1> 
                 <p className="text-gray-600 mt-1">
                   Restore or permanently delete removed brands
                 </p>
@@ -221,7 +221,7 @@ export default function BrandsTrashPage() {
           <ToolbarSearchFilters
             value={q.search}
             onSearchChange={(v) => setAndResetPage({ search: v, page: 1 })}
-            brandStatus={(q as any).brandStatus ?? "all"}
+            isActive={(q as any).isActive ?? "all"}
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
@@ -282,7 +282,7 @@ export default function BrandsTrashPage() {
                       </th>
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Status
+                        Active
                       </th>
 
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
@@ -293,8 +293,8 @@ export default function BrandsTrashPage() {
                         Deleted At
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
                             Priority
                           </span>
@@ -361,11 +361,13 @@ export default function BrandsTrashPage() {
 
                         <td className="px-6 py-4 text-center">
                           <span
-                            className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${statusBadgeClass(
-                              (b as any).brandStatus
-                            )}`}
+                            className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
+                              b.isActive
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
                           >
-                            {formatStatusLabel((b as any).brandStatus)}
+                            {b.isActive ? "Yes" : "No"}
                           </span>
                         </td>
 
@@ -385,7 +387,7 @@ export default function BrandsTrashPage() {
                           {formatDate(b.deletedAt)}
                         </td>
 
-                        <td className="px-6 py-4 text-gray-700">
+                        <td className="px-6 py-4 text-center text-gray-700">
                           {typeof b.priority === "number" ? b.priority : 10}
                         </td>
 

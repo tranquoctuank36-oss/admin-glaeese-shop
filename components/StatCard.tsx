@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 
 type StatCardProps = {
-  name: string;
+  name?: string;
   icon: React.ElementType;
   value: string;
   count?: number;

@@ -81,7 +81,7 @@ export async function getTags(q: TagListQuery): Promise<PaginatedTags> {
     const payload = res.data ?? {};
     const rows: any[] = payload.data ?? payload.rows ?? [];
     const totalItems: number | undefined =
-      payload.total ?? payload.meta?.total ?? undefined;
+      payload.total ?? payload.meta?.total ?? payload.meta?.totalItems ?? undefined;
     const limitFromRes: number = payload.limit ?? limit;
     const pageFromRes: number = payload.page ?? page;
     const totalPages: number | undefined =

@@ -25,6 +25,7 @@ export type BrandListQuery = {
   limit?: number;
   search?: string;
   brandStatus?: string;
+  isActive?: boolean;
   isDeleted?: boolean;
   sortField?: "name" | "createdAt" | "priority";
   sortOrder?: "ASC" | "DESC";
@@ -52,6 +53,7 @@ function toBrand(row: any): Brand {
     websiteUrl: row.website_url ?? row.websiteUrl ?? null,
     description: row.description ?? null,
     brandStatus: row.status ?? row.brand_status ?? null,
+    isActive: Boolean(row.is_active ?? row.isActive),
     isDeleted: Boolean(row.is_deleted ?? row.isDeleted),
     bannerImageId: row.banner_image_id ?? row.bannerImageId ?? row.bannerImage?.id ?? null,
     bannerImage: row.bannerImage ?? row.banner_image ?? null,
@@ -68,6 +70,7 @@ function buildListParams(q: BrandListQuery) {
   if (q.limit) params.limit = q.limit;
   if (q.search && q.search.trim()) params.search = q.search.trim();
   if (q.brandStatus) params.status = q.brandStatus;
+  if (typeof q.isActive === "boolean") params.isActive = q.isActive;
   if (typeof q.isDeleted === "boolean") params.isDeleted = q.isDeleted;
 
   if (q.sortOrder) params.sortOrder = q.sortOrder;
@@ -96,7 +99,7 @@ export async function getBrands(q: BrandListQuery): Promise<PaginatedBrands> {
     const rows: any[] = payload.data ?? payload.rows ?? [];
 
     const totalItems: number | undefined =
-      payload.total ?? payload.meta?.total ?? undefined;
+      payload.total ?? payload.meta?.total ?? payload.meta?.totalItems ?? undefined;
 
     const limitFromRes: number = payload.limit ?? limit;
     const pageFromRes: number = payload.page ?? page;

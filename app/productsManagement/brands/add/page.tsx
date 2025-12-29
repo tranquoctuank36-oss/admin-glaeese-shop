@@ -14,7 +14,7 @@ export default function AddBrandPage() {
     slug: "",
     websiteUrl: "",
     description: "",
-    brandStatus: "active",
+    isActive: true,
     bannerImageId: "",
     priority: 100,
   };

@@ -52,7 +52,7 @@ export default function FrameTypesPage() {
     } else if (q.sortOrder === "ASC") {
       setAndResetPage({ sortField: "name", sortOrder: "DESC" as const, page: 1 });
     } else {
-      setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const, page: 1 });
+      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const, page: 1 });
     }
   };
 
@@ -62,7 +62,7 @@ export default function FrameTypesPage() {
     } else if (q.sortOrder === "DESC") {
       setAndResetPage({ sortField: "createdAt", sortOrder: "ASC" as const, page: 1 });
     } else {
-      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const, page: 1 });
+      setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const, page: 1 });
     }
   };
 
@@ -164,7 +164,7 @@ export default function FrameTypesPage() {
 
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Frame Types
+                  Frame Types List
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Manage all available frame types for your products

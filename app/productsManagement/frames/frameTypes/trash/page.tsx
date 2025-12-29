@@ -43,8 +43,8 @@ export default function FrameTypesTrashPage() {
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
     isDeleted: "true",
-    sortField: "name",
-    sortOrder: "ASC",
+    sortField: "deletedAt",
+    sortOrder: "DESC",
   });
 
   const toggleNameSort = () => {
@@ -68,6 +68,28 @@ export default function FrameTypesTrashPage() {
       });
     }
   };
+  const toggleDeletedAtSort = () => {
+    if (q.sortField !== "deletedAt") {
+      setAndResetPage({
+        sortField: "deletedAt",
+        sortOrder: "DESC" as const,
+        page: 1,
+      });
+    } else if (q.sortOrder === "DESC") {
+      setAndResetPage({
+        sortField: "deletedAt",
+        sortOrder: "ASC" as const,
+        page: 1,
+      });
+    } else {
+      setAndResetPage({
+        sortField: "deletedAt",
+        sortOrder: "DESC" as const,
+        page: 1,
+      });
+    }
+  };
+
 
   const [rows, setRows] = useState<FrameType[]>([]);
   const [meta, setMeta] = useState<{
@@ -177,8 +199,8 @@ export default function FrameTypesTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Frame Types
-                </h1>
+                  Trash Bin – Frame Types List
+                </h1> 
                 <p className="text-gray-600 mt-1">
                   Restore or permanently delete removed types
                 </p>
@@ -251,7 +273,33 @@ export default function FrameTypesTrashPage() {
                       </th>
 
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Deleted At
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-gray-600">
+                            Deleted At
+                          </span>
+                          <button
+                            type="button"
+                            onClick={toggleDeletedAtSort}
+                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
+                            title={
+                              q.sortField === "deletedAt"
+                                ? `Sorting: ${
+                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
+                                  } (click to change)`
+                                : "No sorting (click to sort by Deleted At)"
+                            }
+                          >
+                            {q.sortField === "deletedAt" ? (
+                              q.sortOrder === "ASC" ? (
+                                <ArrowUpAZ className="size-5 relative top-[1px]" />
+                              ) : (
+                                <ArrowDownAZ className="size-5 relative top-[1px]" />
+                              )
+                            ) : (
+                              <ArrowUpDown className="size-5 relative top-[1px]" />
+                            )}
+                          </button>
+                        </div>
                       </th>
 
                       <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">

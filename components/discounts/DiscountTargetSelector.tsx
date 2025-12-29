@@ -12,7 +12,7 @@ import {
 import { getProducts } from "@/services/productService";
 import type { Product, ProductVariant } from "@/types/product";
 import toast from "react-hot-toast";
-import { addDiscountTargets } from "@/services/discountService";
+import { addDiscountTargets, getDiscountTargets } from "@/services/discountService";
 
 interface DiscountTargetSelectorProps {
   discountId: string;
@@ -34,6 +34,22 @@ export default function DiscountTargetSelector({
   );
   const [saving, setSaving] = useState(false);
   const [lightboxImage, setLightboxImage] = useState<{ url: string; alt: string } | null>(null);
+  const [dialogTemporarilyClosed, setDialogTemporarilyClosed] = useState(false);
+  const [existingVariantIds, setExistingVariantIds] = useState<Set<string>>(new Set());
+
+  const loadExistingVariants = async () => {
+    try {
+      // Fetch all existing variants in this discount (without pagination)
+      const result = await getDiscountTargets(discountId, {
+        page: 1,
+        limit: 1000, // Get all existing variants
+      });
+      const variantIds = new Set<string>(result.data.map((v: any) => v.id as string));
+      setExistingVariantIds(variantIds);
+    } catch (error) {
+      console.error("Failed to load existing variants:", error);
+    }
+  };
 
   const loadProducts = async () => {
     try {
@@ -59,6 +75,7 @@ export default function DiscountTargetSelector({
 
   useEffect(() => {
     if (open) {
+      loadExistingVariants();
       loadProducts();
     }
   }, [open, page, search]);
@@ -157,7 +174,16 @@ export default function DiscountTargetSelector({
               </div>
             ) : (
               <div className="space-y-4 p-4">
-                {products.map((product) => (
+                {products.map((product) => {
+                  // Filter out variants that already exist in the discount
+                  const availableVariants = product.productVariants?.filter(
+                    (variant) => !existingVariantIds.has(variant.id)
+                  ) || [];
+
+                  // Skip this product if no variants are available
+                  if (availableVariants.length === 0) return null;
+
+                  return (
                   <div
                     key={product.id}
                     className="border border-gray-200 rounded-lg p-4 bg-white"
@@ -169,10 +195,14 @@ export default function DiscountTargetSelector({
                           src={product.productImages[0].publicUrl}
                           alt={product.name}
                           className="w-16 h-16 object-cover rounded border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => setLightboxImage({
-                            url: product.productImages![0].publicUrl,
-                            alt: product.name
-                          })}
+                          onClick={() => {
+                            setOpen(false);
+                            setDialogTemporarilyClosed(true);
+                            setLightboxImage({
+                              url: product.productImages![0].publicUrl,
+                              alt: product.name
+                            });
+                          }}
                         />
                       )}
                       <div className="flex-1">
@@ -186,14 +216,13 @@ export default function DiscountTargetSelector({
                     </div>
 
                     {/* Variants */}
-                    {product.productVariants &&
-                      product.productVariants.length > 0 && (
+                    {availableVariants.length > 0 && (
                         <div className="space-y-2">
                           <p className="text-xs font-medium text-gray-600 ">
                             Product Variants
                           </p>
                           <div className="grid grid-cols-1 gap-2">
-                            {product.productVariants.map((variant) => (
+                            {availableVariants.map((variant) => (
                               <label
                                 key={variant.id}
                                 className={[
@@ -220,6 +249,8 @@ export default function DiscountTargetSelector({
                                     className="w-12 h-12 object-contain rounded border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
                                     onClick={(e) => {
                                       e.preventDefault();
+                                      setOpen(false);
+                                      setDialogTemporarilyClosed(true);
                                       setLightboxImage({
                                         url: variant.thumbnailImage?.publicUrl || variant.productImages?.[0]?.publicUrl || "",
                                         alt: variant.name
@@ -282,7 +313,8 @@ export default function DiscountTargetSelector({
                         </div>
                       )}
                   </div>
-                ))}
+                );
+                })}
               </div>
             )}
           </div>
@@ -291,23 +323,43 @@ export default function DiscountTargetSelector({
           {!loading && products.length > 0 && totalPages > 1 && (
             <div className="flex items-center justify-center gap-2">
               <Button
-                type="button"
+
+                disabled={page === 1}
+                onClick={() => setPage(1)}
+                title="First page"
+                className="p-0 h-0 bg-white hover:bg-gray-100 hover:text-blue-700 text-gray-900 disabled:opacity-50"
+              >
+                &lt;&lt;
+              </Button>
+              <Button
                 size="sm"
                 disabled={page === 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
+                title="Previous page"
+                className="p-0 h-0 mr-2 bg-white hover:bg-gray-100 hover:text-blue-700 text-gray-900 disabled:opacity-50"
               >
-                Previous
+                &lt;
               </Button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-900 font-medium">
                 Page {page} of {totalPages}
               </span>
               <Button
-                type="button"
                 size="sm"
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
+                title="Next page"
+                className="p-0 h-0 ml-2 bg-white hover:bg-gray-100 hover:text-blue-700 text-gray-900 disabled:opacity-50"
               >
-                Next
+                &gt;
+              </Button>
+              <Button
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => setPage(totalPages)}
+                title="Last page"
+                className="p-0 h-0 bg-white hover:bg-gray-100 hover:text-blue-700 text-gray-900 disabled:opacity-50"
+              >
+                &gt;&gt;
               </Button>
             </div>
           )}
@@ -338,11 +390,23 @@ export default function DiscountTargetSelector({
       {lightboxImage && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-90"
-          onClick={() => setLightboxImage(null)}
+          onClick={() => {
+            setLightboxImage(null);
+            if (dialogTemporarilyClosed) {
+              setOpen(true);
+              setDialogTemporarilyClosed(false);
+            }
+          }}
         >
           <Button
             className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
-            onClick={() => setLightboxImage(null)}
+            onClick={() => {
+              setLightboxImage(null);
+              if (dialogTemporarilyClosed) {
+                setOpen(true);
+                setDialogTemporarilyClosed(false);
+              }
+            }}
             title="Close"
           >
             <X className="w-6 h-6 text-gray-800" />

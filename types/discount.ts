@@ -5,6 +5,7 @@ export interface Discount {
   description?: string;
   type: "percentage" | "fixed";
   value: string;
+  maxDiscountValue?: string;
   status: "draft" | "scheduled" | "happening" | "canceled" | "expired";
   startAt: string;
   endAt: string;

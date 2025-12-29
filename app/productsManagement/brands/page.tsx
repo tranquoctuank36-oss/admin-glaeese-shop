@@ -10,6 +10,7 @@ import {
   ArrowDownAZ,
   ArrowUpDown,
   Eye,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -36,25 +37,7 @@ function fmt(iso?: string) {
   return `${dd}/${mm}/${yyyy}`;
 }
 
-function statusBadgeClass(status?: string | null) {
-  switch (status) {
-    case "active":
-      return "bg-green-100 text-green-700";
-    case "hidden":
-      return "bg-yellow-100 text-yellow-800";
-    case "archived":
-      return "bg-red-100 text-red-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-}
 
-function formatStatusLabel(status?: string | null) {
-  if (!status) return "-";
-  return String(status)
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 export default function BrandsPage() {
   const router = useRouter();
@@ -64,6 +47,7 @@ export default function BrandsPage() {
       limit: 20,
       sortField: "priority",
       sortOrder: "ASC",
+      isDeleted: "false",
     },
     {
       allowedsortField: ["name", "createdAt", "priority"] as const,
@@ -76,7 +60,7 @@ export default function BrandsPage() {
     } else if (q.sortOrder === "ASC") {
       setAndResetPage({ sortField: "name", sortOrder: "DESC" as const });
     } else {
-      setAndResetPage({ sortField: "priority", sortOrder: "ASC" as const });
+      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const });
     }
   };
 
@@ -86,7 +70,7 @@ export default function BrandsPage() {
     } else if (q.sortOrder === "DESC") {
       setAndResetPage({ sortField: "createdAt", sortOrder: "ASC" as const });
     } else {
-      setAndResetPage({ sortField: "priority", sortOrder: "ASC" as const });
+      setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const });
     }
   };
 
@@ -114,6 +98,10 @@ export default function BrandsPage() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [trashCount, setTrashCount] = useState<number>(0);
+  const [lightboxImage, setLightboxImage] = useState<{
+    url: string;
+    alt: string;
+  } | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -184,7 +172,9 @@ export default function BrandsPage() {
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Brands</h1>
+              <h1 className="text-3xl font-bold text-gray-800">
+                Brands List {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+              </h1>
               <p className="text-gray-600 mt-1">
                 Manage brands for your products
               </p>
@@ -221,7 +211,7 @@ export default function BrandsPage() {
           <ToolbarSearchFilters
             value={q.search}
             onSearchChange={(v) => setAndResetPage({ search: v, page: 1 })}
-            brandStatus={(q as any).brandStatus ?? "all"}
+            isActive={(q as any).isActive ?? "all"}
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
@@ -282,14 +272,14 @@ export default function BrandsPage() {
                       </th>
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Status
+                        Active
                       </th>
 
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Banner
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
                             Created At
@@ -319,8 +309,8 @@ export default function BrandsPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
                             Priority
                           </span>
@@ -395,11 +385,13 @@ export default function BrandsPage() {
 
                         <td className="px-6 py-4 text-center">
                           <span
-                            className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${statusBadgeClass(
-                              (b as any).brandStatus
-                            )}`}
+                            className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
+                              b.isActive
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
                           >
-                            {formatStatusLabel((b as any).brandStatus)}
+                            {b.isActive ? "Yes" : "No"}
                           </span>
                         </td>
 
@@ -408,7 +400,13 @@ export default function BrandsPage() {
                             <img
                               src={b.bannerImage.publicUrl}
                               alt={b.bannerImage.altText ?? b.name}
-                              className="h-16 w-28 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                              className="h-16 w-28 object-cover rounded-lg border-2 border-gray-200 shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() =>
+                                setLightboxImage({
+                                  url: b.bannerImage!.publicUrl,
+                                  alt: b.bannerImage!.altText ?? b.name,
+                                })
+                              }
                             />
                           ) : (
                             <span className="text-gray-500">-</span>
@@ -419,32 +417,12 @@ export default function BrandsPage() {
                           {fmt(b.createdAt)}
                         </td>
 
-                        <td className="px-6 py-4 text-gray-700">
+                        <td className="px-6 py-4 text-center text-gray-700">
                           {typeof b.priority === "number" ? b.priority : 100}
                         </td>
 
                         <td className="px-6 py-3">
                           <div className="flex items-center gap-2">
-                            {/* View */}
-                            <Button
-                              size="icon-sm"
-                              className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                              title="View Details"
-                              onClick={() =>
-                                router.push(
-                                  Routes.productsManagement.brands.details.replace(
-                                    "[id]",
-                                    b.id
-                                  )
-                                )
-                              }
-                            >
-                              <Eye className="text-blue-600 size-5" />
-                            </Button>
-
-                            <span className="text-gray-500 text-sm leading-none">
-                              |
-                            </span>
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
@@ -549,6 +527,30 @@ export default function BrandsPage() {
           </motion.div>
         )}
       </main>
+
+      {/* Lightbox Modal */}
+      {lightboxImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
+          onClick={() => setLightboxImage(null)}
+        >
+          <Button
+            className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
+            onClick={() => setLightboxImage(null)}
+            title="Close"
+          >
+            <X className="w-6 h-6 text-gray-800" />
+          </Button>
+          <div className="max-w-7xl max-h-[90vh] p-4">
+            <img
+              src={lightboxImage.url}
+              alt={lightboxImage.alt}
+              className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

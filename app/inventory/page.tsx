@@ -274,7 +274,7 @@ function StocksPage() {
             <div className="flex items-center gap-3 mb-2">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Inventory List
+                  Inventory List {grandTotal > 0 && `(${grandTotal})`}
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
                   Manage product stock levels and availability

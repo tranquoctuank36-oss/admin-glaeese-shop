@@ -456,9 +456,6 @@ function DiscountsTrashPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Slug
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Description
-                      </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Type
                       </th>
@@ -466,10 +463,10 @@ function DiscountsTrashPage() {
                         Value
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Status
+                        Max Discount
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Banner Image
+                        Status
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center justify-center gap-2">
@@ -531,6 +528,9 @@ function DiscountsTrashPage() {
                           </button>
                         </div>
                       </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      Canceled At
+                    </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Actions
                       </th>
@@ -555,11 +555,6 @@ function DiscountsTrashPage() {
                             {discount.slug || "-"}
                           </code>
                         </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-gray-800">
-                            {discount.description || "-"}
-                          </span>
-                        </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           {getTypeBadge(discount.type)}
                         </td>
@@ -571,24 +566,19 @@ function DiscountsTrashPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {getStatusBadge(discount.status)}
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {discount.bannerImage?.publicUrl ? (
-                            <div className="flex justify-center">
-                              <img
-                                src={discount.bannerImage.publicUrl}
-                                alt={discount.bannerImage.altText || discount.name}
-                                className="h-12 w-20 object-cover rounded-md border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
-                                onClick={() => setLightboxImage({
-                                  url: discount.bannerImage!.publicUrl,
-                                  alt: discount.bannerImage!.altText || "Banner Image"
-                                })}
-                              />
-                            </div>
+                          {discount.maxDiscountValue ? (
+                            <span className="text-sm font-semibold text-gray-600">
+                              {Number(discount.maxDiscountValue).toLocaleString(
+                                "en-US"
+                              )}
+                              đ
+                            </span>
                           ) : (
                             <span className="text-gray-400 text-sm">-</span>
                           )}
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          {getStatusBadge(discount.status)}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-gray-600">
@@ -603,6 +593,13 @@ function DiscountsTrashPage() {
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           <span className="text-gray-600">
                             {formatDate((discount as any).deletedAt)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <span className="text-gray-600">
+                            {discount.canceledAt
+                              ? formatDate(discount.canceledAt)
+                              : "-"}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-end whitespace-nowrap">

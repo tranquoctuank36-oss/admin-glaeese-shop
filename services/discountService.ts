@@ -85,6 +85,13 @@ export async function scheduleDiscount(
   return response.data.data;
 }
 
+export async function unscheduleDiscount(id: string): Promise<Discount> {
+  const response = await api.patch<{ data: Discount }>(
+    `/admin/discounts/${id}/unschedule`
+  );
+  return response.data.data;
+}
+
 export async function restoreDiscount(id: string): Promise<Discount> {
   const response = await api.patch<{ data: Discount }>(
     `/admin/discounts/${id}/restore`

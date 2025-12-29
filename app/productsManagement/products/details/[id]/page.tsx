@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -21,7 +22,25 @@ import {
   Pencil,
   RotateCcw,
   Archive,
+  GripVertical,
 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,6 +55,8 @@ import {
   restoreVariant,
   getVariantsByProductId,
   softDeleteProduct,
+  updateVariantsOrder,
+  updateVariantImagesOrder,
 } from "@/services/productService";
 import type { Product, ProductVariant } from "@/types/product";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
@@ -75,6 +96,292 @@ function formatStatusLabel(status?: string | null) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+type SortableImageItemProps = {
+  image: any;
+  imageIndex: number;
+  variantName: string;
+  onClick: () => void;
+};
+
+function SortableImageItem({
+  image,
+  imageIndex,
+  variantName,
+  onClick,
+}: SortableImageItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: image.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-gray-400 transition-all cursor-grab active:cursor-grabbing bg-white group"
+    >
+      <img
+        src={image.publicUrl}
+        alt={image.altText || variantName}
+        className="w-full h-full object-contain"
+      />
+      <div 
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick();
+        }}
+        className="absolute inset-0 bg-black/0 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer"
+      >
+      </div>
+    </div>
+  );
+}
+
+type SortableVariantItemProps = {
+  variant: any;
+  index: number;
+  onEdit: (variant: any) => void;
+  onDelete: (variantId: string) => void;
+  deletingVariantId: string | null;
+  removePopoverOpen: string | null;
+  setRemovePopoverOpen: (id: string | null) => void;
+  setSelectedImage: (url: string | null) => void;
+  setSelectedImageIndex: (index: number) => void;
+  setCurrentVariantImages: (images: any[]) => void;
+};
+
+function SortableVariantItem({
+  variant,
+  index,
+  onEdit,
+  onDelete,
+  deletingVariantId,
+  removePopoverOpen,
+  setRemovePopoverOpen,
+  setSelectedImage,
+  setSelectedImageIndex,
+  setCurrentVariantImages,
+}: SortableVariantItemProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: variant.id });
+
+  const [localImages, setLocalImages] = React.useState<any[]>(variant.productImages || []);
+  const [isReorderingImages, setIsReorderingImages] = React.useState(false);
+
+  React.useEffect(() => {
+    setLocalImages(variant.productImages || []);
+  }, [variant.productImages]);
+
+  const imageSensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const handleImageDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = localImages.findIndex((img) => img.id === active.id);
+    const newIndex = localImages.findIndex((img) => img.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    const reorderedImages = arrayMove(localImages, oldIndex, newIndex);
+    setLocalImages(reorderedImages);
+
+    try {
+      setIsReorderingImages(true);
+      const imageIds = reorderedImages.map((img) => img.id);
+      await updateVariantImagesOrder(variant.id, imageIds);
+      // toast.success("Image order updated successfully");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.detail || "Failed to update image order");
+      setLocalImages(variant.productImages || []);
+    } finally {
+      setIsReorderingImages(false);
+    }
+  };
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="border-2 rounded-xl p-5 bg-gradient-to-br border-gray-200 from-gray-50 to-white hover:shadow-lg transition-all cursor-grab active:cursor-grabbing"
+    >
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-2 flex-1">
+          <div className="flex items-center gap-1">
+            <div className="flex items-center justify-center w-7 h-7 bg-blue-500 text-white text-sm font-bold rounded-full">
+              {index + 1}
+            </div>
+            <div
+              className="hover:bg-gray-100 rounded p-1 transition-colors"
+              title="Drag to reorder"
+            >
+              <GripVertical size={20} className="text-gray-400" />
+            </div>
+          </div>
+          <h4 className="font-bold text-gray-900 text-lg">
+            {variant.name}
+          </h4>
+        </div>
+        <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+          <Button
+            onClick={() => onEdit(variant)}
+            className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white rounded-lg"
+            title="Edit variant"
+          >
+            <Edit size={16} />
+          </Button>
+          <ConfirmPopover
+            open={removePopoverOpen === variant.id}
+            onOpenChange={(open) =>
+              setRemovePopoverOpen(open ? variant.id : null)
+            }
+            title="Remove Variant?"
+            message={
+              <div>
+                Are you sure you want to remove{" "}
+                <strong>{variant.name || "this variant"}</strong>?
+              </div>
+            }
+            onConfirm={() => onDelete(variant.id)}
+            confirmText="Remove"
+          >
+            <Button
+              className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-lg"
+              disabled={deletingVariantId === variant.id}
+              title="Remove"
+            >
+              <Trash2 size={16} />
+            </Button>
+          </ConfirmPopover>
+        </div>
+      </div>
+
+      <div className="space-y-2 text-sm">
+        <div className="flex justify-between py-1 border-b border-gray-100">
+          <span className="text-gray-600">SKU:</span>
+          <span className="font-semibold text-gray-800">{variant.sku}</span>
+        </div>
+        <div className="flex justify-between py-1 border-b border-gray-100">
+          <span className="text-gray-600">Price:</span>
+          <span className="font-bold text-gray-600">
+            {Number(variant.originalPrice || 0).toLocaleString("en-US")}đ
+          </span>
+        </div>
+        <div className="flex justify-between py-1 border-b border-gray-100">
+          <span className="text-gray-600">Quantity:</span>
+          <span className="font-semibold text-gray-800">
+            {variant.quantityAvailable || 0}
+          </span>
+        </div>
+        <div className="flex justify-between py-1 border-b border-gray-100">
+          <span className="text-gray-600">Status:</span>
+          <span
+            className={`font-semibold ${
+              variant.isActive ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {variant.isActive ? "Active" : "Inactive"}
+          </span>
+        </div>
+        {variant.colors && variant.colors.length > 0 && (
+          <div className="flex justify-between py-1 border-b border-gray-100">
+            <span className="text-gray-600">Colors:</span>
+            <div className="flex flex-wrap gap-2 justify-end">
+              {variant.colors.map((color: any, cidx: number) => (
+                <div
+                  key={cidx}
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-white rounded-lg border border-gray-200 shadow-sm"
+                >
+                  {color.hexCode && (
+                    <div
+                      className="w-3.5 h-3.5 rounded-full border-2 border-gray-300 shadow-sm"
+                      style={{ backgroundColor: color.hexCode }}
+                    />
+                  )}
+                  <span className="text-xs font-medium text-gray-700">
+                    {color.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {localImages && localImages.length > 0 && (
+          <div className="flex justify-between py-1">
+            <span className="text-gray-600">
+              Images ({localImages.length}):
+            </span>
+            <div className="flex gap-2 flex-wrap justify-end max-w-[300px]">
+              <DndContext
+                sensors={imageSensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleImageDragEnd}
+              >
+                <SortableContext
+                  items={localImages.map((img) => img.id)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {localImages.map((img: any, imgIdx: number) => (
+                    <SortableImageItem
+                      key={img.id}
+                      image={img}
+                      imageIndex={imgIdx}
+                      variantName={variant.name}
+                      onClick={() => {
+                        setSelectedImage(img.publicUrl);
+                        setSelectedImageIndex(imgIdx);
+                        setCurrentVariantImages(localImages);
+                      }}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ProductDetailPage() {
   const router = useRouter();
   const params = useParams();
@@ -100,6 +407,18 @@ function ProductDetailPage() {
   const [removePopoverOpen, setRemovePopoverOpen] = useState<string | null>(null);
   const [restorePopoverOpen, setRestorePopoverOpen] = useState<string | null>(null);
   const [busyAction, setBusyAction] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const refreshProduct = async () => {
     if (!id) return;
@@ -171,6 +490,36 @@ function ProductDetailPage() {
       toast.error(error?.response?.data?.detail || "Failed to delete product");
     } finally {
       setBusyAction(false);
+    }
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    const oldIndex = activeVariants.findIndex((v) => v.id === active.id);
+    const newIndex = activeVariants.findIndex((v) => v.id === over.id);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      return;
+    }
+
+    const reorderedVariants = arrayMove(activeVariants, oldIndex, newIndex);
+    setActiveVariants(reorderedVariants);
+
+    try {
+      setIsReordering(true);
+      const variantIds = reorderedVariants.map((v) => v.id);
+      await updateVariantsOrder(id, variantIds);
+      // toast.success("Variant order updated successfully");
+    } catch (error: any) {
+      toast.error(error?.response?.data?.detail || "Failed to update variant order");
+      await refreshProduct();
+    } finally {
+      setIsReordering(false);
     }
   };
 
@@ -385,7 +734,7 @@ function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-500 font-medium mb-1">
-                        Product Type
+                        Category
                       </p>
                       <p className="text-lg font-bold text-gray-800">
                         {data.productType ?? "-"}
@@ -490,7 +839,7 @@ function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-500 font-medium mb-3">
-                        Statistics
+                        Performance
                       </p>
                       <div className="space-y-1.5 text-sm">
                         <div className="flex justify-between">
@@ -602,160 +951,34 @@ function ProductDetailPage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {activeVariants.map(
-                      (variant: any, idx: number) => (
-                        <motion.div
-                          key={variant.id || idx}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: 0.6 + idx * 0.05 }}
-                          className="border-2 rounded-xl p-5 bg-gradient-to-br border-gray-200 from-gray-50 to-white hover:shadow-md transition-all"
-                        >
-                          <div className="flex items-start justify-between mb-3">
-                            <h4 className="font-bold text-gray-900 text-lg flex-1">
-                              {variant.name}
-                            </h4>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                onClick={() => handleEditVariant(variant)}
-                                className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white rounded-lg"
-                                title="Edit variant"
-                              >
-                                <Edit size={16} />
-                              </Button>
-                              <ConfirmPopover
-                                open={removePopoverOpen === variant.id}
-                                onOpenChange={(open) => setRemovePopoverOpen(open ? variant.id : null)}
-                                title="Remove Variant?"
-                                message={
-                                  <div>
-                                    Are you sure you want to remove{" "}
-                                    <strong>
-                                      {variant.name || "this variant"}
-                                    </strong>
-                                    ?
-                                  </div>
-                                }
-                                onConfirm={() =>
-                                  handleDeleteVariant(variant.id)
-                                }
-                                confirmText="Remove"
-                              >
-                                <Button
-                                  className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-lg"
-                                  disabled={
-                                    deletingVariantId === variant.id
-                                  }
-                                  title="Remove"
-                                >
-                                  <Trash2 size={16} />
-                                </Button>
-                              </ConfirmPopover>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between py-1 border-b border-gray-100">
-                              <span className="text-gray-600">SKU:</span>
-                              <span className="font-semibold text-gray-800">
-                                {variant.sku}
-                              </span>
-                            </div>
-                            <div className="flex justify-between py-1 border-b border-gray-100">
-                              <span className="text-gray-600">Price:</span>
-                              <span className="font-bold text-gray-600">
-                                {Number(
-                                  variant.originalPrice || 0
-                                ).toLocaleString("en-US")}
-                                đ
-                              </span>
-                            </div>
-                            <div className="flex justify-between py-1 border-b border-gray-100">
-                              <span className="text-gray-600">Quantity:</span>
-                              <span className="font-semibold text-gray-800">
-                                {variant.quantityAvailable || 0}
-                              </span>
-                            </div>
-                            <div className="flex justify-between py-1">
-                              <span className="text-gray-600">Status:</span>
-                              <span
-                                className={`font-semibold ${
-                                  variant.isActive
-                                    ? "text-green-600"
-                                    : "text-red-600"
-                                }`}
-                              >
-                                {variant.isActive ? "Active" : "Inactive"}
-                              </span>
-                            </div>
-                            {variant.colors && variant.colors.length > 0 && (
-                              <div className="mt-3 pt-3 border-t border-gray-200">
-                                <span className="text-gray-600 text-xs font-medium block mb-2">
-                                  Colors:
-                                </span>
-                                <div className="flex flex-wrap gap-2">
-                                  {variant.colors.map(
-                                    (color: any, cidx: number) => (
-                                      <div
-                                        key={cidx}
-                                        className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-gray-200 shadow-sm"
-                                      >
-                                        {color.hexCode && (
-                                          <div
-                                            className="w-4 h-4 rounded-full border-2 border-gray-300 shadow-sm"
-                                            style={{
-                                              backgroundColor: color.hexCode,
-                                            }}
-                                          />
-                                        )}
-                                        <span className="text-xs font-medium text-gray-700">
-                                          {color.name}
-                                        </span>
-                                      </div>
-                                    )
-                                  )}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Variant Images */}
-                            {variant.productImages &&
-                              variant.productImages.length > 0 && (
-                                <div className="mb-4">
-                                  <p className="text-xs text-gray-500 font-medium mb-2">
-                                    Images ({variant.productImages.length})
-                                  </p>
-                                  <div className="grid grid-cols-4 gap-2">
-                                    {variant.productImages.map(
-                                      (img: any, imgIdx: number) => (
-                                        <div
-                                          key={imgIdx}
-                                          onClick={() => {
-                                            setSelectedImage(img.publicUrl);
-                                            setSelectedImageIndex(imgIdx);
-                                            setCurrentVariantImages(
-                                              variant.productImages
-                                            );
-                                          }}
-                                          className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 hover:border-green-400 transition-colors cursor-pointer bg-white"
-                                        >
-                                          <img
-                                            src={img.publicUrl}
-                                            alt={img.altText || variant.name}
-                                            className="w-full h-full object-contain"
-                                          />
-                                        </div>
-                                      )
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-                          </div>
-                        </motion.div>
-                      )
-                    )}
-                  </div>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={activeVariants.map((v) => v.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {activeVariants.map((variant: any, idx: number) => (
+                          <SortableVariantItem
+                            key={variant.id}
+                            variant={variant}
+                            index={idx}
+                            onEdit={handleEditVariant}
+                            onDelete={handleDeleteVariant}
+                            deletingVariantId={deletingVariantId}
+                            removePopoverOpen={removePopoverOpen}
+                            setRemovePopoverOpen={setRemovePopoverOpen}
+                            setSelectedImage={setSelectedImage}
+                            setSelectedImageIndex={setSelectedImageIndex}
+                            setCurrentVariantImages={setCurrentVariantImages}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
                 </motion.div>
               )}
             </motion.div>

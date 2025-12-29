@@ -54,11 +54,12 @@ export type PaginatedProducts = {
 function toProduct(row: any): Product {
   if (!row) return {} as Product;
 
-  const { status, frameDetail, variants, ...rest } = row;
+  const { status, frameDetail, variants, thumbnail_url, thumbnailUrl, ...rest } = row;
 
   return {
     ...rest,
     productStatus: status ?? null,
+    thumbnailUrl: thumbnail_url ?? thumbnailUrl ?? null,
     // Map frameDetail fields to root level
     lensWidth: frameDetail?.lensWidth ?? null,
     lensHeight: frameDetail?.lensHeight ?? null,
@@ -316,6 +317,28 @@ export const restoreVariant = async (variantId: string) => {
     return res.data?.data ?? res.data;
   } catch (err) {
     return handleError(err, "Failed to restore variant");
+  }
+};
+
+export const updateVariantsOrder = async (productId: string, variantIdsInNewOrder: string[]) => {
+  try {
+    const res = await api.patch(`/admin/products/${productId}/variants-order`, {
+      variantIdsInNewOrder,
+    });
+    return res.data?.data ?? res.data;
+  } catch (err) {
+    return handleError(err, "Failed to update variants order");
+  }
+};
+
+export const updateVariantImagesOrder = async (variantId: string, productImageIds: string[]) => {
+  try {
+    const res = await api.patch(`/admin/products-variants/${variantId}/images-order`, {
+      productImageIds,
+    });
+    return res.data?.data ?? res.data;
+  } catch (err) {
+    return handleError(err, "Failed to update variant images order");
   }
 };
 

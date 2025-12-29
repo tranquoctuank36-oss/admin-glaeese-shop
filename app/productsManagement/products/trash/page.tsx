@@ -10,6 +10,7 @@ import {
   ArrowUpAZ,
   ArrowDownAZ,
   ArrowUpDown,
+  X,
 } from "lucide-react";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import {
@@ -47,7 +48,7 @@ function formatStatusLabel(status?: string | null) {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function fmt(iso?: string) {
+function fmt(iso?: string | null) {
   if (!iso) return "-";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "-";
@@ -58,6 +59,7 @@ function fmt(iso?: string) {
 
 function ProductsTrashPage() {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [lightboxImage, setLightboxImage] = useState<{ url: string; alt: string } | null>(null);
   const router = useRouter();
 
   const [rows, setRows] = useState<Product[]>([]);
@@ -72,7 +74,7 @@ function ProductsTrashPage() {
 
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
-    sortField: "createdAt",
+    sortField: "deletedAt",
     sortOrder: "DESC",
     isDeleted: "true",
   });
@@ -83,16 +85,16 @@ function ProductsTrashPage() {
     else if (q.sortOrder === "ASC")
       setAndResetPage({ sortField: "name", sortOrder: "DESC" as const });
     else
-      setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const });
+      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const });
   };
 
-  const toggleCreatedAtSort = () => {
-    if (q.sortField !== "createdAt") {
-      setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const });
+  const toggleDeletedAtSort = () => {
+    if (q.sortField !== "deletedAt") {
+      setAndResetPage({ sortField: "deletedAt", sortOrder: "DESC" as const });
     } else if (q.sortOrder === "DESC") {
-      setAndResetPage({ sortField: "createdAt", sortOrder: "ASC" as const });
+      setAndResetPage({ sortField: "deletedAt", sortOrder: "ASC" as const });
     } else {
-      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const });
+      setAndResetPage({ sortField: "deletedAt", sortOrder: "DESC" as const });
     }
   };
 
@@ -240,7 +242,7 @@ function ProductsTrashPage() {
                   <ArrowLeft className="text-gray-700 size-7" />
                 </Button>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Products
+                  Trash Bin – Products List
                 </h1>
               </div>
               <p className="text-gray-600 mt-1 ml-12">
@@ -350,20 +352,11 @@ function ProductsTrashPage() {
                   <th className="px-6 py-4 w-50 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
                     Slug
                   </th>
-                  <th className="px-6 py-4 w-20 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    Brand
-                  </th>
                   <th className="px-6 py-4 w-40 text-left text-xs font-bold text-gray-600 uppercase">
-                    Product Type & Gender
+                    Category
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">
-                    Frame Details
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">
-                    Dimensions
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">
-                    Review / Sold
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase">
+                    Performance
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrapp">
                     Status
@@ -371,21 +364,21 @@ function ProductsTrashPage() {
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-gray-600">
-                        Created At
+                        Deleted At
                       </span>
                       <button
                         type="button"
-                        onClick={toggleCreatedAtSort}
+                        onClick={toggleDeletedAtSort}
                         className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                         title={
-                          q.sortField === "createdAt"
+                          q.sortField === "deletedAt"
                             ? `Sorting: ${
                                 q.sortOrder === "ASC" ? "ASC" : "DESC"
                               } (click to change)`
-                            : "No sorting (click to sort by Created At)"
+                            : "No sorting (click to sort by Deleted At)"
                         }
                       >
-                        {q.sortField === "createdAt" ? (
+                        {q.sortField === "deletedAt" ? (
                           q.sortOrder === "ASC" ? (
                             <ArrowUpAZ className="size-5" />
                           ) : (
@@ -441,33 +434,33 @@ function ProductsTrashPage() {
 
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div>
-                            <div className="font-semibold text-gray-800">
+                          {product.thumbnailUrl ? (
+                            <img
+                              src={product.thumbnailUrl}
+                              alt={product.name}
+                              className="w-15 h-15 object-contain rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() => setLightboxImage({ url: product.thumbnailUrl!, alt: product.name })}
+                            />
+                          ) : (
+                            <div className="w-15 h-15 bg-gray-200 rounded-lg flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">No image</span>
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <div className="font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
                               {product.name}
                             </div>
-                            <div className="text-sm text-blue-600 mt-0.5">
-                              {product.productVariants?.length} variant(s)
+
+                            <div className="text-sm text-gray-600 mt-0.5 whitespace-nowrap">
+                              {product.brand?.name} ·{" "}
+                              {product.productVariants?.length} variants
                             </div>
-                            {product.description && (
-                              <p className="text-xs text-gray-600 mt-1 italic line-clamp-1">
-                                <span className="text-gray-700 not-italic">
-                                  Description:
-                                </span>{" "}
-                                {product.description}
-                              </p>
-                            )}
                           </div>
                         </div>
                       </td>
 
                       <td className="px-6 py-4 text-gray-600">
                         {product.slug}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <div className="text-base text-gray-600 block max-w-[100px] truncate">
-                          {product.brand?.name ?? "—"}
-                        </div>
                       </td>
 
                       <td className="px-6 py-4">
@@ -482,78 +475,16 @@ function ProductsTrashPage() {
                       </td>
 
                       <td className="px-6 py-4">
-                        <div className="text-sm space-y-1 block ">
-                          <div>
-                            <span className="text-gray-500">Type: </span>
-                            <span className="font-medium text-gray-600 ">
-                              {product.frameType?.name ?? "—"}
-                            </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                            <span>🛒 {product.totalSold ?? 0}</span>
+                            <span>•</span>
+                            <span>👁️ {product.reviewCount ?? 0}</span>
                           </div>
-                          <div>
-                            <span className="text-gray-500">Shape: </span>
-                            <span className="font-medium text-gray-600">
-                              {product.frameShape?.name ?? "—"}
-                            </span>
+                          <div className="text-xs text-gray-600 flex items-center gap-1">
+                            <span className="text-yellow-500">⭐</span>
+                            <span>{product.averageRating ?? 0} / 5</span>
                           </div>
-                          <div>
-                            <span className="text-gray-500">Material: </span>
-                            <span className="font-medium text-gray-600">
-                              {product.frameMaterial?.name ?? "—"}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-600 space-y-0.5">
-                          <div>
-                            <span className="text-gray-500">Lens Width: </span>
-                            <span className="font-medium text-gray-600 ">
-                              {product.lensWidth !== null &&
-                              product.lensWidth !== undefined
-                                ? product.lensWidth
-                                : "—"}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Lens Height: </span>
-                            <span className="font-medium text-gray-600 ">
-                              {product.lensHeight !== null &&
-                              product.lensHeight !== undefined
-                                ? product.lensHeight
-                                : "—"}
-                            </span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">
-                              Bridge Width:{" "}
-                            </span>
-                            <span className="font-medium text-gray-600 ">
-                              {product.bridgeWidth !== null &&
-                              product.bridgeWidth !== undefined
-                                ? product.bridgeWidth
-                                : "—"}
-                            </span>
-                          </div>
-
-                          <div>
-                            <span className="text-gray-500">
-                              Temple Length:{" "}
-                            </span>
-                            <span className="font-medium text-gray-600 ">
-                              {product.templeLength !== null &&
-                              product.templeLength !== undefined
-                                ? product.templeLength
-                                : "—"}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-800 text-center">
-                          {product.reviewCount ?? "—"} /{" "}
-                          {product.totalSold ?? "—"}
                         </div>
                       </td>
 
@@ -568,7 +499,7 @@ function ProductsTrashPage() {
                       </td>
 
                       <td className="px-6 py-4 text-gray-600">
-                        {fmt(product.createdAt)}
+                        {fmt(product.deletedAt)}
                       </td>
 
                       <td className="px-6 py-4">
@@ -685,6 +616,30 @@ function ProductsTrashPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Lightbox Modal */}
+        {lightboxImage && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
+            onClick={() => setLightboxImage(null)}
+          >
+            <Button
+              className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
+              onClick={() => setLightboxImage(null)}
+              title="Close"
+            >
+              <X className="w-6 h-6 text-gray-800" />
+            </Button>
+            <div className="max-w-7xl max-h-[90vh] p-4">
+              <img
+                src={lightboxImage.url}
+                alt={lightboxImage.alt}
+                className="max-w-full max-h-full object-contain"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

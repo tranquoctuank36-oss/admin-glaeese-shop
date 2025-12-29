@@ -58,8 +58,7 @@ function FramesPage() {
         >
           <Link href={Routes.productsManagement.frames.frameShapes.root}>
             <StatCard
-              name="Frame Shapes"
-              value={loading ? "..." : "Manage"}
+              value={loading ? "..." : "Frame Shapes"}
               icon={ICONS.Shapes}
               count={counts.frameShapes}
             />
@@ -67,8 +66,7 @@ function FramesPage() {
 
           <Link href={Routes.productsManagement.frames.frameTypes.root}>
             <StatCard
-              name="Frame Types"
-              value={loading ? "..." : "Manage"}
+              value={loading ? "..." : "Frame Types"}
               icon={ICONS.Component}
               count={counts.frameTypes}
             />
@@ -76,8 +74,7 @@ function FramesPage() {
 
           <Link href={Routes.productsManagement.frames.frameMaterials.root}>
             <StatCard
-              name="Frame Materials"
-              value={loading ? "..." : "Manage"}
+              value={loading ? "..." : "Frame Materials"}
               icon={ICONS.Gem}
               count={counts.frameMaterials}
             />

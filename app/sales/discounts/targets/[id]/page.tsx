@@ -318,7 +318,7 @@ function DiscountTargetsPage() {
                             <img
                               src={variant.thumbnailImage.publicUrl}
                               alt={variant.name}
-                              className="w-16 h-16 object-contain rounded border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+                              className="w-16 h-14 object-contain rounded border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
                               onClick={() => setLightboxImage({
                                 url: variant.thumbnailImage!.publicUrl,
                                 alt: variant.name

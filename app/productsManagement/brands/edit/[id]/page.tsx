@@ -31,11 +31,7 @@ export default function EditBrandPage() {
             slug: b.slug ?? "",
             websiteUrl: b.websiteUrl ?? "",
             description: b.description ?? "",
-            brandStatus: ["active", "hidden", "archived"].includes(
-              b.brandStatus
-            )
-              ? (b.brandStatus as "active" | "hidden" | "archived")
-              : "active",
+            isActive: b.isActive ?? true,
             bannerImageId: b.bannerImageId ?? undefined,
             bannerImage: b.bannerImage ? {
               id: b.bannerImage.id,

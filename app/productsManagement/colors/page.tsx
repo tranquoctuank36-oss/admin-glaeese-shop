@@ -148,7 +148,7 @@ export default function ColorsPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-3">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Colors</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Colors List {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
                 <p className="text-gray-600 mt-1">
                   Manage all available colors for your products
                 </p>

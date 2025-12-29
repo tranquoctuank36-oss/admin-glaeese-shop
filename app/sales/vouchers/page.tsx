@@ -287,7 +287,7 @@ function VouchersPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Voucher Management
+                  Voucher List {totalPages > 0 && `(${(currentPage - 1) * itemsPerPage + vouchers.length})`}
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Create and manage voucher codes and promotional campaigns
