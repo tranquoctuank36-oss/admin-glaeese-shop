@@ -77,7 +77,7 @@ export default function EditProductPage() {
         <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-gray-600 text-lg">Loading product...</p>
+            <p className="text-gray-600 text-lg">Đang tải sản phẩm...</p>
           </div>
         </main>
       </div>
@@ -90,7 +90,7 @@ export default function EditProductPage() {
         <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
           <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center">
             <p className="text-red-600 text-xl font-semibold">
-              {error || "Product not found."}
+              {error || "Không tìm thấy sản phẩm."}
             </p>
           </div>
         </main>
@@ -122,7 +122,7 @@ export default function EditProductPage() {
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Edit Product</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Sửa sản phẩm</h1>
         <ProductForm
           initial={initial}
           onCancel={() => router.back()}
@@ -162,9 +162,9 @@ export default function EditProductPage() {
             console.log("Product updated successfully");
 
             router.push(Routes.productsManagement.products.root);
-            toast.success("Product updated successfully!");
+            toast.success("Sản phẩm được cập nhật thành công!");
           }}
-          submitLabel="Update"
+          submitLabel="Cập nhật"
         />
       </main>
     </div>

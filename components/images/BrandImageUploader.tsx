@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ImagePlus, X, Search } from "lucide-react";
+import { ImagePlus, X, Search, Loader2 } from "lucide-react";
 import { getImages } from "@/services/imagesService";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -20,7 +20,7 @@ export type BannerUploaderProps = {
 };
 
 export default function BrandImageUploader({
-  label = "Banner Image",
+  label = "Hình ảnh Banner",
   value,
   onChange,
   disabled,
@@ -125,7 +125,7 @@ export default function BrandImageUploader({
           >
             <ImagePlus className="size-8 text-gray-500" />
             <span className="mt-2 text-sm text-gray-600">
-              Click to select banner image
+              Nhấn để chọn hình ảnh Banner
             </span>
           </button>
         ) : (
@@ -143,7 +143,7 @@ export default function BrandImageUploader({
                 type="button"
                 size="icon-sm"
                 className="bg-white/90 hover:bg-white"
-                title="Change"
+                title="Thay đổi"
                 onClick={() => !disabled && setOpen(true)}
                 disabled={disabled}
               >
@@ -153,7 +153,7 @@ export default function BrandImageUploader({
                 type="button"
                 size="icon-sm"
                 className="bg-white/90 hover:bg-white"
-                title="Remove"
+                title="Xóa"
                 onClick={() => onChange(null)}
                 disabled={disabled}
               >
@@ -168,7 +168,7 @@ export default function BrandImageUploader({
         <p className="text-sm text-red-600">
           {typeof error === "string" && error
             ? error
-            : "Please select a banner image."}
+            : "Vui lòng chọn hình ảnh Banner."}
         </p>
       ) : (
         helperText && <p className="text-xs text-gray-500">{helperText}</p>
@@ -180,7 +180,7 @@ export default function BrandImageUploader({
           style={{ maxWidth: '1200px', width: '98vw', maxHeight: '90vh' }}
         >
           <DialogHeader>
-            <DialogTitle>Select Banner Image</DialogTitle>
+            <DialogTitle>Chọn hình ảnh Banner</DialogTitle>
           </DialogHeader>
 
           {/* <div className="mb-4">
@@ -198,11 +198,13 @@ export default function BrandImageUploader({
 
           <div className="flex-1 overflow-y-auto min-h-0">
             {loading && page === 1 ? (
-              <div className="text-center py-8 text-gray-500">Loading images...</div>
+              <div className="flex justify-center items-center py-8">
+                <Loader2 className="size-8 animate-spin text-blue-600" />
+              </div>
             ) : images.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <ImagePlus className="size-16 mx-auto mb-4 text-gray-300" />
-                <p>No images found. Please upload images first.</p>
+                <p>Không tìm thấy hình ảnh. Vui lòng tải lên hình ảnh trước.</p>
               </div>
             ) : (
               <>
@@ -231,7 +233,7 @@ export default function BrandImageUploader({
                       disabled={loading}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      {loading ? "Loading..." : "Load More"}
+                      {loading ? <Loader2 className="size-4 animate-spin" /> : "Tải thêm"}
                     </Button>
                   </div>
                 )}

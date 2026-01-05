@@ -66,7 +66,7 @@ type Props = {
 export default function ToolbarSearchFilters({
   value,
   onSearchChange,
-  placeholder = "Search...",
+  placeholder = "Tìm kiếm...",
   isActive,
   brandStatus,
   categoryStatus,
@@ -117,7 +117,7 @@ export default function ToolbarSearchFilters({
           <PopoverTrigger asChild>
             <Button className="h-11 rounded-xl px-4 relative border border-gray-300 bg-white hover:border-gray-500 text-gray-500 hover:text-gray-700">
               <Filter className="mr-2 size-4" />
-              Filters
+              Bộ lọc
             </Button>
           </PopoverTrigger>
 
@@ -131,7 +131,7 @@ export default function ToolbarSearchFilters({
             <div className="space-y-3 text-sm">
               {typeof isActive !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Active</div>
+                  <div className="mb-1 font-medium text-gray-700">Hoạt động</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={isActive}
@@ -139,16 +139,16 @@ export default function ToolbarSearchFilters({
                       onFiltersChange({ isActive: e.target.value as any })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
+                    <option value="all">Tất cả</option>
+                    <option value="true">Có</option>
+                    <option value="false">Không</option>
                   </select>
                 </div>
               )}
 
               {typeof brandStatus !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Status</div>
+                  <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={brandStatus}
@@ -158,17 +158,17 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="active">Active</option>
-                    <option value="hidden">Hidden</option>
-                    <option value="archived">Archived</option>
+                    <option value="all">Tất cả</option>
+                    <option value="active">Hoạt động</option>
+                    <option value="hidden">Ẩn</option>
+                    <option value="archived">Lưu trữ</option>
                   </select>
                 </div>
               )}
 
               {typeof categoryStatus !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Status</div>
+                  <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={categoryStatus}
@@ -178,17 +178,17 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="unpublished">Unpublished</option>
+                    <option value="all">Tất cả</option>
+                    <option value="draft">Bản nháp</option>
+                    <option value="published">Đã xuất bản</option>
+                    <option value="unpublished">Chưa xuất bản</option>
                   </select>
                 </div>
               )}
 
               {typeof productStatus !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Status</div>
+                  <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={productStatus}
@@ -198,18 +198,18 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="unlisted">Unlisted</option>
-                    <option value="archived">Archived</option>
+                    <option value="all">Tất cả</option>
+                    <option value="draft">Bản nháp</option>
+                    <option value="published">Đã xuất bản</option>
+                    <option value="unlisted">Không liệt kê</option>
+                    <option value="archived">Lưu trữ</option>
                   </select>
                 </div>
               )}
 
               {typeof imageStatus !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Status</div>
+                  <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={imageStatus}
@@ -219,16 +219,16 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="draft">Draft</option>
-                    <option value="used">Used</option>
+                    <option value="all">Tất cả</option>
+                    <option value="draft">Bản nháp</option>
+                    <option value="used">Đã sử dụng</option>
                   </select>
                 </div>
               )}
 
               {typeof ownerType !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Image Type</div>
+                  <div className="mb-1 font-medium text-gray-700">Loại hình ảnh</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={ownerType}
@@ -238,17 +238,17 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="product_variant">Product Variant</option>
-                    <option value="brand">Brand</option>
-                    <option value="discount">Discount</option>
+                    <option value="all">Tất cả</option>
+                    <option value="product_variant">Biến thể sản phẩm</option>
+                    <option value="brand">Thương hiệu</option>
+                    <option value="discount">Giảm giá</option>
                   </select>
                 </div>
               )}
 
               {typeof stockStatus !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Status</div>
+                  <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={stockStatus}
@@ -258,90 +258,99 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All Status</option>
-                    <option value="in_stock">In Stock</option>
-                    <option value="low_stock">Low Stock</option>
-                    <option value="out_of_stock">Out of Stock</option>
-                    <option value="unknown">Unknown</option>
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="in_stock">Còn hàng</option>
+                    <option value="low_stock">Sắp hết hàng</option>
+                    <option value="out_of_stock">Hết hàng</option>
+                    <option value="unknown">Không xác định</option>
                   </select>
                 </div>
               )}
 
               {typeof userRole !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Role</div>
+                  <div className="mb-1 font-medium text-gray-700">Vai trò</div>
                   <div className="space-y-2">
-                    {["admin", "customer"].map((role) => (
-                      <label
-                        key={role}
-                        className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={
-                            Array.isArray(userRole)
-                              ? userRole.includes(role as any)
-                              : false
-                          }
-                          onChange={(e) => {
-                            const currentRoles = Array.isArray(userRole)
-                              ? userRole
-                              : [];
-                            const newRoles = e.target.checked
-                              ? [...currentRoles, role]
-                              : currentRoles.filter((r) => r !== role);
-                            onFiltersChange({
-                              userRole: newRoles as any,
-                            });
-                          }}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="text-sm capitalize">{role}</span>
-                      </label>
-                    ))}
+                    {["admin", "customer"].map((role) => {
+                      const roleLabel = role === "admin" ? "Admin" : "Khách hàng";
+                      return (
+                        <label
+                          key={role}
+                          className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={
+                              Array.isArray(userRole)
+                                ? userRole.includes(role as any)
+                                : false
+                            }
+                            onChange={(e) => {
+                              const currentRoles = Array.isArray(userRole)
+                                ? userRole
+                                : [];
+                              const newRoles = e.target.checked
+                                ? [...currentRoles, role]
+                                : currentRoles.filter((r) => r !== role);
+                              onFiltersChange({
+                                userRole: newRoles as any,
+                              });
+                            }}
+                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="text-sm">{roleLabel}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
               {typeof userStatus !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Status</div>
+                  <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
                   <div className="space-y-2">
-                    {["active", "inactive", "suspended"].map((status) => (
-                      <label
-                        key={status}
-                        className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={
-                            Array.isArray(userStatus)
-                              ? userStatus.includes(status as any)
-                              : false
-                          }
-                          onChange={(e) => {
-                            const currentStatuses = Array.isArray(userStatus)
-                              ? userStatus
-                              : [];
-                            const newStatuses = e.target.checked
-                              ? [...currentStatuses, status]
-                              : currentStatuses.filter((s) => s !== status);
-                            onFiltersChange({
-                              userStatus: newStatuses as any,
-                            });
-                          }}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                        />
-                        <span className="text-sm capitalize">{status}</span>
-                      </label>
-                    ))}
+                    {["active", "inactive", "suspended"].map((status) => {
+                      const statusLabel = 
+                        status === "active" ? "Hoạt động" :
+                        status === "inactive" ? "Không hoạt động" :
+                        "Bị khóa";
+                      return (
+                        <label
+                          key={status}
+                          className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={
+                              Array.isArray(userStatus)
+                                ? userStatus.includes(status as any)
+                                : false
+                            }
+                            onChange={(e) => {
+                              const currentStatuses = Array.isArray(userStatus)
+                                ? userStatus
+                                : [];
+                              const newStatuses = e.target.checked
+                                ? [...currentStatuses, status]
+                                : currentStatuses.filter((s) => s !== status);
+                              onFiltersChange({
+                                userStatus: newStatuses as any,
+                              });
+                            }}
+                            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="text-sm">{statusLabel}</span>
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
               {typeof voucherStatus !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Status</div>
+                  <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={voucherStatus}
@@ -351,19 +360,19 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="draft">Draft</option>
-                    <option value="scheduled">Scheduled</option>
-                    <option value="happening">Happening</option>
-                    <option value="canceled">Canceled</option>
-                    <option value="expired">Expired</option>
+                    <option value="all">Tất cả</option>
+                    <option value="draft">Bản nháp</option>
+                    <option value="scheduled">Đã lên lịch</option>
+                    <option value="happening">Đang diễn ra</option>
+                    <option value="canceled">Đã hủy</option>
+                    <option value="expired">Đã hết hạn</option>
                   </select>
                 </div>
               )}
 
               {typeof voucherType !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Type</div>
+                  <div className="mb-1 font-medium text-gray-700">Loại</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={voucherType}
@@ -373,16 +382,16 @@ export default function ToolbarSearchFilters({
                       })
                     }
                   >
-                    <option value="all">All</option>
-                    <option value="fixed">Fixed</option>
-                    <option value="percentage">Percentage</option>
+                    <option value="all">Tất cả</option>
+                    <option value="fixed">Cố định</option>
+                    <option value="percentage">Phần trăm</option>
                   </select>
                 </div>
               )}
 
               {typeof depth !== "undefined" && (
                 <div>
-                  <div className="mb-1 font-medium text-gray-700">Depth</div>
+                  <div className="mb-1 font-medium text-gray-700">Độ sâu</div>
                   <select
                     className="w-full border rounded-md px-2 py-2 cursor-pointer"
                     value={depthValue}
@@ -441,7 +450,7 @@ export default function ToolbarSearchFilters({
                     })
                   }
                 >
-                  Reset
+                  Đặt lại
                 </Button>
               </div>
             </div>

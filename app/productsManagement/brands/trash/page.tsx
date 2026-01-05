@@ -202,16 +202,16 @@ export default function BrandsTrashPage() {
                 onClick={() =>
                   router.push(Routes.productsManagement.brands.root)
                 }
-                title="Go Back"
+                title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7"/>
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Brands List
+                  Thùng rác – Danh sách thương hiệu
                 </h1> 
                 <p className="text-gray-600 mt-1">
-                  Restore or permanently delete removed brands
+                  Khôi phục hoặc xóa vĩnh viễn thương hiệu đã xóa
                 </p>
               </div>
             </div>
@@ -225,12 +225,12 @@ export default function BrandsTrashPage() {
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by brand name or slug in trash…"
+            placeholder="Tìm kiếm theo tên hoặc slug thương hiệu trong thùng rác…"
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -246,7 +246,7 @@ export default function BrandsTrashPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -254,10 +254,10 @@ export default function BrandsTrashPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "A-Z" : "Z-A"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -277,26 +277,18 @@ export default function BrandsTrashPage() {
                         Slug
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Website
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hoạt động
                       </th>
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
-                      </th>
-
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Banner
-                      </th>
-
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Deleted At
+                        Ngày xóa
                       </th>
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Priority
+                            Mức ưu tiên
                           </span>
                           <button
                             type="button"
@@ -304,10 +296,10 @@ export default function BrandsTrashPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "priority"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Priority)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "Thấp" : "Cao"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Mức ưu tiên)"
                             }
                           >
                             {q.sortField === "priority" ? (
@@ -324,7 +316,7 @@ export default function BrandsTrashPage() {
                       </th>
 
                       <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                        Hành động
                       </th>
                     </tr>
                   </thead>
@@ -345,20 +337,6 @@ export default function BrandsTrashPage() {
                           {b.slug}
                         </td>
 
-                        <td className="px-6 py-4">
-                          {b.websiteUrl ? (
-                            <a
-                              href={b.websiteUrl}
-                              target="_blank"
-                              className="text-blue-600 underline break-all"
-                            >
-                              {b.websiteUrl}
-                            </a>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-
                         <td className="px-6 py-4 text-center">
                           <span
                             className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
@@ -367,23 +345,11 @@ export default function BrandsTrashPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {b.isActive ? "Yes" : "No"}
+                            {b.isActive ? "Có" : "Không"}
                           </span>
                         </td>
 
-                        <td className="px-6 py-4">
-                          {b.bannerImage?.publicUrl ? (
-                            <img
-                              src={b.bannerImage.publicUrl}
-                              alt={b.bannerImage.altText ?? b.name}
-                              className="h-16 w-28 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
-                            />
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrapp text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrapp text-gray-600 text-center">
                           {formatDate(b.deletedAt)}
                         </td>
 
@@ -399,9 +365,9 @@ export default function BrandsTrashPage() {
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(b.id, "restore") : null)
                               }
-                              title="Restore this brand?"
+                              title="Khôi phục thương hiệu này?"
                               message={<b>{b.name}</b>}
-                              confirmText="Restore"
+                              confirmText="Khôi phục"
                               onConfirm={async () => {
                                 setBusyId(b.id);
                                 try {
@@ -421,7 +387,7 @@ export default function BrandsTrashPage() {
                                 size="icon-sm"
                                 className="p-2 hover:bg-green-100 rounded-lg transition-colors"
                                 disabled={busyId === b.id}
-                                title="Restore"
+                                title="Khôi phục"
                                 onClick={() =>
                                   setOpenKey(keyOf(b.id, "restore"))
                                 }
@@ -440,9 +406,9 @@ export default function BrandsTrashPage() {
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(b.id, "delete") : null)
                               }
-                              title="Permanently delete this brand?"
+                              title="Xóa vĩnh viễn thương hiệu này?"
                               message={<b>{b.name}</b>}
-                              confirmText="Delete"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setBusyId(b.id);
                                 try {
@@ -462,7 +428,7 @@ export default function BrandsTrashPage() {
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                                 disabled={busyId === b.id}
-                                title="Delete permanently"
+                                title="X\u00f3a v\u0129nh vi\u1ec5n"
                                 onClick={() =>
                                   setOpenKey(keyOf(b.id, "delete"))
                                 }
@@ -479,7 +445,7 @@ export default function BrandsTrashPage() {
                       <tr>
                         <td colSpan={8} className="px-6 py-10">
                           <p className="text-center text-gray-600">
-                            Trash is empty.
+                            Thùng rác trống.
                           </p>
                         </td>
                       </tr>
@@ -492,7 +458,7 @@ export default function BrandsTrashPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Số hàng mỗi trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

@@ -36,6 +36,12 @@ export default function EditVoucherPage() {
         setLoading(true);
         const voucher = await getVoucherById(voucherId);
         
+        // Convert percentage value from backend (divide by 100)
+        let voucherValue = voucher.value || "0";
+        if (voucher.type === "percentage" && voucher.value) {
+          voucherValue = String(parseFloat(voucher.value) / 100);
+        }
+        
         setInitial({
           code: voucher.code || "",
           description: voucher.description || "",
@@ -43,7 +49,7 @@ export default function EditVoucherPage() {
           maxDiscountValue: voucher.maxDiscountValue || undefined,
           maxUsage: voucher.maxUsage || 0,
           type: voucher.type || "fixed",
-          value: voucher.value || "0",
+          value: voucherValue,
           validFrom: convertToDateTimeLocal(voucher.validFrom),
           validTo: convertToDateTimeLocal(voucher.validTo),
         });

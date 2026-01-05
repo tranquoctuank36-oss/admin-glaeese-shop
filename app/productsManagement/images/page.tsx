@@ -10,6 +10,7 @@ import {
   ArrowDownAZ,
   Trash2,
   Plus,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Pagination from "@/components/data/Pagination";
@@ -149,9 +150,9 @@ export default function ImagesPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-3">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Images List {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Danh Sách Hình Ảnh {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
                 <p className="text-gray-600 mt-1">
-                  Manage all uploaded images for products, brands, and discounts
+                  Quản lý tất cả hình ảnh tải lên cho sản phẩm, thương hiệu và khuyến mãi
                 </p>
               </div>
             </div>
@@ -160,7 +161,7 @@ export default function ImagesPage() {
               className="flex items-center gap-2 h-12 bg-blue-600 hover:bg-blue-700 text-white text-base transition-all"
             >
               <Plus size={20} />
-              Add Image
+              Thêm Hình Ảnh
             </Button>
           </div>
 
@@ -172,7 +173,7 @@ export default function ImagesPage() {
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by AltText..."
+            placeholder="Tìm kiếm theo văn bản thay thế..."
           />
         </motion.div>
 
@@ -184,14 +185,14 @@ export default function ImagesPage() {
             className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between"
           >
             <div className="text-blue-800 font-medium">
-              {selectedImages.length} image(s) selected
+              {selectedImages.length} hình ảnh được chọn
             </div>
             <ConfirmPopover
               open={openBulkDelete}
               onOpenChange={setOpenBulkDelete}
-              title="Delete selected images?"
-              message={`Are you sure you want to delete ${selectedImages.length} image(s)?`}
-              confirmText="Delete"
+              title="Xóa các hình ảnh được chọn?"
+              message={`Bạn có chắc chắn muốn xóa ${selectedImages.length} hình ảnh?`}
+              confirmText="Xóa"
               onConfirm={handleBulkDelete}
               confirmDisabled={deletingBulk}
               confirmLoading={deletingBulk}
@@ -202,7 +203,7 @@ export default function ImagesPage() {
             >
               <Button className="h-12 px-4 py-2 bg-red-500 text-white/90 rounded-lg hover:bg-red-700">
                 <Trash2 className="text-white/90 size-5" />
-                Delete Selected
+                Xóa Các HÌnh Được Chọn
               </Button>
             </ConfirmPopover>
             {/* <ConfirmPopover
@@ -244,7 +245,7 @@ export default function ImagesPage() {
         )}
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -265,22 +266,22 @@ export default function ImagesPage() {
                           className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         />
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Preview
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Hình Ảnh
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         URL / Key
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Status
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Trạng Thái
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Type
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Loại
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày Tạo
                           </span>
                           <button
                             type="button"
@@ -288,10 +289,10 @@ export default function ImagesPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "createdAt"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Ngày Tạo)"
                             }
                           >
                             {q.sortField === "createdAt" ? (
@@ -336,7 +337,7 @@ export default function ImagesPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 max-w-[320px]">
                           <div className="max-w-md">
                             <a
                               href={image.publicUrl}
@@ -360,7 +361,7 @@ export default function ImagesPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           <span
                             className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
                               image.status === "used"
@@ -368,10 +369,10 @@ export default function ImagesPage() {
                                 : "bg-gray-100 text-gray-700"
                             }`}
                           >
-                            {image.status === "used" ? "Used" : "Draft"}
+                            {image.status === "used" ? "Được Sử Dụng" : "Nháp"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           <span
                             className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
                               image.ownerType === "product_variant" || image.ownerType === "product"
@@ -384,15 +385,15 @@ export default function ImagesPage() {
                             }`}
                           >
                             {image.ownerType === "product_variant" || image.ownerType === "product"
-                              ? "Product Variant"
+                              ? "Biến Thể Sản Phẩm"
                               : image.ownerType === "brand"
-                              ? "Brand"
+                              ? "Thương Hiệu"
                               : image.ownerType === "discount"
-                              ? "Discount"
+                              ? "Khuyến Mãi"
                               : image.ownerType.charAt(0).toUpperCase() + image.ownerType.slice(1)}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           <span className="text-gray-600 text-sm">
                             {formatDate(image.createdAt) || "-"}
                           </span>
@@ -406,7 +407,7 @@ export default function ImagesPage() {
                           <div className="text-center">
                             <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
                             <p className="mt-2 text-gray-600">
-                              No images found.
+                              Không tìm thấy hình ảnh nào.
                             </p>
                           </div>
                         </td>
@@ -420,7 +421,7 @@ export default function ImagesPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

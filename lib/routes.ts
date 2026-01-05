@@ -1,6 +1,11 @@
 export const Routes = {
   root: "/",
 
+  reviews: {
+    root: "/reviews",
+    details: (id: string) => `/reviews/details/${id}`,
+  },
+
   productsManagement: {
     root: "/productsManagement",
     products: {
@@ -97,7 +102,13 @@ export const Routes = {
     },
   },
   
-  orders: "/orders",
+  orders: {
+    root: "/orders",
+    pending: "/orders/pending",
+    packing: "/orders/packing",
+    all: "/orders/all",
+    details: (id: string) => `/order-details/${id}`,
+  },
   settings: "/settings",
   messages: "/messages",
   notifications: "/notifications",

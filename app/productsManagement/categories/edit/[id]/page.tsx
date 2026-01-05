@@ -49,25 +49,25 @@ export default function EditCategoryPage() {
   }, [id]);
 
   if (loading) {
-    return <p className="p-6 flex items-center justify-center">Loading...</p>;
+    return <p className="p-6 flex items-center justify-center">Đang tải...</p>;
   }
   if (!initial) {
-    return <p className="p-6 text-red-600">Category not found.</p>;
+    return <p className="p-6 text-red-600">Không tìm thấy danh mục.</p>;
   }
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Edit Category</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Sửa danh mục</h1>
 
         <CategoryForm
           initial={initial}
-          submitLabel="Update"
+          submitLabel="Cập nhật"
           onCancel={() => router.back()}
           onSubmit={async (values) => {
             await updateCategory(id, values);
             router.push(Routes.productsManagement.categories.root);
-            toast.success("Category updated successfully!");
+            toast.success("Danh mục đã được cập nhật thành công!");
           }}
         />
       </main>

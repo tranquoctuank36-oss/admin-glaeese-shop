@@ -453,7 +453,7 @@ function DiscountDetailsPage() {
                       </label>
                       <p className="text-2xl font-bold text-green-600 mt-1">
                         {discount.type === "percentage"
-                          ? `${parseFloat(discount.value)}%`
+                          ? `${parseFloat(discount.value) / 100}%`
                           : `${parseFloat(discount.value).toLocaleString(
                               "en-US"
                             )}đ`}

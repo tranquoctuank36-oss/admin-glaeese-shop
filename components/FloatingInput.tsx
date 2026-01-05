@@ -142,7 +142,7 @@ export default function FloatingInput({
                 <div className="max-h-60 overflow-y-auto">
                   {options.length === 0 ? (
                     <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                      No options available
+                      Không có tùy chọn nào
                     </div>
                   ) : (
                     options.map((opt) => (
@@ -207,7 +207,7 @@ export default function FloatingInput({
       </div>
 
       {showError && (
-        <p className="text-xs text-red-500 mt-1">Please enter your details</p>
+        <p className="text-xs text-red-500 mt-1">Vui lòng nhập thông tin</p>
       )}
     </div>
   );

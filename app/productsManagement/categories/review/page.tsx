@@ -187,16 +187,16 @@ export default function CategoriesReviewPage() {
               onClick={() =>
                 router.push(Routes.productsManagement.categories.root)
               }
-              title="Go Back"
+              title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Categories – Tree view
+                Danh mục – Xem dạng cây
               </h1>
               <p className="text-gray-600 mt-1">
-                View nested tree (levels 0 → selected depth)
+                Xem cây lồng nhau (cấp 0 → cấp được chọn)
               </p>
             </div>
           </div>
@@ -204,10 +204,10 @@ export default function CategoriesReviewPage() {
           {/* FILTER BAR */}
           <div className="bg-white rounded-2xl p-3 shadow-sm border border-gray-200 mb-6">
             <div className="flex flex-wrap items-center gap-12">
-              <div className="text-base text-gray-700 font-bold">Filters:</div>
+              <div className="text-base text-gray-700 font-bold">Bộ lọc:</div>
 
               <label className="text-sm text-gray-700 flex items-center gap-2">
-                <span className="text-base font-medium">Depth:</span>
+                <span className="text-base">Cấp độ:</span>
                 <select
                   className="text-sm border rounded-md px-2 py-2 hover:cursor-pointer"
                   value={depth ?? `${maxDepth}`}
@@ -222,7 +222,7 @@ export default function CategoriesReviewPage() {
               </label>
 
               <label className="text-sm text-gray-700 flex items-center gap-2">
-                <span className="text-base font-medium">Status:</span>
+                <span className="text-base">Trạng thái:</span>
                 <select
                   className="text-sm border rounded-md px-2 py-2 hover:cursor-pointer"
                   value={status}
@@ -230,36 +230,36 @@ export default function CategoriesReviewPage() {
                     setStatus(e.target.value as CategoryStatusOption)
                   }
                 >
-                  <option value="all">All</option>
-                  <option value="published">Published</option>
-                  <option value="draft">Draft</option>
-                  <option value="unpublished">Unpublished</option>
+                  <option value="all">Tất cả</option>
+                  <option value="published">Đã xuất bản</option>
+                  <option value="draft">Bản nháp</option>
+                  <option value="unpublished">Chưa xuất bản</option>
                 </select>
               </label>
 
               <label className="text-sm text-gray-700 flex items-center gap-2">
-                <span className="text-base font-medium">Sort by: </span>
+                <span className="text-base">Sắp xếp theo: </span>
                 <select
                   className="text-sm border rounded-md px-2 py-2 hover:cursor-pointer"
                   value={sortField}
                   onChange={(e) => setSortField(e.target.value as SortField)}
                 >
-                  <option value="priority">Priority</option>
-                  <option value="createdAt">Created At</option>
-                  <option value="name">Name</option>
-                  <option value="level">Level</option>
+                  <option value="priority">Mức ưu tiên</option>
+                  <option value="createdAt">Ngày tạo</option>
+                  <option value="name">Tên</option>
+                  <option value="level">Cấp độ</option>
                 </select>
               </label>
 
               <label className="text-sm text-gray-700 flex items-center gap-2">
-                <span className="text-base font-medium">Order:</span>
+                <span className="text-base">Thứ tự:</span>
                 <select
                   className="text-sm border rounded-md px-2 py-2 hover:cursor-pointer"
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value as SortOrder)}
                 >
-                  <option value="ASC">ASC</option>
-                  <option value="DESC">DESC</option>
+                  <option value="ASC">Tăng dần</option>
+                  <option value="DESC">Giảm dần</option>
                 </select>
               </label>
 
@@ -272,17 +272,17 @@ export default function CategoriesReviewPage() {
                   setSortOrder("ASC");
                 }}
               >
-                Reset
+                Đặt lại
               </Button>
             </div>
           </div>
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : prunedTree.length === 0 ? (
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8 text-center text-gray-600">
-            No categories to display.
+            Không có danh mục để hiển thị.
           </div>
         ) : (
           <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
@@ -303,7 +303,7 @@ export default function CategoriesReviewPage() {
                           .map((c) => renderNode(c, 1))
                       ) : (
                         <li className="italic text-gray-400">
-                          (No subcategories)
+                          (Không có danh mục con)
                         </li>
                       )}
                     </ul>

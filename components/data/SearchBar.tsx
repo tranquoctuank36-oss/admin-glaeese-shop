@@ -3,7 +3,7 @@
 export default function SearchBar({
   value,
   onChange,
-  placeholder = "Search...",
+  placeholder = "Tìm kiếm...",
 }: {
   value: string;
   onChange: (v: string) => void;

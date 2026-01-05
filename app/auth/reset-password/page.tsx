@@ -6,7 +6,7 @@ export default function ResetPasswordPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-screen">
-          <div>Loading…</div>
+          <div>Đang tải…</div>
         </div>
       }
     >

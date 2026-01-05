@@ -173,10 +173,10 @@ export default function BrandsPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Brands List {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+                Danh sách thương hiệu {meta?.totalItems !== undefined && `(${meta.totalItems})`}
               </h1>
               <p className="text-gray-600 mt-1">
-                Manage brands for your products
+                Quản lý thương hiệu cho sản phẩm của bạn
               </p>
             </div>
 
@@ -188,7 +188,7 @@ export default function BrandsPage() {
                 }
               >
                 <Trash2 className="size-5" />
-                Trash Bin
+                Thùng rác
                 {trashCount > 0 && (
                   <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
                     {trashCount}
@@ -203,7 +203,7 @@ export default function BrandsPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Brand
+                Thêm thương hiệu
               </Button>
             </div>
           </div>
@@ -215,12 +215,12 @@ export default function BrandsPage() {
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by brand name or slug..."
+            placeholder="Tìm kiếm theo tên hoặc slug thương hiệu..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -230,13 +230,13 @@ export default function BrandsPage() {
           >
             <div className="rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="table-auto w-max min-w-[1440px]">
+                <table className="w-full">
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
-                      <th className="px-6 py-4 w-60 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-4 py-4 w-1/5 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -244,10 +244,10 @@ export default function BrandsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "A-Z" : "Z-A"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -263,26 +263,18 @@ export default function BrandsPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 w-1/6 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Slug
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Website
+                      <th className="px-4 py-4 w-1/6 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Hoạt động
                       </th>
 
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
-                      </th>
-
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Banner
-                      </th>
-
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-4 py-4 w-1/6 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày tạo  
                           </span>
                           <button
                             type="button"
@@ -290,10 +282,10 @@ export default function BrandsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "createdAt"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "A-Z" : "Z-A"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Ngày tạo)"
                             }
                           >
                             {q.sortField === "createdAt" ? (
@@ -309,10 +301,10 @@ export default function BrandsPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-4 py-4 w-1/6 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Priority
+                            Mức ưu tiên
                           </span>
                           <button
                             type="button"
@@ -320,10 +312,10 @@ export default function BrandsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "priority"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Priority)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "Thấp" : "Cao"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Mức ưu tiên)"
                             }
                           >
                             {q.sortField === "priority" ? (
@@ -339,8 +331,8 @@ export default function BrandsPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-4 py-4 w-1/6 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành động
                       </th>
                     </tr>
                   </thead>
@@ -351,39 +343,23 @@ export default function BrandsPage() {
                         key={b.id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-4">
                           <span className="text-gray-800 font-semibold">
                             {b.name}
                           </span>
                           {b.description && (
                             <p className="text-xs text-gray-600 mt-1 italic line-clamp-1">
                                 <span className="text-gray-700 not-italic">
-                                  Description:
+                                  Mô tả:
                                 </span>{" "}
                                 {b.description}
                               </p>
                           )}
                         </td>
 
-                        <td className="px-6 py-4 text-gray-600">{b.slug}</td>
+                        <td className="px-4 py-4 text-gray-600">{b.slug}</td>
 
-                        <td className="px-6 py-4">
-                          {b.websiteUrl ? (
-                            <a
-                              href={b.websiteUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              title={b.websiteUrl}
-                              className="text-blue-600 underline block max-w-[150px] truncate"
-                            >
-                              {b.websiteUrl}
-                            </a>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-4 py-4 text-center">
                           <span
                             className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${
                               b.isActive
@@ -391,42 +367,43 @@ export default function BrandsPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {b.isActive ? "Yes" : "No"}
+                            {b.isActive ? "Có" : "Không"}
                           </span>
                         </td>
 
-                        <td className="px-6 py-4">
-                          {b.bannerImage?.publicUrl ? (
-                            <img
-                              src={b.bannerImage.publicUrl}
-                              alt={b.bannerImage.altText ?? b.name}
-                              className="h-16 w-28 object-cover rounded-lg border-2 border-gray-200 shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
-                              onClick={() =>
-                                setLightboxImage({
-                                  url: b.bannerImage!.publicUrl,
-                                  alt: b.bannerImage!.altText ?? b.name,
-                                })
-                              }
-                            />
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-
-                        <td className="px-6 py-4 text-gray-600">
+                        <td className="px-4 py-4 text-gray-600 text-center">
                           {fmt(b.createdAt)}
                         </td>
 
-                        <td className="px-6 py-4 text-center text-gray-700">
+                        <td className="px-4 py-4 text-center text-gray-700">
                           {typeof b.priority === "number" ? b.priority : 100}
                         </td>
 
-                        <td className="px-6 py-3">
+                        <td className="px-4 py-3 text-center">
                           <div className="flex items-center gap-2">
                             <Button
                               size="icon-sm"
+                              className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
+                              title="Xem chi tiết"
+                              onClick={() =>
+                                router.push(
+                                  Routes.productsManagement.brands.details.replace(
+                                    "[id]",
+                                    b.id
+                                  )
+                                )
+                              }
+                            >
+                              <Eye className="text-blue-600 size-5" />
+                            </Button>
+                            <span className="text-gray-500 text-sm leading-none">
+                              |
+                            </span>
+
+                            <Button
+                              size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.productsManagement.brands.edit.replace(
@@ -445,9 +422,9 @@ export default function BrandsPage() {
                             <ConfirmPopover
                               open={openId === b.id}
                               onOpenChange={(o) => setOpenId(o ? b.id : null)}
-                              title="Remove this brand?"
+                              title="Xóa thương hiệu này?"
                               message={<b>{b.name}</b>}
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setDeletingId(b.id);
                                 try {
@@ -466,7 +443,7 @@ export default function BrandsPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Remove"
+                                title="Xóa"
                                 onClick={() => setOpenId(b.id)}
                                 disabled={deletingId === b.id}
                               >
@@ -482,7 +459,7 @@ export default function BrandsPage() {
                       <tr>
                         <td colSpan={8} className="px-6 py-8">
                           <div className="text-center text-gray-600">
-                            Brands is empty.
+                            Danh sách thương hiệu trống.
                           </div>
                         </td>
                       </tr>
@@ -495,7 +472,7 @@ export default function BrandsPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Số hàng mỗi trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}
@@ -537,7 +514,7 @@ export default function BrandsPage() {
           <Button
             className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
             onClick={() => setLightboxImage(null)}
-            title="Close"
+            title="Đóng"
           >
             <X className="w-6 h-6 text-gray-800" />
           </Button>

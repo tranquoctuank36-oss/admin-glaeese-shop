@@ -213,25 +213,25 @@ function VouchersPage() {
       case "happening":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-            Happening
+            Đang diễn ra
           </span>
         );
       case "upcoming":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-            Upcoming
+            Sắp diễn ra
           </span>
         );
       case "expired":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-            Expired
+            Hết hạn
           </span>
         );
       case "canceled":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-            Canceled
+            Đã hủy
           </span>
         );
       default:
@@ -244,19 +244,19 @@ function VouchersPage() {
       case "percentage":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-purple-100 text-purple-700">
-            Percentage
+            Phần trăm
           </span>
         );
       case "fixed":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-700">
-            Fixed Amount
+            Số tiền cố định
           </span>
         );
       case "free_shipping":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-green-100 text-green-700">
-            Free Shipping
+            Miễn phí vận chuyển
           </span>
         );
       default:
@@ -287,10 +287,10 @@ function VouchersPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Voucher List {totalPages > 0 && `(${(currentPage - 1) * itemsPerPage + vouchers.length})`}
+                  Danh sách phiếu giảm giá {totalPages > 0 && `(${(currentPage - 1) * itemsPerPage + vouchers.length})`}
                 </h1>
-                <p className="text-gray-600 mt-1">
-                  Create and manage voucher codes and promotional campaigns
+                <p className="text-sm text-gray-500 mt-1">
+                  Tạo và quản lý mã phiếu và chiến dịch khuyến mại
                 </p>
               </div>
             </div>
@@ -301,9 +301,9 @@ function VouchersPage() {
                 onClick={() => router.push(Routes.sales.vouchers.trash)}
               >
                 <Trash2 className="size-5" />
-                Trash Bin
+                Thùng rác
                 {trashCount > 0 && (
-                  <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
+                  <span className="ml-1 bg-white text-red-600 px-2 py-0.5 rounded-full text-xs font-semibold">
                     {trashCount}
                   </span>
                 )}
@@ -314,7 +314,7 @@ function VouchersPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Voucher
+                Thêm phiếu
               </Button>
             </div>
           </div>
@@ -336,7 +336,7 @@ function VouchersPage() {
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-                  placeholder="Search by code or description..."
+                  placeholder="Tìm kiếm theo mã phiếu hoặc mô tả..."
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -349,7 +349,7 @@ function VouchersPage() {
                 className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
               >
                 <Filter size={20} />
-                Filters
+                Bộ lọc
               </Button>
             </div>
 
@@ -489,94 +489,91 @@ function VouchersPage() {
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Code
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Description
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Type
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Value
+                        Mã
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Min Order
+                        Loại giảm giá
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Max Discount
+                        Giá trị
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Status
+                        Đơn tối thiểu
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Usage
+                        Giảm tối đa
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Valid From</span>
-                          <button
-                            type="button"
-                            onClick={toggleValidFromSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                            title={
-                              sortField === "validFrom"
-                                ? `Sorting: ${sortOrder} (click to change)`
-                                : "No sorting (click to sort by Valid From)"
-                            }
-                          >
-                            {sortField === "validFrom" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
+                        Trạng thái
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Sử dụng
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        <div className="flex flex-col items-center gap-1">
+                          <span>Thời gian áp dụng</span>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={toggleValidFromSort}
+                              className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                              title={
+                                sortField === "validFrom"
+                                  ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
+                                  : "Chưa sắp xếp (nhấp để sắp xếp theo thời gian bắt đầu)"
+                              }
+                            >
+                              <span className="mr-1">Bắt đầu</span>
+                              {sortField === "validFrom" ? (
+                                sortOrder === "ASC" ? (
+                                  <ArrowUpAZ className="size-5" />
+                                ) : (
+                                  <ArrowDownAZ className="size-5" />
+                                )
                               ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Valid To</span>
-                          <button
-                            type="button"
-                            onClick={toggleValidToSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                            title={
-                              sortField === "validTo"
-                                ? `Sorting: ${sortOrder} (click to change)`
-                                : "No sorting (click to sort by Valid To)"
-                            }
-                          >
-                            {sortField === "validTo" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
+                                <ArrowUpDown className="size-5" />
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={toggleValidToSort}
+                              className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                              title={
+                                sortField === "validTo"
+                                  ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
+                                  : "Chưa sắp xếp (nhấp để sắp xếp theo thời gian kết thúc)"
+                              }
+                            >
+                              <span className="mr-1">Kết thúc</span>
+                              {sortField === "validTo" ? (
+                                sortOrder === "ASC" ? (
+                                  <ArrowUpAZ className="size-5" />
+                                ) : (
+                                  <ArrowDownAZ className="size-5" />
+                                )
                               ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
+                                <ArrowUpDown className="size-5" />
+                              )}
+                            </button>
+                          </div>
                         </div>
                       </th>
                       
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Created At</span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span>Ngày tạo / Hủy</span>
                           <button
                             type="button"
                             onClick={toggleCreatedAtSort}
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               sortField === "createdAt"
-                                ? `Sorting: ${sortOrder} (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
+                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày tạo)"
                             }
                           >
+                            <span className="mr-1">Tạo</span>
                             {sortField === "createdAt" ? (
                               sortOrder === "ASC" ? (
                                 <ArrowUpAZ className="size-5" />
@@ -590,10 +587,7 @@ function VouchersPage() {
                         </div>
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Canceled At
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Actions
+                        Hành động
                       </th>
                     </tr>
                   </thead>
@@ -606,15 +600,15 @@ function VouchersPage() {
                         transition={{ delay: idx * 0.03 }}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <code className="text-gray-600 text-lg">
-                            {voucher.code}
-                          </code>
-                        </td>
-                        <td className="px-6 py-4 min-w-[200px] max-w-[300px]">
-                          <span className="text-sm text-gray-800">
-                            {voucher.description || "-"}
-                          </span>
+                        <td className="px-6 py-4 min-w-[140px] max-w-[180px]">
+                          <div className="flex flex-col gap-1">
+                            <code className="text-gray-600 text-lg font-semibold">
+                              {voucher.code}
+                            </code>
+                            <span className="text-xs text-gray-500 truncate">
+                              Mô tả: {voucher.description || "-"}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           {getTypeBadge(voucher.type)}
@@ -666,27 +660,37 @@ function VouchersPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(voucher.validFrom)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(voucher.validTo)}
-                          </span>
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          {formatDateTime(voucher.validFrom) === "-" && formatDateTime(voucher.validTo) === "-" ? (
+                            <div className="flex justify-center items-center w-full min-w-[220px] text-gray-400">
+                              <span className="text-center">-</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-center">-</span>
+                            </div>
+                          ) : (
+                            <div className="flex justify-between items-center w-full min-w-[220px] text-gray-600">
+                              <span className="text-left flex-1">{formatDateTime(voucher.validFrom)}</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-right flex-1">{formatDateTime(voucher.validTo)}</span>
+                            </div>
+                          )}
                         </td>
                         
 
-                        <td className="px-6 py-4 text-center whitespace-nowrap min-w-[120px]">
-                          <span className="text-gray-600">
-                            {formatDate(voucher.createdAt)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDate(voucher.canceledAt)}
-                          </span>
+                        <td className="px-6 py-4 text-center whitespace-nowrap min-w-[180px]">
+                          {formatDate(voucher.createdAt) === "-" && (!voucher.canceledAt || formatDate(voucher.canceledAt) === "-") ? (
+                            <div className="flex justify-center items-center w-full min-w-[180px] text-gray-400">
+                              <span className="text-center">-</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-center">-</span>
+                            </div>
+                          ) : (
+                            <div className="flex justify-between items-center w-full min-w-[180px] text-gray-600">
+                              <span className="text-left flex-1">{formatDate(voucher.createdAt)}</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-right flex-1">{voucher.canceledAt ? formatDate(voucher.canceledAt) : "-"}</span>
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 text-end whitespace-nowrap">
                           <div className="flex items-center justify-end gap-2">
@@ -763,7 +767,7 @@ function VouchersPage() {
                     {filteredVouchers.length === 0 && (
                       <tr>
                         <td
-                          colSpan={13}
+                          colSpan={11}
                           className="px-6 py-8 text-center text-gray-500"
                         >
                           No discounts found

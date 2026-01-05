@@ -39,7 +39,7 @@ export default function LoginDialog({
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      setErrorMsg("Please enter both email and password.");
+      setErrorMsg("Vui lòng nhập cả email và mật khẩu.");
       return;
     }
 
@@ -53,13 +53,13 @@ export default function LoginDialog({
       console.log("Logged in user roles:", roles);
 
       if (!roles || !roles.includes("admin")) {
-        setErrorMsg("You are not an administrator.");
+        setErrorMsg("Bạn không phải là quản trị viên.");
         return;
       }
 
       await commitSession(session);
 
-      toast.success("Login successful!", {
+      toast.success("Đăng nhập thành công!", {
         duration: 2000,
         position: "top-center",
       });
@@ -67,9 +67,9 @@ export default function LoginDialog({
       onOpenChange(false);
     } catch (err: unknown) {
       if (isAxiosLikeError(err) && err.response?.status === 401) {
-        setErrorMsg("Incorrect email or password!");
+        setErrorMsg("Email hoặc mật khẩu không chính xác!");
       } else {
-        setErrorMsg("Login failed. Please try again later!");
+        setErrorMsg("Đăng nhập thất bại. Vui lòng thử lại sau!");
       }
     } finally {
       setLoading(false);
@@ -85,10 +85,10 @@ export default function LoginDialog({
         >
           <DialogHeader>
             <DialogTitle className="mt-2 text-center text-2xl font-bold">
-              Log in
+              Đăng nhập
             </DialogTitle>
             <p className="text-center text-sm text-gray-500">
-              Access your dashboard.
+              Truy cập bảng điều khiển của bạn.
             </p>
           </DialogHeader>
 
@@ -101,7 +101,7 @@ export default function LoginDialog({
           >
             <FloatingInput
               id="email"
-              label="Email Address"
+              label="Địa chỉ Email"
               type="email"
               value={email}
               onChange={(val) => {
@@ -113,7 +113,7 @@ export default function LoginDialog({
 
             <FloatingInput
               id="password"
-              label="Password"
+              label="Mật khẩu"
               type={showPwd ? "text" : "password"}
               value={password}
               onChange={(val) => {
@@ -151,7 +151,7 @@ export default function LoginDialog({
                 }}
                 className="text-sm text-gray-400 underline hover:text-black/60 cursor-pointer px-0 py-0"
               >
-                Forgot password?
+                Quên mật khẩu?
               </Button>
             </div>
 
@@ -163,7 +163,7 @@ export default function LoginDialog({
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                <span className="font-semibold text-lg">Continue</span>
+                <span className="font-semibold text-lg">Tiếp tục</span>
               )}
             </Button>
           </form>

@@ -178,50 +178,28 @@ export default function FrameTypesTrashPage() {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
-        {/* Header */}
+      <main className="max-w-[1440px] mx-auto">
+        {/* Tìm kiếm và Bộ lọc */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <Button
-                size="icon-lg"
-                className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() =>
-                  router.push(Routes.productsManagement.frames.frameTypes.root)
-                }
-                title="Go Back"
-              >
-                <ArrowLeft className="text-gray-700 size-7" />
-              </Button>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Frame Types List
-                </h1> 
-                <p className="text-gray-600 mt-1">
-                  Restore or permanently delete removed types
-                </p>
-              </div>
-            </div>
-          </div>
 
           {/* Search/Filters (ẩn Active) */}
           <ToolbarSearchFilters
             value={q.search}
             onSearchChange={(v) => setAndResetPage({ search: v, page: 1 })}
-            isActive={undefined as any}
+            isActive={q.isActive}
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by type name or slug in trash..."
+            placeholder="Tìm kiếm theo tên loại gọng hoặc slug trong thùng rác..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -237,7 +215,7 @@ export default function FrameTypesTrashPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -245,10 +223,10 @@ export default function FrameTypesTrashPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "Tăng dần" : "Giảm dần"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -269,13 +247,13 @@ export default function FrameTypesTrashPage() {
                       </th>
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
+                        Hoạt động
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Deleted At
+                            Ngày Xóa
                           </span>
                           <button
                             type="button"
@@ -283,10 +261,10 @@ export default function FrameTypesTrashPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "deletedAt"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Deleted At)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Ngày Xóa)"
                             }
                           >
                             {q.sortField === "deletedAt" ? (
@@ -302,8 +280,8 @@ export default function FrameTypesTrashPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành Động
                       </th>
                     </tr>
                   </thead>
@@ -335,30 +313,30 @@ export default function FrameTypesTrashPage() {
                                   : "bg-red-100 text-red-700"
                               }`}
                             >
-                              {s.isActive ? "Yes" : "No"}
+                              {s.isActive ? "Có" : "Không"}
                             </span>
                           ) : (
                             <span className="text-gray-500">-</span>
                           )}
                         </td>
 
-                        <td className="px-6 py-4 whitespace-nowrapp">
+                        <td className="px-6 py-4 text-center">
                           <span className="text-gray-600">
                             {formatDate((s as any).deletedAt)}
                           </span>
                         </td>
 
-                        <td className="px-6 py-3">
-                          <div className="flex items-center gap-3">
+                        <td className="px-6 py-3 text-center">
+                          <div className="flex items-center justify-center gap-3">
                             {/* Restore */}
                             <ConfirmPopover
                               open={isOpen(s.id, "restore")}
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(s.id, "restore") : null)
                               }
-                              title="Restore this frame type?"
+                              title="Khôi phục loại khung này?"
                               message={<b>{s.name}</b>}
-                              confirmText="Restore"
+                              confirmText="Khôi phục"
                               onConfirm={async () => {
                                 setBusyId(s.id);
                                 try {
@@ -378,7 +356,7 @@ export default function FrameTypesTrashPage() {
                                 size="icon-sm"
                                 className="p-2 hover:bg-green-100 rounded-lg transition-colors"
                                 disabled={busyId === s.id}
-                                title="Restore"
+                                title="Khôi phục"
                                 onClick={() =>
                                   setOpenKey(keyOf(s.id, "restore"))
                                 }
@@ -397,9 +375,9 @@ export default function FrameTypesTrashPage() {
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(s.id, "delete") : null)
                               }
-                              title="Permanently delete this frame type?"
+                              title="Xóa vĩnh viễn loại khung này?"
                               message={<b>{s.name}</b>}
-                              confirmText="Delete"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setBusyId(s.id);
                                 try {
@@ -419,7 +397,7 @@ export default function FrameTypesTrashPage() {
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                                 disabled={busyId === s.id}
-                                title="Delete permanently"
+                                title="Xóa vĩnh viễn"
                                 onClick={() =>
                                   setOpenKey(keyOf(s.id, "delete"))
                                 }
@@ -436,7 +414,7 @@ export default function FrameTypesTrashPage() {
                       <tr>
                         <td colSpan={5} className="px-6 py-10">
                           <p className="text-center text-gray-600">
-                            Trash is empty.
+                            Thùng rác đang trống.
                           </p>
                         </td>
                       </tr>
@@ -449,7 +427,7 @@ export default function FrameTypesTrashPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

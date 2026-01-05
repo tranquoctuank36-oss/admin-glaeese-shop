@@ -20,7 +20,7 @@ export default function DiscountProductsViewer({
       className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
     >
       <Eye size={18} />
-      View Product Variants
+      Xem biến thể sản phẩm
     </Button>
   );
 }

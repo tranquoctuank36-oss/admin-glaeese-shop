@@ -9,9 +9,11 @@ import LoginDialog from "./LoginDialog";
 import { Button } from "@/components/ui/button";
 import * as Popover from "@radix-ui/react-popover";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { user, logout } = useAuth();
+  const router = useRouter();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [open, setOpen] = useState(false);
@@ -20,7 +22,7 @@ export default function Header() {
   const greetingName = useMemo(() => {
     const fn = (user as any)?.firstName;
     const clean = typeof fn === "string" ? fn.trim() : "";
-    return clean || "You";
+    return clean || "Bạn";
   }, [user]);
 
   const handleUserPress = () => {
@@ -32,10 +34,11 @@ export default function Header() {
     try {
       setLoggingOut(true);
       await logout();
-      toast.success("You have been logged out successfully!", {
+      toast.success("Đã đăng xuất!", {
         duration: 2000,
         position: "top-center",
       });
+      router.push('/');
     } finally {
       setLoggingOut(false);
       setOpen(false);
@@ -46,14 +49,14 @@ export default function Header() {
     <header className="bg-gradient-to-br from-blue-50 via-slate-50 to-gray-50 border-b mx-4 sm:sm-6 lg:mx-8 mt-4 mb-2 rounded-lg">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 flex items-center justify-between">
         <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800">
-          Dashboard
+          Tổng quan
         </h1>
 
         <div className="flex items-center space-x-3 sm:space-x-6">
-          <Bell
+          {/* <Bell
             className="w-5 sm:w-6 h-5 sm:h-6 text-gray-600 cursor-pointer hover:fill-gray-800 hover:text-gray-800 transition-all duration-200"
             fill="none"
-          />
+          /> */}
 
           {user ? (
             <Popover.Root open={open} onOpenChange={setOpen}>
@@ -72,7 +75,7 @@ export default function Header() {
                   />
                   {/* ✅ Hiển thị “Hi, <firstName|You>” */}
                   <span className="hidden sm:block text-gray-800 font-bold transition">
-                    Hi,&nbsp;{greetingName}
+                    Chào,&nbsp;{greetingName}
                   </span>
                 </button>
               </Popover.Trigger>
@@ -93,7 +96,7 @@ export default function Header() {
                       className="rounded-full border border-gray-200 bg-gray-300"
                     />
                     <div className="min-w-0">
-                      <p className="font-semibold truncate">Hi, {greetingName}</p>
+                      <p className="font-semibold truncate">Chào, {greetingName}</p>
                       {/* Nếu cần email phụ trợ, giữ nguyên; không bắt buộc */}
                       {(user as any)?.email && (
                         <p className="text-xs text-gray-500 truncate">
@@ -111,7 +114,7 @@ export default function Header() {
                       className="w-full justify-center gap-2 cursor-pointer border-gray-300 hover:border-gray-700 bg-white "
                     >
                       <LogOut className="h-4 w-4" />
-                      {loggingOut ? "Logging out..." : "Logout"}
+                      {loggingOut ? "Đang đăng xuất..." : "Đăng xuất"}
                     </Button>
                   </div>
 
@@ -133,7 +136,7 @@ export default function Header() {
                 className="rounded-full border border-gray-600 bg-gray-300 hover:brightness-110 transition"
               />
               <span className="hidden sm:block text-gray-700 font-semibold transition">
-                Login
+                Đăng nhập
               </span>
             </button>
           )}

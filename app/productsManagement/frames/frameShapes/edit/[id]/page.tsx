@@ -39,14 +39,14 @@ export default function EditFrameShapePage() {
     };
   }, [id]);
 
-  if (loading) return <p className="p-6 flex items-center justify-center">Loading...</p>;
-  if (!initial) return <p className="p-6 text-red-600">Frame Shape Not found.</p>;
+  if (loading) return <p className="p-6 flex items-center justify-center">Đang tải...</p>;
+  if (!initial) return <p className="p-6 text-red-600">Không tìm thấy Hình dạng khung.</p>;
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
+      <main className="max-w-[600px] mx-auto py-6 px-4 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Edit Frame Shape
+          Chỉnh Sửa Hình Dạng Khung
         </h1>
 
         <FrameShapeForm
@@ -55,9 +55,9 @@ export default function EditFrameShapePage() {
           onSubmit={async (values) => {
             await updateFrameShapes(id, values);
             router.push(Routes.productsManagement.frames.frameShapes.root);
-            toast.success("Frame Shape updated successfully!");
+            toast.success("Hình dạng khung đã được cập nhật thành công!");
           }}
-          submitLabel="Update"
+          submitLabel="Cập nhật"
         />
       </main>
     </div>

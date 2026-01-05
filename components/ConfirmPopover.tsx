@@ -34,10 +34,10 @@ export default function ConfirmPopover({
   open,
   onOpenChange,
   children,
-  title = "Are you sure?",
+  title = "Bạn có chắc chắn?",
   message,
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  confirmText = "Xác nhận",
+  cancelText = "Hủy",
   onConfirm,
   confirmDisabled,
   confirmLoading,
@@ -79,7 +79,11 @@ export default function ConfirmPopover({
             }}
             disabled={confirmDisabled || confirmLoading}
           >
-            {confirmLoading ? "Working..." : confirmText}
+            {confirmLoading ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              confirmText
+            )}
           </Button>
         </div>
       </PopoverContent>

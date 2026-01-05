@@ -16,7 +16,7 @@ import { getColors } from "@/services/colorService";
 import ProductImageSelector from "./ProductImageSelector";
 import { getImages } from "@/services/imagesService";
 import type { ImageItem } from "@/types/image";
-import { X, Plus, Search } from "lucide-react";
+import { X, Plus, Search, Loader2 } from "lucide-react";
 import { createVariant, updateVariant, addImagesToVariant, removeImagesFromVariant } from "@/services/productService";
 
 interface AddVariantDialogProps {
@@ -84,7 +84,7 @@ export default function AddVariantDialog({
 
   const handleOpenImageSelector = () => {
     if (selectedImages.length >= MAX_IMAGES) {
-      toast.error(`You are only allowed to select a maximum of ${MAX_IMAGES} images.`);
+      toast.error(`Bạn chỉ được chọn tối đa ${MAX_IMAGES} hình ảnh.`);
       return;
     }
     setShowImageSelector(true);
@@ -293,10 +293,10 @@ export default function AddVariantDialog({
     if (variantId) {
       try {
         await removeImagesFromVariant(variantId, [imageId]);
-        toast.success("Image removed successfully!");
+        toast.success("Hình ảnh đã được xóa thành công!");
       } catch (error: any) {
         console.error("Error removing image:", error);
-        toast.error(error?.response?.data?.detail || "Failed to remove image");
+        toast.error(error?.response?.data?.detail || "Không thể xóa hình ảnh");
         return; // Don't update UI if API call failed
       }
     }
@@ -314,23 +314,23 @@ export default function AddVariantDialog({
 
     // Validation
     if (!name.trim()) {
-      setError("Variant name is required");
+      setError("Tên biến thể là bắt buộc");
       return;
     }
     if (!sku.trim()) {
-      setError("SKU is required");
+      setError("SKU là bắt buộc");
       return;
     }
     if (!originalPrice.trim()) {
-      setError("Price is required");
+      setError("Giá là bắt buộc");
       return;
     }
     if (colorIds.length === 0) {
-      setError("Please select a color");
+      setError("Vui lòng chọn màu");
       return;
     }
     if (productImagesIds.length === 0) {
-      setError("Please select product images");
+      setError("Vui lòng chọn hình ảnh sản phẩm");
       return;
     }
 
@@ -384,7 +384,7 @@ export default function AddVariantDialog({
 
       // Show success toast - use editIndex to determine if editing (works for both DB-saved and local variants)
       const isEditing = editIndex !== undefined || !!variantId;
-      toast.success(isEditing ? "Variant updated successfully!" : "Variant created successfully!");
+      toast.success(isEditing ? "Biến thể đã được cập nhật thành công!" : "Biến thể đã được tạo thành công!");
 
       // Wait for parent to refresh data
       await onAdd(variantData as any);
@@ -402,7 +402,7 @@ export default function AddVariantDialog({
       setLoading(false);
       onOpenChange(false);
     } catch (error: any) {
-      setError(error?.response?.data?.detail || "Failed to save variant");
+      setError(error?.response?.data?.detail || "Không thể lưu biến thể");
       setLoading(false);
     }
   };
@@ -436,8 +436,8 @@ export default function AddVariantDialog({
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             {editIndex !== undefined || variantId
-              ? "Edit Product Variant"
-              : "Add Product Variant"}
+              ? "Chỉnh sửa biến thể sản phẩm"
+              : "Thêm biến thể sản phẩm"}
           </DialogTitle>
         </DialogHeader>
 
@@ -445,7 +445,7 @@ export default function AddVariantDialog({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FloatingInput
               id="variant-name"
-              label="Product Variant Name"
+              label="Tên biến thể sản phẩm"
               required
               value={name}
               onChange={setName}
@@ -466,7 +466,7 @@ export default function AddVariantDialog({
             <div className="relative">
               <FloatingInput
                 id="variant-original-price"
-                label="Price"
+                label="Giá"
                 type="text"
                 required
                 value={originalPrice}
@@ -480,15 +480,15 @@ export default function AddVariantDialog({
 
             <FloatingInput
               id="variant-status"
-              label="Status"
+              label="Trạng thái"
               as="select"
               required
               value={isActive ? "true" : "false"}
               onChange={(v) => setIsActive(v === "true")}
               disabled={loading}
               options={[
-                { value: "true", label: "Active" },
-                { value: "false", label: "Inactive" },
+                { value: "true", label: "Hoạt động" },
+                { value: "false", label: "Không hoạt động" },
               ]}
             />
           </div>
@@ -497,7 +497,7 @@ export default function AddVariantDialog({
           <div className="mt-4">
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-semibold text-gray-700">
-                Colors <span className="text-red-500">*</span>
+                Màu sắc <span className="text-red-500">*</span>
               </label>
               {colors.length > 0 && (
                 <Button
@@ -511,7 +511,7 @@ export default function AddVariantDialog({
                   }}
                   className="text-xs text-blue-600 hover:text-blue-800 font-medium underline hover:no-underline p-0"
                 >
-                  {colorIds.length === colors.length ? "" : "Select All"}
+                  {colorIds.length === colors.length ? "" : "Chọn tất cả"}
                 </Button>
               )}
             </div>
@@ -521,7 +521,7 @@ export default function AddVariantDialog({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search colors..."
+                  placeholder="Tìm kiếm màu sắc..."
                   value={colorSearch}
                   onChange={(e) => setColorSearch(e.target.value)}
                   disabled={loading}
@@ -531,10 +531,13 @@ export default function AddVariantDialog({
             )}
 
             {loadingColors ? (
-              <p className="text-sm text-gray-500 italic">Loading colors...</p>
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <Loader2 className="size-4 animate-spin" />
+                <span>Đang tải màu sắc...</span>
+              </div>
             ) : colors.length === 0 ? (
               <p className="text-sm text-gray-500 italic">
-                No colors available
+                Không có màu sắc
               </p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
@@ -580,15 +583,14 @@ export default function AddVariantDialog({
             {colorIds.length > 0 && (
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-600">
-                  Selected: <strong>{colorIds.length}</strong> color
-                  {colorIds.length !== 1 ? "s" : ""}
+                  Đã chọn: <strong>{colorIds.length}</strong> màu
                 </span>
                 <Button
                   type="button"
                   onClick={() => setColorIds([])}
                   className="text-xs text-blue-600 hover:text-blue-800 underline hover:no-underline p-0"
                 >
-                  Clear all
+                  Xóa tất cả
                 </Button>
               </div>
             )}
@@ -598,7 +600,7 @@ export default function AddVariantDialog({
           <div className="mt-4">
             <div className="flex justify-between items-center mb-3">
               <label className="block text-sm font-semibold text-gray-700">
-                Product Images (Optional)
+                Hình ảnh sản phẩm
               </label>
               <Button
                 type="button"
@@ -607,13 +609,13 @@ export default function AddVariantDialog({
                 disabled={loading}
               >
                 <Plus className="w-3.5 h-3.5" />
-                Select Images
+                Chọn hình ảnh
               </Button>
             </div>
 
             {selectedImages.length === 0 ? (
               <p className="text-sm text-gray-500 italic">
-                No images selected yet.
+                Chưa có hình ảnh nào được chọn.
               </p>
             ) : (
               <div className="grid grid-cols-4 gap-3">
@@ -649,8 +651,7 @@ export default function AddVariantDialog({
 
             {selectedImages.length > 0 && (
               <p className="mt-2 text-xs text-gray-600">
-                Selected: <strong>{selectedImages.length}</strong> image
-                {selectedImages.length !== 1 ? "s" : ""}
+                Đã chọn: <strong>{selectedImages.length}</strong> hình ảnh
               </p>
             )}
           </div>
@@ -668,7 +669,7 @@ export default function AddVariantDialog({
               onClick={handleCancel}
               disabled={loading}
             >
-              Cancel
+              Hủy
             </Button>
             <Button
               type="button"
@@ -676,11 +677,13 @@ export default function AddVariantDialog({
               className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white"
               disabled={loading}
             >
-              {loading
-                ? "Saving..."
-                : editIndex !== undefined
-                ? "Update"
-                : "Save"}
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : editIndex !== undefined ? (
+                "Cập nhật"
+              ) : (
+                "Lưu"
+              )}
             </Button>
           </div>
         </form>

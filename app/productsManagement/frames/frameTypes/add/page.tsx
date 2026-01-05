@@ -11,8 +11,8 @@ export default function AddFrameTypesPage() {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Add Frame Type</h1>
+      <main className="max-w-[600px] mx-auto py-6 px-4 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm Loại Gọng</h1>
 
         <FrameTypeForm
           initial={{ name: "", slug: "", isActive: true }}
@@ -20,9 +20,9 @@ export default function AddFrameTypesPage() {
           onSubmit={async (values) => {
             await createFrameTypes(values);
             router.push(Routes.productsManagement.frames.frameTypes.root);
-            toast.success("Frame Type created successfully!");
+            toast.success("Loại gọng đã được tạo thành công!");
           }}
-          submitLabel="Create"
+          submitLabel="Tạo"
         />
       </main>
     </div>

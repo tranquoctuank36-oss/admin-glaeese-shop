@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import FloatingInput from "@/components/FloatingInput";
 import BannerUploader from "@/components/images/BrandImageUploader";
+import { Loader2 } from "lucide-react";
 
 // Helper functions outside component
 const formatNumber = (value: string): string => {
@@ -108,7 +109,7 @@ export function DiscountForm({
         name: name.trim(),
         slug: displaySlug,
         description: description.trim(),
-        value: value || "0",
+        value: type === "percentage" ? String(parseFloat(value || "0") * 100) : (value || "0"),
       };
 
       // Only include type when creating (not updating)
@@ -151,7 +152,7 @@ export function DiscountForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FloatingInput
           id="name"
-          label="Discount Name"
+          label="Tên giảm giá"
           required
           value={name}
           onChange={(v) => {
@@ -177,7 +178,7 @@ export function DiscountForm({
           />
           {name && (
             <p className="mt-1 text-xs text-gray-500">
-              Suggested: <span className="font-medium">{autoSlug}</span>
+              Gợi ý: <span className="font-medium">{autoSlug}</span>
             </p>
           )}
         </div>
@@ -185,7 +186,7 @@ export function DiscountForm({
 
       <FloatingInput
         id="description"
-        label="Description"
+        label="Mô tả"
         as="textarea"
         rows={3}
         value={description}
@@ -196,15 +197,15 @@ export function DiscountForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FloatingInput
           id="type"
-          label="Type"
+          label="Loại"
           as="select"
           required
           value={type}
           onChange={(v) => setType(v as "percentage" | "fixed")}
           disabled={loading || !canUpdateDiscountValues}
           options={[
-            { value: "percentage", label: "Percentage" },
-            { value: "fixed", label: "Fixed Amount" },
+            { value: "percentage", label: "Phần trăm" },
+            { value: "fixed", label: "Số tiền cố định" },
           ]}
         />
 
@@ -212,7 +213,7 @@ export function DiscountForm({
           <div className="relative">
             <FloatingInput
               id="value"
-              label="Discount Percentage"
+              label="Phần trăm giảm giá"
               type="text"
               required
               value={value}
@@ -237,7 +238,7 @@ export function DiscountForm({
           <div className="relative">
             <FloatingInput
               id="value"
-              label="Discount Amount"
+              label="Số tiền giảm giá"
               type="text"
               required
               value={formatNumber(value)}
@@ -266,7 +267,7 @@ export function DiscountForm({
         <div className="relative">
           <FloatingInput
             id="maxDiscountValue"
-            label="Maximum Discount Value"
+            label="Giá trị giảm giá tối đa"
             type="text"
             value={formatNumber(maxDiscountValue)}
             onChange={(v) => {
@@ -290,7 +291,7 @@ export function DiscountForm({
       )}
 
       <BannerUploader
-        label="Banner Image"
+        label="Hình ảnh Banner"
         value={banner}
         onChange={(v) => setBanner(v)}
         disabled={loading}
@@ -304,15 +305,15 @@ export function DiscountForm({
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="submit"
           className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
           disabled={loading || !canSubmit}
-          title={!canSubmit ? "Please check your inputs" : submitLabel}
+          title={!canSubmit ? "Vui lòng kiểm tra dữ liệu nhập" : submitLabel}
         >
-          {loading ? "Saving..." : submitLabel}
+          {loading ? <Loader2 className="animate-spin" size={20} /> : submitLabel}
         </Button>
       </div>
     </form>

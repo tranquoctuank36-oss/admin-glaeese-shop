@@ -140,37 +140,16 @@ export default function FrameMaterialsPage() {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
+      <main className="max-w-[1440px] mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <Button
-                size="icon-lg"
-                className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() =>
-                  router.push(Routes.productsManagement.frames.root)
-                }
-                title="Go Back"
-              >
-                <ArrowLeft className="text-gray-700 size-7" />
-              </Button>
-
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">
-                  Frame Materials List
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Manage all available frame materials for your products
-                </p>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4 mb-6">
             <div className="flex gap-2">
-              <Button
+              {/* <Button
                 className="flex h-12 items-center gap-2 bg-red-500 hover:bg-red-700 text-white text-base"
                 onClick={() =>
                   router.push(
@@ -185,7 +164,7 @@ export default function FrameMaterialsPage() {
                     {trashCount}
                   </span>
                 )}
-              </Button>
+              </Button> */}
               <Button
                 onClick={() =>
                   router.push(
@@ -195,7 +174,7 @@ export default function FrameMaterialsPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Material
+                Thêm Chất Liệu Gọng
               </Button>
             </div>
           </div>
@@ -207,12 +186,12 @@ export default function FrameMaterialsPage() {
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by material name or slug..."
+            placeholder="Tìm kiếm theo tên chất liệu gọng hoặc slug..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -228,7 +207,7 @@ export default function FrameMaterialsPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -237,10 +216,10 @@ export default function FrameMaterialsPage() {
                                         text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -260,13 +239,13 @@ export default function FrameMaterialsPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Slug
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hoạt động
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày Tạo
                           </span>
                           <button
                             type="button"
@@ -274,10 +253,10 @@ export default function FrameMaterialsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "createdAt"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Ngày Tạo)"
                             }
                           >
                             {q.sortField === "createdAt" ? (
@@ -292,8 +271,8 @@ export default function FrameMaterialsPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành Động
                       </th>
                     </tr>
                   </thead>
@@ -323,23 +302,23 @@ export default function FrameMaterialsPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {material.isActive ? "Yes" : "No"}
+                            {material.isActive ? "Có" : "Không"}
                           </span>
                         </td>
                         {/* createdAt */}
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center">
                           <span className="text-gray-600">
                             {formatDate(material.createdAt) || "-"}
                           </span>
                         </td>
 
                         {/* actions */}
-                        <td className="px-6 py-3">
-                          <div className="flex items-center gap-2">
+                        <td className="px-6 py-3 text-center">
+                          <div className="flex items-center justify-center gap-2">
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Chỉnh Sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.productsManagement.frames.frameMaterials.edit.replace(
@@ -362,9 +341,9 @@ export default function FrameMaterialsPage() {
                                   o ? keyOf(material.id, "delete") : null
                                 )
                               }
-                              title="Remove this frame material?"
+                              title="Xóa chất liệu gọng này?"
                               message={<b>{material.name}</b>}
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setDeletingId(material.id);
                                 try {
@@ -384,7 +363,7 @@ export default function FrameMaterialsPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Remove"
+                                title="Xóa"
                                 onClick={() =>
                                   setOpenKey(keyOf(material.id, "delete"))
                                 }
@@ -402,7 +381,7 @@ export default function FrameMaterialsPage() {
                       <tr>
                         <td colSpan={5} className="px-6 py-6">
                           <div className="text-center text-gray-600">
-                            Frame Materials is empty.
+                            Chưa có chất liệu gọng nào.
                           </div>
                         </td>
                       </tr>
@@ -415,7 +394,7 @@ export default function FrameMaterialsPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

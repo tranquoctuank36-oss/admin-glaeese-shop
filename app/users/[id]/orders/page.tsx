@@ -34,12 +34,26 @@ function formatDateTime(iso?: string) {
   return `${dd}/${mm}/${yyyy} ${hh}:${min}`;
 }
 
-function formatCurrency(value: string) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "đ",
-  }).format(Number(value));
+function formatCurrency(value: string | number) {
+  return Number(value).toLocaleString("en-US") + "đ";
 }
+
+function getStatusLabel(status: string): string {
+  const statusMap: Record<string, string> = {
+    "awaiting_payment": "Chờ thanh toán",
+    "pending": "Chờ xử lý",
+    "processing": "Đang xử lý",
+    "shipping": "Đang giao hàng",
+    "delivered": "Đã giao hàng",
+    "completed": "Hoàn tất",
+    "cancelled": "Đã hủy",
+    "expired": "Đã hết hạn",
+    "returned": "Đã trả hàng",
+    "on_hold": "Tạm dừng",
+  };
+  return statusMap[status.toLowerCase()] || status;
+}
+
 
 function UserOrdersPage() {
   const router = useRouter();
@@ -48,8 +62,6 @@ function UserOrdersPage() {
 
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
-    sortField: "createdAt",
-    sortOrder: "DESC",
   });
 
   const [orders, setOrders] = useState<UserOrder[]>([]);
@@ -60,27 +72,6 @@ function UserOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const toggleCreatedAtSort = () => {
-    if (q.sortField !== "createdAt") {
-      setAndResetPage({
-        sortField: "createdAt",
-        sortOrder: "DESC" as const,
-        page: 1,
-      });
-    } else if (q.sortOrder === "DESC") {
-      setAndResetPage({
-        sortField: "createdAt",
-        sortOrder: "ASC" as const,
-        page: 1,
-      });
-    } else {
-      setAndResetPage({
-        sortField: "createdAt",
-        sortOrder: "DESC" as const,
-        page: 1,
-      });
-    }
-  };
 
   useEffect(() => {
     if (!userId) return;
@@ -95,9 +86,7 @@ function UserOrdersPage() {
           limit: apiParams.limit,
         };
         if (apiParams.search) queryParams.search = apiParams.search;
-        if (apiParams.sortField)
-          queryParams.sortField = apiParams.sortField as "createdAt";
-        if (apiParams.sortOrder) queryParams.sortOrder = apiParams.sortOrder;
+        if ((apiParams as any).status) queryParams.status = (apiParams as any).status;
 
         const res = await getUserOrders(userId, queryParams);
         if (alive && res.success) {
@@ -109,9 +98,9 @@ function UserOrdersPage() {
           setMeta({ totalItems, totalPages });
         }
       } catch (e) {
-        console.error("Failed to fetch orders:", e);
+        console.error("Lỗi khi tải đơn hàng:", e);
         if (alive) {
-          setError("Failed to load orders");
+          setError("Không thể tải đơn hàng");
         }
       } finally {
         if (alive) {
@@ -126,27 +115,49 @@ function UserOrdersPage() {
   }, [userId, apiKey]);
 
   const getStatusBadgeClass = (status: string) => {
-    switch (status) {
+    const statusLower = status.toLowerCase();
+    switch (statusLower) {
+      case "awaiting_payment":
+        return "bg-orange-100 text-orange-800 border border-orange-300";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+      case "processing":
+        return "bg-blue-100 text-blue-800 border border-blue-300";
+      case "shipping":
+        return "bg-indigo-100 text-indigo-800 border border-indigo-300";
+      case "delivered":
+        return "bg-green-100 text-green-800 border border-green-300";
+      case "completed":
+        return "bg-emerald-100 text-emerald-800 border border-emerald-300";
+      case "cancelled":
+        return "bg-red-100 text-red-800 border border-red-300";
+      case "expired":
+        return "bg-gray-100 text-gray-800 border border-gray-300";
+      case "returned":
+        return "bg-pink-100 text-pink-800 border border-pink-300";
+      case "on_hold":
+        return "bg-purple-100 text-purple-800 border border-purple-300";
+      // Fallback for old status formats
       case "PENDING":
-        return "bg-yellow-100 text-yellow-700";
+        return "bg-yellow-100 text-yellow-800 border border-yellow-300";
       case "AWAITING_PAYMENT":
-        return "bg-orange-100 text-orange-700";
+        return "bg-orange-100 text-orange-800 border border-orange-300";
       case "PLACED":
-        return "bg-blue-100 text-blue-700";
+        return "bg-blue-100 text-blue-800 border border-blue-300";
       case "PAID":
-        return "bg-green-100 text-green-700";
+        return "bg-green-100 text-green-800 border border-green-300";
       case "CONFIRMED":
-        return "bg-cyan-100 text-cyan-700";
+        return "bg-green-100 text-green-800 border border-green-300";
       case "PREPARING_SHIPMENT":
-        return "bg-indigo-100 text-indigo-700";
+        return "bg-indigo-100 text-indigo-800 border border-indigo-300";
       case "SHIPPED":
-        return "bg-purple-100 text-purple-700";
+        return "bg-indigo-100 text-indigo-800 border border-indigo-300";
       case "DELIVERED":
-        return "bg-green-100 text-green-700";
+        return "bg-green-100 text-green-800 border border-green-300";
       case "CANCELLED":
-        return "bg-red-100 text-red-700";
+        return "bg-red-100 text-red-800 border border-red-300";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-gray-100 text-gray-800 border border-gray-300";
     }
   };
 
@@ -154,7 +165,7 @@ function UserOrdersPage() {
     return (
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         </main>
       </div>
     );
@@ -164,12 +175,19 @@ function UserOrdersPage() {
     return (
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
-          <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <Button onClick={() => router.push(Routes.users.details.replace('[id]', userId))}>
-              <ArrowLeft size={18} className="mr-2" />
-              Back to User Details
+          <div className="flex items-center gap-3 mb-6">
+            <Button
+              size="icon-lg"
+              className="hover:bg-gray-300 rounded-full bg-gray-200"
+              onClick={() => router.push(Routes.users.details.replace('[id]', userId))}
+              title="Quay lại"
+            >
+              <ArrowLeft className="text-gray-700 size-7" />
             </Button>
+            <h1 className="text-3xl font-bold text-gray-800">Đơn hàng của người dùng</h1>
+          </div>
+          <div className="flex justify-center min-h-[400px]">
+            <p className="text-red-600 text-lg">{error}</p>
           </div>
         </main>
       </div>
@@ -190,17 +208,32 @@ function UserOrdersPage() {
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
               onClick={() => router.push(Routes.users.details.replace('[id]', userId))}
-              title="Back"
+              title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />
             </Button>
 
-            <div className="flex items-end gap-3">
-              <h1 className="text-3xl font-bold text-gray-800">User Orders</h1>
-              <p className="text-gray-600">
-                Total {meta?.totalItems || 0} order(s)
-              </p>
+            <div className="flex items-end gap-3 flex-1">
+              <h1 className="text-3xl font-bold text-gray-800">Đơn hàng của người dùng ({meta?.totalItems || 0})</h1>
             </div>
+
+            <select
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:border-blue-500 cursor-pointer"
+              value={(apiParams as any).status || ""}
+              onChange={(e) => setAndResetPage({ status: e.target.value || undefined, page: 1 } as any)}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="awaiting_payment">Chờ thanh toán</option>
+              <option value="pending">Chờ xử lý</option>
+              <option value="processing">Đang xử lý</option>
+              <option value="shipping">Đang giao hàng</option>
+              <option value="delivered">Đã giao hàng</option>
+              <option value="completed">Hoàn tất</option>
+              <option value="cancelled">Đã hủy</option>
+              <option value="expired">Đã hết hạn</option>
+              <option value="returned">Đã trả hàng</option>
+              <option value="on_hold">Tạm dừng</option>
+            </select>
           </div>
         </motion.div>
 
@@ -212,7 +245,7 @@ function UserOrdersPage() {
             className="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center"
           >
             <ShoppingBag size={64} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-600 text-lg">No orders found</p>
+            <p className="text-gray-600 text-lg">Không tìm thấy đơn hàng</p>
           </motion.div>
         ) : (
           <motion.div
@@ -227,41 +260,22 @@ function UserOrdersPage() {
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Order Code
+                        Mã đơn hàng
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Trạng thái
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Status
+                        Sản phẩm
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Items
+                        Tổng
                       </th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Total
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Thanh toán
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Payment
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-gray-600">
-                            Created At
-                          </span>
-                          <button
-                            type="button"
-                            onClick={toggleCreatedAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          >
-                            {q.sortField === "createdAt" ? (
-                              q.sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Ngày tạo
                       </th>
                     </tr>
                   </thead>
@@ -281,40 +295,49 @@ function UserOrdersPage() {
                               </p>
                               {order.shippingCode && (
                                 <p className="text-xs text-gray-500">
-                                  Ship: {order.shippingCode}
+                                  Vận chuyển: {order.shippingCode}
                                 </p>
                               )}
                             </div>
                           </div>
                         </td>
 
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center">
                           <span
                             className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${getStatusBadgeClass(
                               order.status
                             )}`}
                           >
-                            {order.status}
+                            {getStatusLabel(order.status)}
                           </span>
                         </td>
 
-                        <td className="px-6 py-4">
-                          <p className="text-gray-700">
-                            {order.items.length} item(s)
-                          </p>
+                        <td className="px-6 py-4 text-left">
+                          <div className="space-y-1">
+                            {order.items.map((item: any, idx: number) => (
+                              <div key={idx} className="text-sm">
+                                <p className="text-gray-800 font-medium">
+                                  {item.productName || item.name}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  SL: {item.quantity} / Màu: {item.colors}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
                         </td>
 
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-6 py-4 text-left">
                           <p className="text-gray-800 font-semibold">
                             {formatCurrency(order.grandTotal)}
                           </p>
                         </td>
 
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center">
                           <p className="text-gray-700">{order.paymentMethod}</p>
                         </td>
 
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center">
                           <p className="text-gray-600">
                             {formatDateTime(order.createdAt)}
                           </p>
@@ -329,7 +352,7 @@ function UserOrdersPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Số hàng mỗi trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

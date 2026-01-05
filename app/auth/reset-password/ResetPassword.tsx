@@ -43,7 +43,7 @@ export default function ResetPasswordClient() {
     }
     if (!matchConfirm) {
       setForceValidate(true);
-      setErrorMsg("Passwords do not match.");
+      setErrorMsg("Mật khẩu không khớp.");
       return;
     }
     if (!isValidPassword) {
@@ -63,7 +63,7 @@ export default function ResetPasswordClient() {
       const elapsed = Date.now() - startedAt;
       if (elapsed < MIN_SPIN_MS) await sleep(MIN_SPIN_MS - elapsed);
 
-      toast.success("Password reset successfully! Please log in again.", {
+      toast.success("Đặt lại mật khẩu thành công! Vui lòng đăng nhập lại.", {
         duration: 2000,
         position: "top-center",
       });
@@ -73,7 +73,7 @@ export default function ResetPasswordClient() {
       const elapsed = Date.now() - startedAt;
       if (elapsed < MIN_SPIN_MS) await sleep(MIN_SPIN_MS - elapsed);
 
-      setErrorMsg("Failed to reset password. The link may be expired.");
+      setErrorMsg("Không thể đặt lại mật khẩu. Liên kết có thể đã hết hạn.");
     } finally {
       setLoading(false);
     }
@@ -82,15 +82,15 @@ export default function ResetPasswordClient() {
   return (
     <div className="min-h-[500px] flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow p-8 space-y-4">
-        <h1 className="text-2xl font-bold text-center">Reset Password</h1>
+        <h1 className="text-2xl font-bold text-center">Đặt lại mật khẩu</h1>
         <p className="text-center text-gray-500">
-          Enter your new password below.
+          Nhập mật khẩu mới của bạn bên dưới.
         </p>
 
         {/* Password */}
         <FloatingInput
           id="new-password"
-          label="* New Password"
+          label="* Mật khẩu mới"
           type={showPwd ? "text" : "password"}
           required
           value={password}
@@ -117,12 +117,12 @@ export default function ResetPasswordClient() {
           <ul className="mt-1 space-y-1 text-sm">
             <li className="flex items-center gap-2">
               <Circle className="w-2 h-2 fill-gray-500 text-gray-500" />
-              <span className="text-gray-600">At least 8 characters</span>
+              <span className="text-gray-600">Ít nhất 8 ký tự</span>
             </li>
             <li className="flex items-center gap-2">
               <Circle className="w-2 h-2 fill-gray-500 text-gray-500" />
               <span className="text-gray-600">
-                Includes number, uppercase, lowercase and special character
+                Bao gồm số, chữ hoa, chữ thường và ký tự đặc biệt
               </span>
             </li>
           </ul>
@@ -135,7 +135,7 @@ export default function ResetPasswordClient() {
                 <Circle className="w-2 h-2 fill-red-500 text-red-500" />
               )}
               <span className={passMin8 ? "text-green-600" : "text-red-500"}>
-                At least 8 characters
+                Ít nhất 8 ký tự
               </span>
             </li>
             <li className="flex items-center gap-2">
@@ -151,7 +151,7 @@ export default function ResetPasswordClient() {
                     : "text-red-500"
                 }
               >
-                Includes number, uppercase, lowercase and special character
+                Bao gồm số, chữ hoa, chữ thường và ký tự đặc biệt
               </span>
             </li>
           </ul>
@@ -160,7 +160,7 @@ export default function ResetPasswordClient() {
         {/* Confirm Password */}
         <FloatingInput
           id="confirm-password"
-          label="* Confirm Password"
+          label="* Xác nhận mật khẩu"
           type={showConfirmPwd ? "text" : "password"}
           required
           value={confirmPwd}
@@ -185,7 +185,7 @@ export default function ResetPasswordClient() {
         {errorMsg && <p className="text-xs text-red-500 mt-1">{errorMsg}</p>}
         {forceValidate && confirmPwd && !matchConfirm && (
             <p className="text-xs text-red-500 mt-1">
-              Confirm password does not match
+              Mật khẩu xác nhận không khớp
             </p>
           )}
 
@@ -197,7 +197,7 @@ export default function ResetPasswordClient() {
           {loading ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <span className="font-semibold text-lg">Reset</span>
+            <span className="font-semibold text-lg">Đặt lại</span>
           )}
         </Button>
       </div>

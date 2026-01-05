@@ -80,8 +80,8 @@ export default function BrandDetailPage() {
                 <ArrowLeft className="text-gray-700 size-6" />
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Brand Details</h1>
-                <p className="text-sm text-gray-500 mt-1">View complete information</p>
+                <h1 className="text-3xl font-bold text-gray-800">Chi tiết thương hiệu</h1>
+                <p className="text-sm text-gray-500 mt-1">Xem thông tin đầy đủ</p>
               </div>
             </div>
             
@@ -96,7 +96,7 @@ export default function BrandDetailPage() {
                   className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base shadow-lg hover:shadow-xl transition-all"
                 >
                   <Edit size={20} />
-                  Edit Brand
+                  Sửa thương hiệu
                 </Button>
               </motion.div>
             )}
@@ -109,7 +109,7 @@ export default function BrandDetailPage() {
               className="flex flex-col items-center justify-center py-20"
             >
               <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-gray-600 text-lg">Loading brand details…</p>
+              <p className="text-gray-600 text-lg">Đang tải chi tiết thương hiệu…</p>
             </motion.div>
           ) : !data ? (
             <motion.div
@@ -117,7 +117,7 @@ export default function BrandDetailPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center"
             >
-              <p className="text-red-600 text-xl font-semibold">Brand not found.</p>
+              <p className="text-red-600 text-xl font-semibold">Không tìm thấy thương hiệu.</p>
             </motion.div>
           ) : (
             <motion.div
@@ -144,47 +144,35 @@ export default function BrandDetailPage() {
                     <div className="absolute bottom-6 left-6">
                       <div className="flex items-center gap-2 text-white">
                         <ImageIcon className="size-5" />
-                        <span className="text-sm font-medium">Brand Banner</span>
+                        <span className="text-sm font-medium">Hình ảnh banner thương hiệu</span>
                       </div>
                     </div>
                   </div>
                 </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="bg-white rounded-2xl overflow-hidden"
-                >
-                  <div className="relative h-64 md:h-80 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                    <div className="text-center">
-                      <ImageIcon className="size-16 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-400 font-semibold text-lg">No banner image</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
+              ) : null}
 
               {/* Header Card */}
               <motion.div
                 transition={{ duration: 0.2 }}
                 className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl shadow-xl p-8 text-white"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex-1">
                     <h2 className="text-4xl font-bold mb-3">{data.name}</h2>
                     <p className="text-purple-100 text-lg font-medium">{data.slug}</p>
                   </div>
-                  <div>
-                    <span className={`inline-block px-4 py-2 rounded-full text-base font-semibold shadow-lg ${statusBadgeClass((data as any).brandStatus)} ring-2 ring-white`}>
-                      {formatStatusLabel((data as any).brandStatus)}
-                    </span>
-                  </div>
                 </div>
+                {data.description && (
+                  <div className="border-t border-purple-400 pt-4">
+                    <p className="text-purple-100 text-base leading-relaxed whitespace-pre-line">
+                      Mô tả: {data.description}
+                    </p>
+                  </div>
+                )}
               </motion.div>
 
               {/* Info Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Created At Card */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -197,7 +185,7 @@ export default function BrandDetailPage() {
                       <Calendar className="size-6 text-blue-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500 font-medium mb-1">Created At</p>
+                      <p className="text-sm text-gray-500 font-medium mb-1">Ngày tạo</p>
                       <p className="text-xl font-bold text-gray-800">{fmt(data.createdAt)}</p>
                     </div>
                   </div>
@@ -215,8 +203,30 @@ export default function BrandDetailPage() {
                       <Hash className="size-6 text-orange-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500 font-medium mb-1">Priority</p>
+                      <p className="text-sm text-gray-500 font-medium mb-1">Mức ưu tiên</p>
                       <p className="text-xl font-bold text-gray-800">{Number(data.priority ?? 0)}</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Active Status Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="bg-white rounded-2xl p-6 transition-all"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-xl ${data.isActive ? "bg-green-100" : "bg-red-100"}`}>
+                      <span className={`text-xl font-bold ${data.isActive ? "text-green-600" : "text-red-600"}`}>
+                        ●
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-gray-500 font-medium mb-1">Hoạt động</p>
+                      <p className={`text-xl font-bold ${data.isActive ? "text-green-600" : "text-red-600"}`}>
+                        {data.isActive ? "Có" : "Không"}
+                      </p>
                     </div>
                   </div>
                 </motion.div>
@@ -234,7 +244,7 @@ export default function BrandDetailPage() {
                     <Globe className="size-6 text-green-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-500 font-medium mb-2">Website</p>
+                    <p className="text-sm text-gray-500 font-medium mb-2">Trang web</p>
                     {data.websiteUrl ? (
                       <a
                         href={data.websiteUrl}
@@ -249,22 +259,6 @@ export default function BrandDetailPage() {
                     )}
                   </div>
                 </div>
-              </motion.div>
-
-              {/* Description Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="bg-white rounded-2xl p-8 transition-all"
-              >
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <span className="w-1 h-6 bg-purple-600 rounded-full"></span>
-                  Description
-                </h3>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line text-base">
-                  {data.description || "-"}
-                </p>
               </motion.div>
             </motion.div>
           )}

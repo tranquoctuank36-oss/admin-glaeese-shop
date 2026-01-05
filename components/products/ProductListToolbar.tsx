@@ -28,7 +28,7 @@ export default function ProductListToolbar({
   onToggleFilters,
   children,
   onSearchSideEffect,
-  placeholder = "Search by name, SKU, or brand...",
+  placeholder = "Tìm kiếm theo tên, SKU hoặc thương hiệu...",
 }: Props) {
   return (
     <div className="bg-white rounded-xl shadow-lg p-4 border border-gray-200">
@@ -54,7 +54,7 @@ export default function ProductListToolbar({
           }`}
         >
           <Filter size={20} />
-          Filters
+          Bộ lọc
         </button>
       </div>
 
@@ -64,7 +64,7 @@ export default function ProductListToolbar({
           animate={{ opacity: 1, height: "auto" }}
           className="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-4 gap-4"
         >
-          {children ?? <div className="text-sm text-gray-500">More filters…</div>}
+          {children ?? <div className="text-sm text-gray-500">Thêm bộ lọc...</div>}
         </motion.div>
       )}
     </div>

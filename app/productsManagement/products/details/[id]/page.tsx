@@ -90,10 +90,34 @@ function statusBadgeClass(status?: string | null) {
 }
 
 function formatStatusLabel(status?: string | null) {
+  const statusMap: Record<string, string> = {
+    published: "Đã xuất bản",
+    draft: "Bản nháp",
+    unlisted: "Chưa liệt kê",
+    archived: "Đã lưu trữ",
+  };
   if (!status) return "-";
-  return String(status)
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return statusMap[status.toLowerCase()] || status;
+}
+
+function formatProductType(type?: string | null) {
+  const typeMap: Record<string, string> = {
+    eyeglasses: "Gọng kính",
+    sunglasses: "Kính mát",
+  };
+  if (!type) return "-";
+  return typeMap[type.toLowerCase()] || type;
+}
+
+function formatGender(gender?: string | null) {
+  const genderMap: Record<string, string> = {
+    male: "Nam",
+    female: "Nữ",
+    unisex: "Unisex",
+    kid: "Trẻ em",
+  };
+  if (!gender) return "-";
+  return genderMap[gender.toLowerCase()] || gender;
 }
 
 type SortableImageItemProps = {
@@ -250,7 +274,7 @@ function SortableVariantItem({
             </div>
             <div
               className="hover:bg-gray-100 rounded p-1 transition-colors"
-              title="Drag to reorder"
+              title="Kéo để sắp xếp lại"
             >
               <GripVertical size={20} className="text-gray-400" />
             </div>
@@ -263,7 +287,7 @@ function SortableVariantItem({
           <Button
             onClick={() => onEdit(variant)}
             className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white rounded-lg"
-            title="Edit variant"
+            title="Sửa biến thể"
           >
             <Edit size={16} />
           </Button>
@@ -272,20 +296,20 @@ function SortableVariantItem({
             onOpenChange={(open) =>
               setRemovePopoverOpen(open ? variant.id : null)
             }
-            title="Remove Variant?"
+            title="Xóa biến thể?"
             message={
               <div>
-                Are you sure you want to remove{" "}
-                <strong>{variant.name || "this variant"}</strong>?
+                Bạn chắc chắn muốn xóa{" "}
+                <strong>{variant.name || "biến thể này"}</strong>?
               </div>
             }
             onConfirm={() => onDelete(variant.id)}
-            confirmText="Remove"
+            confirmText="Xóa"
           >
             <Button
               className="h-8 w-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-lg"
               disabled={deletingVariantId === variant.id}
-              title="Remove"
+              title="Xóa"
             >
               <Trash2 size={16} />
             </Button>
@@ -299,30 +323,30 @@ function SortableVariantItem({
           <span className="font-semibold text-gray-800">{variant.sku}</span>
         </div>
         <div className="flex justify-between py-1 border-b border-gray-100">
-          <span className="text-gray-600">Price:</span>
+          <span className="text-gray-600">Giá:</span>
           <span className="font-bold text-gray-600">
             {Number(variant.originalPrice || 0).toLocaleString("en-US")}đ
           </span>
         </div>
         <div className="flex justify-between py-1 border-b border-gray-100">
-          <span className="text-gray-600">Quantity:</span>
+          <span className="text-gray-600">Số lượng:</span>
           <span className="font-semibold text-gray-800">
             {variant.quantityAvailable || 0}
           </span>
         </div>
         <div className="flex justify-between py-1 border-b border-gray-100">
-          <span className="text-gray-600">Status:</span>
+          <span className="text-gray-600">Trạng thái:</span>
           <span
             className={`font-semibold ${
               variant.isActive ? "text-green-600" : "text-red-600"
             }`}
           >
-            {variant.isActive ? "Active" : "Inactive"}
+            {variant.isActive ? "Hoạt động" : "Không hoạt động"}
           </span>
         </div>
         {variant.colors && variant.colors.length > 0 && (
           <div className="flex justify-between py-1 border-b border-gray-100">
-            <span className="text-gray-600">Colors:</span>
+            <span className="text-gray-600">Màu sắc:</span>
             <div className="flex flex-wrap gap-2 justify-end">
               {variant.colors.map((color: any, cidx: number) => (
                 <div
@@ -347,7 +371,7 @@ function SortableVariantItem({
         {localImages && localImages.length > 0 && (
           <div className="flex justify-between py-1">
             <span className="text-gray-600">
-              Images ({localImages.length}):
+              Hình ảnh ({localImages.length}):
             </span>
             <div className="flex gap-2 flex-wrap justify-end max-w-[300px]">
               <DndContext
@@ -580,10 +604,10 @@ function ProductDetailPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Product Details
+                  Chi tiết sản phẩm
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  View complete information
+                  Xem thông tin đầy đủ
                 </p>
               </div>
             </div>
@@ -605,17 +629,17 @@ function ProductDetailPage() {
                   disabled={busyAction}
                 >
                   <Edit size={20} />
-                  Edit
+                  Sửa
                 </Button>
 
                 <ConfirmPopover
-                  title="Delete Product"
+                  title="Xóa sản phẩm"
                   message={
                     <div>
-                      Are you sure you want to delete <strong>{data.name}</strong>?
+                      Bạn chắc chắn muốn xóa <strong>{data.name}</strong>?
                     </div>
                   }
-                  confirmText="Delete"
+                  confirmText="Xóa"
                   onConfirm={handleDeleteProduct}
                 >
                   <Button
@@ -623,7 +647,7 @@ function ProductDetailPage() {
                     disabled={busyAction}
                   >
                     <Trash2 size={20} />
-                    Delete
+                    Xóa
                   </Button>
                 </ConfirmPopover>
               </motion.div>
@@ -637,7 +661,7 @@ function ProductDetailPage() {
               className="flex flex-col items-center justify-center py-20"
             >
               <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-gray-600 text-lg">Loading product details…</p>
+              <p className="text-gray-600 text-lg">Đang tải chi tiết sản phẩm…</p>
             </motion.div>
           ) : error ? (
             <motion.div
@@ -654,7 +678,7 @@ function ProductDetailPage() {
               className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center"
             >
               <p className="text-red-600 text-xl font-semibold">
-                Product not found.
+                Không tìm thấy sản phẩm.
               </p>
             </motion.div>
           ) : (
@@ -687,14 +711,14 @@ function ProductDetailPage() {
                       <div className="flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-lg backdrop-blur-sm">
                         <Package className="size-4" />
                         <span className="text-sm font-medium">
-                          {data.productVariants?.length ?? 0} Variants
+                          {data.productVariants?.length ?? 0} Biến thể
                         </span>
                       </div>
                       {data.isFeatured && (
                         <div className="flex items-center gap-2 bg-yellow-400/90 text-yellow-900 px-3 py-1.5 rounded-lg">
                           <Star className="size-4 fill-current" />
                           <span className="text-sm font-semibold">
-                            Featured
+                            Nổi bật
                           </span>
                         </div>
                       )}
@@ -713,7 +737,7 @@ function ProductDetailPage() {
                 {data.description && (
                   <div className="mt-4 pt-2 border-t border-white/20">
                     <p className="text-green-50 leading-relaxed">
-                      <span className="italic">Description:</span>{" "}
+                      <span className="italic">Mô tả:</span>{" "}
                       {data.description}
                     </p>
                   </div>
@@ -734,13 +758,13 @@ function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-500 font-medium mb-1">
-                        Category
+                        Danh mục
                       </p>
                       <p className="text-lg font-bold text-gray-800">
-                        {data.productType ?? "-"}
+                        {formatProductType(data.productType)}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
-                        Gender: {data.gender ?? "-"}
+                        Giới tính: {formatGender(data.gender)}
                       </p>
                     </div>
                   </div>
@@ -759,23 +783,23 @@ function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-500 font-medium mb-3">
-                        Frame Details
+                        Chi tiết khung
                       </p>
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Type:</span>
+                          <span className="text-gray-600">Loại:</span>
                           <span className="font-semibold text-gray-800">
                             {data.frameType?.name ?? "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Shape:</span>
+                          <span className="text-gray-600">Hình dáng:</span>
                           <span className="font-semibold text-gray-800">
                             {data.frameShape?.name ?? "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Material:</span>
+                          <span className="text-gray-600">Chất liệu:</span>
                           <span className="font-semibold text-gray-800">
                             {data.frameMaterial?.name ?? "-"}
                           </span>
@@ -798,25 +822,25 @@ function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-500 font-medium mb-3">
-                        Dimensions
+                        Kích thước
                       </p>
                       <div className="space-y-1.5 text-sm">
                         <div className="flex justify-between">
                           <span className="text-gray-600">
-                            Lens Width/Height:
+                            Chiều rộng/cao kính:
                           </span>
                           <span className="font-semibold text-gray-800">
                             {data.lensWidth ?? "-"} / {data.lensHeight ?? "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Bridge Width:</span>
+                          <span className="text-gray-600">Chiều rộng cầu:</span>
                           <span className="font-semibold text-gray-800">
                             {data.bridgeWidth ?? "-"}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Temple Length:</span>
+                          <span className="text-gray-600">Chiều dài tay gọng:</span>
                           <span className="font-semibold text-gray-800">
                             {data.templeLength ?? "-"}
                           </span>
@@ -839,25 +863,25 @@ function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-500 font-medium mb-3">
-                        Performance
+                        Hiếu suất
                       </p>
                       <div className="space-y-1.5 text-sm">
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Reviews:</span>
+                          <span className="text-gray-600">Nhận xét:</span>
                           <span className="font-semibold text-gray-800">
                             {data.reviewCount ?? 0}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Sold:</span>
+                          <span className="text-gray-600">Đã bán:</span>
                           <span className="font-semibold text-gray-800">
                             {data.totalSold ?? 0}
                           </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-600">Rating:</span>
+                          <span className="text-gray-600">Đánh giá:</span>
                           <span className="font-semibold text-gray-800">
-                            {data.averageRating ?? "-"}
+                            {data.averageRating ? `${Math.round(data.averageRating)} / 5 ⭐` : "-"}
                           </span>
                         </div>
                       </div>
@@ -878,7 +902,7 @@ function ProductDetailPage() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-500 font-medium mb-1">
-                        Created Date
+                        Ngày tạo
                       </p>
                       <p className="text-lg font-bold text-gray-800">
                         {fmt(data.createdAt)}
@@ -898,7 +922,7 @@ function ProductDetailPage() {
                 >
                   <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <span className="w-1 h-6 bg-green-600 rounded-full"></span>
-                    Tags
+                    Nhãn
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {data.tags.map((tag: any) => (
@@ -924,7 +948,7 @@ function ProductDetailPage() {
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                       <span className="w-1 h-6 bg-green-600 rounded-full"></span>
-                      Product Variants ({activeVariants.length})
+                      Biến thể sản phẩm ({activeVariants.length})
                     </h3>
                     <div className="flex items-center gap-2">
                       <Button
@@ -932,7 +956,7 @@ function ProductDetailPage() {
                         className="flex items-center gap-2 h-10 bg-red-600 hover:bg-red-700 text-white"
                       >
                         <Trash2 size={18} />
-                        Trash bin
+                        Thùng rác
                         {deletedVariants.length > 0 && (
                           <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
                             {deletedVariants.length}
@@ -947,7 +971,7 @@ function ProductDetailPage() {
                         className="flex items-center gap-2 h-10 bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         <Plus size={18} />
-                        Add Product Variant
+                        Thêm biến thể
                       </Button>
                     </div>
                   </div>
@@ -1150,7 +1174,7 @@ function ProductDetailPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl">
               <Trash2 className="text-red-600" size={24} />
-              Trash Bin - Deleted Variants ({deletedVariants.length})
+              Thùng rác - Biến thể đã xóa ({deletedVariants.length})
             </DialogTitle>
           </DialogHeader>
 
@@ -1158,7 +1182,7 @@ function ProductDetailPage() {
             {deletedVariants.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 <Trash2 size={48} className="mx-auto mb-4 opacity-30" />
-                <p className="text-lg">No deleted variants</p>
+                <p className="text-lg">Không có biến thể đã xóa</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1177,21 +1201,21 @@ function ProductDetailPage() {
                       <ConfirmPopover
                         open={restorePopoverOpen === variant.id}
                         onOpenChange={(open) => setRestorePopoverOpen(open ? variant.id : null)}
-                        title="Restore Variant?"
+                        title="Khôi phục biến thể?"
                         message={
                           <div>
-                            Are you sure you want to restore{" "}
-                            <strong>{variant.name || "this variant"}</strong>?
+                            Bạn chắc chắn muốn khôi phục{" "}
+                            <strong>{variant.name || "biến thể này"}</strong>?
                           </div>
                         }
                         onConfirm={() => handleRestoreVariant(variant.id)}
-                        confirmText="Restore"
+                        confirmText="Khôi phục"
                         confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
                         widthClass="w-[320px]"
                       >
                         <Button
                           className="h-8 w-8 p-0 bg-green-500 hover:bg-green-600 text-white rounded-lg"
-                          title="Restore variant"
+                          title="Khôi phục biến thể"
                         >
                           <RotateCcw size={16} />
                         </Button>
@@ -1206,7 +1230,7 @@ function ProductDetailPage() {
                         </span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-gray-100">
-                        <span className="text-gray-600">Price:</span>
+                        <span className="text-gray-600">Giá:</span>
                         <span className="font-bold text-gray-600">
                           {Number(variant.originalPrice || 0).toLocaleString(
                             "en-US"
@@ -1215,13 +1239,13 @@ function ProductDetailPage() {
                         </span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-gray-100">
-                        <span className="text-gray-600">Quantity:</span>
+                        <span className="text-gray-600">Số lượng:</span>
                         <span className="font-semibold text-gray-800">
                           {variant.quantityAvailable || 0}
                         </span>
                       </div>
                       <div className="flex justify-between py-1">
-                        <span className="text-gray-600">Status:</span>
+                        <span className="text-gray-600">Trạng thái:</span>
                         <span
                           className={`font-semibold ${
                             variant.isActive
@@ -1229,14 +1253,14 @@ function ProductDetailPage() {
                               : "text-red-600"
                           }`}
                         >
-                          {variant.isActive ? "Active" : "Inactive"}
+                          {variant.isActive ? "Hoạt động" : "Không hoạt động"}
                         </span>
                       </div>
 
                       {variant.colors && variant.colors.length > 0 && (
                         <div className="mt-3 pt-3 border-t border-gray-200">
                           <span className="text-gray-600 text-xs font-medium block mb-2">
-                            Colors:
+                            Màu sắc:
                           </span>
                           <div className="flex flex-wrap gap-2">
                             {variant.colors.map((color: any, cidx: number) => (
@@ -1265,7 +1289,7 @@ function ProductDetailPage() {
                         variant.productImages.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-gray-200">
                             <p className="text-xs text-gray-500 font-medium mb-2">
-                              Images ({variant.productImages.length})
+                              Hình ảnh ({variant.productImages.length})
                             </p>
                             <div className="grid grid-cols-4 gap-2">
                               {variant.productImages.map(

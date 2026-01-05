@@ -40,6 +40,23 @@ function formatDate(iso?: string) {
   return d.toLocaleDateString("en-GB");
 }
 
+function getRoleLabel(role: string): string {
+  const roleMap: Record<string, string> = {
+    admin: "Admin",
+    customer: "Khách hàng",
+  };
+  return roleMap[role] || role;
+}
+
+function getStatusLabel(status: string): string {
+  const statusMap: Record<string, string> = {
+    active: "Hoạt động",
+    inactive: "Không hoạt động",
+    suspended: "Bị khóa",
+  };
+  return statusMap[status] || status;
+}
+
 function UserDetailsPage() {
   const router = useRouter();
   const params = useParams();
@@ -64,7 +81,7 @@ function UserDetailsPage() {
       } catch (e) {
         console.error("Failed to fetch user:", e);
         if (alive) {
-          setError("Failed to load user details");
+          setError("Lỗi khi tải người dùng");
         }
       } finally {
         if (alive) {
@@ -106,7 +123,7 @@ function UserDetailsPage() {
     return (
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         </main>
       </div>
     );
@@ -117,7 +134,7 @@ function UserDetailsPage() {
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
           <div className="text-center gap-3 mb-6">
-            <p className="text-red-600 mb-4">{error || "User not found"}</p>
+            <p className="text-red-600 mb-4">{error || "Không tìm thấy người dùng"}</p>
             <Button
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
@@ -129,10 +146,10 @@ function UserDetailsPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  User Details
+                  Chi tiết người dùng
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  View detailed information about this user
+                  Xem thông tin chi tiết về người dùng này
                 </p>
               </div>
             </div>
@@ -164,10 +181,10 @@ function UserDetailsPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  User Details
+                  Chi tiết người dùng
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  View detailed information about this user
+                  Xem thông tin chi tiết về người dùng này
                 </p>
               </div>
             </div>
@@ -185,7 +202,7 @@ function UserDetailsPage() {
           >
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <UserIcon size={20} className="text-blue-600" />
-              Basic Information
+              Thông tin cơ bản
             </h2>
 
             <div className="space-y-4">
@@ -199,12 +216,12 @@ function UserDetailsPage() {
 
               <div>
                 <label className="text-sm font-medium text-gray-500">
-                  Full Name
+                  Họ và tên
                 </label>
                 <p className="text-gray-800">{user.fullName || "-"}</p>
               </div>
 
-              {user.firstName && (
+              {/* {user.firstName && (
                 <div>
                   <label className="text-sm font-medium text-gray-500">
                     First Name
@@ -220,11 +237,11 @@ function UserDetailsPage() {
                   </label>
                   <p className="text-gray-800">{user.lastName}</p>
                 </div>
-              )}
+              )} */}
 
               <div>
                 <label className="text-sm font-medium text-gray-500">
-                  Gender
+                  Giới tính
                 </label>
                 <p className="text-gray-800 capitalize">{user.gender || "-"}</p>
               </div>
@@ -232,7 +249,7 @@ function UserDetailsPage() {
               <div>
                 <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
                   <Calendar size={16} />
-                  Date of Birth
+                  Ngày sinh
                 </label>
                 <p className="text-gray-800">
                   {formatDate(user.dateOfBirth || undefined)}
@@ -250,29 +267,42 @@ function UserDetailsPage() {
           >
             <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
               <Shield size={20} className="text-purple-600" />
-              Account Status
+              Trạng thái tài khoản
             </h2>
 
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-500">
-                  Role
+                  Vai trò
                 </label>
-                <div className="mt-1">
-                  <span
-                    className={`inline-block px-4 py-2 text-sm font-medium rounded-full ${getRoleBadgeClass(
-                      user.roles[0] || "customer"
-                    )}`}
-                  >
-                    {(user.roles[0] || "customer").charAt(0).toUpperCase() + (user.roles[0] || "customer").slice(1)}
-                  </span>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {user.roles && user.roles.length > 0 ? (
+                    user.roles.map((role) => (
+                      <span
+                        key={role}
+                        className={`inline-block px-4 py-2 text-sm font-medium rounded-full ${getRoleBadgeClass(
+                          role
+                        )}`}
+                      >
+                        {getRoleLabel(role)}
+                      </span>
+                    ))
+                  ) : (
+                    <span
+                      className={`inline-block px-4 py-2 text-sm font-medium rounded-full ${getRoleBadgeClass(
+                        "customer"
+                      )}`}
+                    >
+                      {getRoleLabel("customer")}
+                    </span>
+                  )}
                 </div>
               </div>
 
               <div>
                 <label className="text-sm font-medium text-gray-500 flex items-center gap-2">
                   <Activity size={16} />
-                  Status
+                  Trạng thái
                 </label>
                 <div className="mt-1">
                   <span
@@ -280,7 +310,7 @@ function UserDetailsPage() {
                       user.status
                     )}`}
                   >
-                    {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                    {getStatusLabel(user.status)}
                   </span>
                 </div>
               </div>
@@ -297,21 +327,30 @@ function UserDetailsPage() {
         >
           <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <Clock size={20} className="text-gray-600" />
-            Activity Timeline
+            Lịch sử hoạt động
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="text-sm font-medium text-gray-500">
-                Created At
+                Ngày tạo
               </label>
               <p className="text-gray-800">{formatDateTime(user.createdAt)}</p>
             </div>
 
+            {user.emailVerifiedAt && (
+              <div>
+                <label className="text-sm font-medium text-gray-500">
+                  Ngày xác minh Email
+                </label>
+                <p className="text-gray-800">{formatDateTime(user.emailVerifiedAt)}</p>
+              </div>
+            )}
+
             {user.deletedAt && (
               <div>
                 <label className="text-sm font-medium text-gray-500">
-                  Deleted At
+                  Ngày xóa
                 </label>
                 <p className="text-red-600">{formatDateTime(user.deletedAt)}</p>
               </div>
@@ -337,10 +376,10 @@ function UserDetailsPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                  View Addresses
+                  Xem địa chỉ
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Manage user's delivery addresses
+                  Quản lý địa chỉ giao hàng của người dùng
                 </p>
               </div>
               <ArrowLeft
@@ -361,10 +400,10 @@ function UserDetailsPage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                  View Orders
+                  Xem đơn hàng
                 </h3>
                 <p className="text-sm text-gray-600">
-                  Check user's order history
+                  Kiểm tra lịch sử đơn hàng của người dùng
                 </p>
               </div>
               <ArrowLeft

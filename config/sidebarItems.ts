@@ -21,7 +21,8 @@ import {
   Square,
   Glasses,
   Image,
-  Warehouse
+  Warehouse,
+  Star
 } from "lucide-react";
 import { Routes } from "@/lib/routes";
 
@@ -49,6 +50,7 @@ export const ICONS = {
   Glasses,
   Image,
   Warehouse,
+  Star,
 };
 
 export type SubMenuItem = {
@@ -67,55 +69,60 @@ export type SidebarItem = {
 };
 
 export const sidebarItems: SidebarItem[] = [
-  { name: "Dashboard", href: Routes.root, icon: "House" },
+  { name: "Tổng quan", href: Routes.root, icon: "House" },
   {
-    name: "Products Management",
+    name: "Quản lý sản phẩm",
     href: Routes.productsManagement.root,
     icon: "ShoppingBag",
     subItems: [
       {
-        name: "Products",
+        name: "Sản phẩm",
         href: Routes.productsManagement.products.root,
         icon: "Package",
       },
       {
-        name: "Categories",
+        name: "Danh mục",
         href: Routes.productsManagement.categories.root,
         icon: "FolderTree",
       },
       {
-        name: "Brands",
+        name: "Thương hiệu",
         href: Routes.productsManagement.brands.root,
         icon: "BadgeCheck",
       },
       {
-        name: "Glasses Frames",
+        name: "Gọng kính",
         href: Routes.productsManagement.frames.root,
         icon: "Glasses",
       },
       {
-        name: "Colors",
+        name: "Màu sắc",
         href: Routes.productsManagement.colors.root,
         icon: "Palette",
       },
       {
-        name: "Tags",
+        name: "Nhãn",
         href: Routes.productsManagement.tags.root,
         icon: "Tag",
       },
       {
-        name: "Images",
+        name: "Hình ảnh",
         href: Routes.productsManagement.images.root,
         icon: "Image",
       },
     ],
   },
-  { name: "Inventory", href: Routes.stocks.root, icon: "Warehouse" },
-  { name: "Users", href: Routes.users.root, icon: "Users" },
+  { name: "Kho hàng", href: Routes.stocks.root, icon: "Warehouse" },
+  { name: "Người dùng", href: Routes.users.root, icon: "Users" },
   { name: "Sales", href: Routes.sales.root, icon: "DollarSign" },
-  { name: "Orders", href: Routes.orders, icon: "ShoppingCart" },
-  { name: "Settings", href: Routes.settings, icon: "Settings" },
-  { name: "Messages", href: Routes.messages, icon: "Mail" },
-  { name: "Notifications", href: Routes.notifications, icon: "Bell" },
-  { name: "Help", href: Routes.help, icon: "Info" },
+  { 
+    name: "Đơn hàng", 
+    href: Routes.orders.root, 
+    icon: "ShoppingCart",
+  },
+  { name: "Đánh giá", href: Routes.reviews.root, icon: "Star" },
+  { name: "Cài đặt", href: Routes.settings, icon: "Settings" },
+  { name: "Tin nhắn", href: Routes.messages, icon: "Mail" },
+  { name: "Thông báo", href: Routes.notifications, icon: "Bell" },
+  { name: "Trợ giúp", href: Routes.help, icon: "Info" },
 ];

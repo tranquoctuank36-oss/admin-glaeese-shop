@@ -11,8 +11,8 @@ function SalesPage() {
 
   const salesModules = [
     {
-      title: "Discount Management",
-      description: "Create and manage product discounts, promotional pricing, and special offers",
+      title: "Quản lý giảm giá",
+      description: "Tạo và quản lý giảm giá sản phẩm, giá khuyến mại và ưu đãi đặc biệt",
       icon: Percent,
       color: "from-purple-50 to-white",
       borderColor: "border-purple-100",
@@ -20,8 +20,8 @@ function SalesPage() {
       path: Routes.sales.discounts.root,
     },
     {
-      title: "Voucher Management",
-      description: "Create and manage voucher codes, coupons, and promotional campaigns",
+      title: "Quản lý phiếu giảm giá",
+      description: "Tạo và quản lý mã phiếu, phiếu mua hàng và chiến dịch khuyến mại",
       icon: Ticket,
       color: "from-blue-50 to-white",
       borderColor: "border-blue-100",
@@ -40,9 +40,9 @@ function SalesPage() {
         >
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Sales Management</h1>
+            <h1 className="text-3xl font-bold text-gray-800">Quản lý bán hàng</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Manage discounts, vouchers, and promotional campaigns
+              Quản lý giảm giá, phiếu và chiến dịch khuyến mại
             </p>
           </div>
 

@@ -10,8 +10,8 @@ export default function AddColorPage() {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Add Color</h1>
+      <main className="max-w-[600px] mx-auto py-6 px-4 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm Màu Sắc</h1>
         <ColorForm
           initial={{
             name: "",
@@ -22,10 +22,10 @@ export default function AddColorPage() {
           onSubmit={async (values) => {
             await createColor(values);
             router.push(Routes.productsManagement.colors.root);
-            toast.success("Color created successfully!");
+            toast.success("Màu sắc đã được tạo thành công!");
           }}
           onCancel={() => router.back()}
-          submitLabel="Create"
+          submitLabel="Tạo"
         />
       </main>
     </div>

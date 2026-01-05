@@ -17,7 +17,7 @@ import type { ProductImage } from "@/types/product";
 import AddVariantDialog from "@/components/products/AddVariantDialog";
 import type { Brand } from "@/types/product";
 import SearchableFloatingSelect from "@/components/SearchableFloatingSelect";
-import { Plus, Pencil, Trash2, Edit, X, RotateCcw } from "lucide-react";
+import { Plus, Pencil, Trash2, Edit, X, RotateCcw, Loader2 } from "lucide-react";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import { deleteVariant } from "@/services/productService";
 
@@ -270,7 +270,7 @@ export default function ProductForm({
         setProductImages(imagesRes.data || []);
       } catch (error) {
         console.error("Error loading data:", error);
-        setErr("Failed to load data");
+        setErr("Không thể tải dữ liệu");
       } finally {
         setLoadingData(false);
       }
@@ -279,13 +279,6 @@ export default function ProductForm({
     loadData();
   }, []);
 
-  const handleCategoryChange = (selected: string[]) => {
-    setCategoryIds(selected);
-  };
-
-  const handleTagChange = (selected: string[]) => {
-    setTagIds(selected);
-  };
 
   const handleAddVariant = async (variant: Partial<ProductVariant>) => {
     if (editingVariantIndex !== undefined) {
@@ -315,7 +308,7 @@ export default function ProductForm({
   const removeVariant = async (idx: number) => {
     // Check if this is the last variant
     if (variants.length === 1) {
-      setErr("A product needs to have at least one Product Variant.");
+      setErr("Một sản phẩm cần phải có ít nhất một biến thể.");
       // Clear error after 3 seconds
       setTimeout(() => setErr(""), 3000);
       return;
@@ -331,7 +324,7 @@ export default function ProductForm({
         setDeletedVariants((prev) => [...prev, variant]);
       } catch (error) {
         console.error("Failed to delete variant:", error);
-        setErr("Failed to delete variant");
+        setErr("Không thể xóa biến thể");
         return;
       }
     } else {
@@ -423,52 +416,52 @@ export default function ProductForm({
 
     // Validate all required fields first
     if (!name.trim()) {
-      setErr("Product name is required");
+      setErr("Tên sản phẩm là bắt buộc");
       return;
     }
 
     if (!displaySlug.trim()) {
-      setErr("Slug is required");
+      setErr("Slug là bắt buộc");
       return;
     }
 
     if (!productType) {
-      setErr("Product type is required");
+      setErr("Loại sản phẩm là bắt buộc");
       return;
     }
 
     if (!gender) {
-      setErr("Gender is required");
+      setErr("Giới tính là bắt buộc");
       return;
     }
 
     if (!frameShapeId) {
-      setErr("Frame shape is required");
+      setErr("Hình dáng khung là bắt buộc");
       return;
     }
 
     if (!frameTypeId) {
-      setErr("Frame type is required");
+      setErr("Loại khung là bắt buộc");
       return;
     }
 
     if (!frameMaterialId) {
-      setErr("Frame material is required");
+      setErr("Chất liệu khung là bắt buộc");
       return;
     }
 
     if (!brandId) {
-      setErr("Brand is required");
+      setErr("Thương hiệu là bắt buộc");
       return;
     }
 
     if (!status) {
-      setErr("Status is required");
+      setErr("Trạng thái là bắt buộc");
       return;
     }
 
     if (variants.length === 0) {
-      setErr("At least 1 variant is required");
+      setErr("Ít nhất 1 biến thể là bắt buộc");
       return;
     }
 
@@ -504,7 +497,7 @@ export default function ProductForm({
       }
     } catch (e: any) {
       const detail = e?.response?.data?.detail || e?.message || "";
-      setErr(detail || "Something went wrong. Please try again.");
+      setErr(detail || "Đã xảy ra lỗi. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -513,7 +506,7 @@ export default function ProductForm({
   if (loadingData) {
     return (
       <div className="flex justify-center h-screen">
-        <div className="text-lg text-gray-500">Loading...</div>
+        <div className="text-lg text-gray-500">Đang tải...</div>
       </div>
     );
   }
@@ -525,12 +518,12 @@ export default function ProductForm({
     >
       {/* Basic Information */}
       <div className="border-b pb-6">
-        <h2 className="text-lg font-bold mb-4">Basic Information</h2>
+        <h2 className="text-lg font-bold mb-4">Thông tin cơ bản</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <FloatingInput
             id="name"
-            label="Product Name"
+            label="Tên sản phẩm"
             required
             value={name}
             disabled={loading}
@@ -554,7 +547,7 @@ export default function ProductForm({
             />
             {name && (
               <p className="mt-2 text-xs text-gray-500">
-                Suggested: <span className="font-medium">{autoSlug}</span>
+                Gợi ý: <span className="font-medium">{autoSlug}</span>
               </p>
             )}
           </div>
@@ -562,7 +555,7 @@ export default function ProductForm({
 
         <FloatingInput
           id="description"
-          label="Description"
+          label="Mô tả"
           as="textarea"
           rows={4}
           value={description}
@@ -573,31 +566,31 @@ export default function ProductForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <FloatingInput
             id="productType"
-            label="Product Type"
+            label="Loại sản phẩm"
             as="select"
             required
             value={productType}
             disabled={loading}
             onChange={(v) => setProductType(v as ProductType)}
             options={[
-              { value: "Eyeglasses", label: "Eyeglasses" },
-              { value: "Sunglasses", label: "Sunglasses" },
+              { value: "Eyeglasses", label: "Gọng kính" },
+              { value: "Sunglasses", label: "Kính mát" },
             ]}
           />
 
           <FloatingInput
             id="gender"
-            label="Gender"
+            label="Giới tính"
             as="select"
             required
             value={gender}
             onChange={(v) => setGender(v as Gender)}
             disabled={loading}
             options={[
-              { value: "Male", label: "Male" },
-              { value: "Female", label: "Female" },
+              { value: "Male", label: "Nam" },
+              { value: "Female", label: "Nữ" },
               { value: "Unisex", label: "Unisex" },
-              { value: "Kid", label: "Kid" },
+              { value: "Kid", label: "Trẻ em" },
             ]}
           />
         </div>
@@ -605,12 +598,12 @@ export default function ProductForm({
 
       {/* Dimensions */}
       <div className="border-b pb-6">
-        <h2 className="text-lg font-bold mb-4">Dimensions</h2>
+        <h2 className="text-lg font-bold mb-4">Kích thước</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <FloatingInput
             id="lensWidth"
-            label="Lens Width (mm)"
+            label="Chiều rộng kính (mm)"
             type="number"
             min={0}
             step={1}
@@ -621,7 +614,7 @@ export default function ProductForm({
 
           <FloatingInput
             id="lensHeight"
-            label="Lens Height (mm)"
+            label="Chiều cao kính (mm)"
             type="number"
             min={0}
             step={1}
@@ -632,7 +625,7 @@ export default function ProductForm({
 
           <FloatingInput
             id="bridgeWidth"
-            label="Bridge Width (mm)"
+            label="Chiều rộng cầu (mm)"
             type="number"
             min={0}
             step={1}
@@ -643,7 +636,7 @@ export default function ProductForm({
 
           <FloatingInput
             id="templeLength"
-            label="Temple Length (mm)"
+            label="Chiều dài tay gọng (mm)"
             type="number"
             step={1}
             value={templeLength}
@@ -655,12 +648,12 @@ export default function ProductForm({
 
       {/* Frame Information */}
       <div className="border-b pb-6">
-        <h2 className="text-lg font-bold mb-4">Glasses Frame Information</h2>
+        <h2 className="text-lg font-bold mb-4">Thông tin khung kính</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FloatingInput
             id="frameShapeId"
-            label="Frame Shape"
+            label="Hình dáng khung"
             as="select"
             required
             value={frameShapeId}
@@ -673,7 +666,7 @@ export default function ProductForm({
 
           <FloatingInput
             id="frameTypeId"
-            label="Frame Type"
+            label="Loại khung"
             as="select"
             required
             value={frameTypeId}
@@ -686,7 +679,7 @@ export default function ProductForm({
 
           <FloatingInput
             id="frameMaterialId"
-            label="Frame Material"
+            label="Chất liệu khung"
             as="select"
             required
             value={frameMaterialId}
@@ -701,32 +694,32 @@ export default function ProductForm({
 
       {/* Relationships */}
       <div className="border-b pb-6">
-        <h2 className="text-lg font-bold mb-4">Related Information</h2>
+        <h2 className="text-lg font-bold mb-4">Thông tin liên quan</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <SearchableFloatingSelect
             id="brandId"
-            label="Brand"
+            label="Thương hiệu"
             required
             value={brandId}
             onChange={setBrandId}
             disabled={loading}
-            searchPlaceholder="Search brands..."
+            searchPlaceholder="Tìm kiếm thương hiệu..."
             options={[...brands.map((b) => ({ value: b.id, label: b.name }))]}
           />
 
           <FloatingInput
             id="status"
-            label="Status"
+            label="Trạng thái"
             as="select"
             required
             value={status}
             onChange={(v) => setStatus(v as any)}
             disabled={loading}
             options={[
-              { value: "draft", label: "Draft" },
-              { value: "published", label: "Published" },
-              { value: "unlisted", label: "Unlisted" },
-              { value: "archived", label: "Archived" },
+              { value: "draft", label: "Bản nháp" },
+              { value: "published", label: "Đã xuất bản" },
+              { value: "unlisted", label: "Chưa liệt kê" },
+              { value: "archived", label: "Đã lưu trữ" },
             ]}
           />
         </div>
@@ -734,7 +727,7 @@ export default function ProductForm({
         <div className="mt-4">
           <div className="flex justify-between items-center">
             <label className="block text-sm font-medium text-gray-700">
-              Tags
+              Nhãn
             </label>
 
             {tags.length > 0 && (
@@ -750,13 +743,13 @@ export default function ProductForm({
                 disabled={loading}
                 className="text-xs text-blue-600 hover:text-blue-800 font-medium underline hover:no-underline p-0"
               >
-                {tagIds.length === tags.length ? "" : "Select All"}
+                {tagIds.length === tags.length ? "" : "Chọn tất cả"}
               </Button>
             )}
           </div>
 
           {tags.length === 0 ? (
-            <p className="text-sm text-gray-500 italic">No tags available</p>
+            <p className="text-sm text-gray-500 italic">Không có thẻ nào</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-4 bg-gray-50">
               {tags.map((tag) => (
@@ -779,7 +772,7 @@ export default function ProductForm({
                   />
                   <span className="text-sm text-gray-700">{tag.name}</span>
                   {tag.isActive === false && (
-                    <span className="text-xs text-red-500">(Inactive)</span>
+                    <span className="text-xs text-red-500">(Không hoạt động)</span>
                   )}
                 </label>
               ))}
@@ -789,8 +782,7 @@ export default function ProductForm({
           {tagIds.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-600">
-                Selected: <strong>{tagIds.length}</strong> tag
-                {tagIds.length !== 1 ? "s" : ""}
+                Đã chọn: <strong>{tagIds.length}</strong> thẻ
               </span>
               <Button
                 type="button"
@@ -798,7 +790,7 @@ export default function ProductForm({
                 disabled={loading}
                 className="text-xs text-blue-600 hover:text-blue-800 underline hover:no-underline p-0"
               >
-                Clear all
+                Xóa tất cả
               </Button>
             </div>
           )}
@@ -813,7 +805,7 @@ export default function ProductForm({
               disabled={loading}
               className="w-4 h-4 cursor-pointer"
             />
-            <span className="text-sm font-medium">Featured</span>
+            <span className="text-sm font-medium">Nổi bật</span>
           </label>
         </div>
       </div>
@@ -822,7 +814,7 @@ export default function ProductForm({
       {!disableVariants && (
       <div className="border-b pb-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold">Product Variants</h2>
+          <h2 className="text-lg font-bold">Biến thể sản phẩm</h2>
           <div className="flex gap-2">
             <Button
               type="button"
@@ -831,7 +823,7 @@ export default function ProductForm({
               // disabled={deletedVariants.length === 0}
             >
               <Trash2 className="w-4 h-4" />
-              Trash Bin
+              Thùng rác
               {deletedVariants.length > 0 && (
                   <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
                     {deletedVariants.length}
@@ -844,13 +836,13 @@ export default function ProductForm({
               className="h-9 px-4 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
-              Add Product Variant
+              Thêm biến thể sản phẩm
             </Button>
           </div>
         </div>
 
         {variants.length === 0 ? (
-          <p className="text-gray-500 text-sm">No variants added yet.</p>
+          <p className="text-gray-500 text-sm">Chưa có biến thể nào được thêm.</p>
         ) : (
           <div className="space-y-4">
             {variants.map((variant, idx) => (
@@ -910,12 +902,12 @@ export default function ProductForm({
                       </svg>
                       <div>
                         <h3 className="font-medium text-sm">
-                          Variant {idx + 1}
+                          Biến thể {idx + 1}
                         </h3>
                         <p className="text-xs text-gray-600">
-                          Name:{" "}
+                          Tên:{" "}
                           <span className="font-semibold">
-                            {variant.name || "Unnamed"}
+                            {variant.name || "Không tên"}
                           </span>
                         </p>
                       </div>
@@ -929,7 +921,7 @@ export default function ProductForm({
                       type="button"
                       onClick={() => editVariant(idx)}
                       size="sm"
-                      title="Edit"
+                      title="Sửa"
                       className="bg-green-500 hover:bg-green-700 rounded-lg transition-colors"
                     >
                       <Edit className="w-4 h-4" />
@@ -937,15 +929,15 @@ export default function ProductForm({
                     <ConfirmPopover
                       open={removePopoverOpen === idx}
                       onOpenChange={(open) => setRemovePopoverOpen(open ? idx : null)}
-                      title="Remove Variant?"
+                      title="Xóa biến thể?"
                       message={
                         <div>
-                          Are you sure you want to remove{" "}
-                          <strong>{variant.name || "this variant"}</strong>?
+                          Bạn có chắc chắn muốn xóa{" "}
+                          <strong>{variant.name || "biến thể này"}</strong>?
                         </div>
                       }
-                      confirmText="Remove"
-                      cancelText="Cancel"
+                      confirmText="Xóa"
+                      cancelText="Hủy"
                       onConfirm={async () => await removeVariant(idx)}
                       confirmClassName="h-10 bg-red-600 hover:bg-red-700 text-white"
                       widthClass="w-[320px]"
@@ -953,7 +945,7 @@ export default function ProductForm({
                       <Button
                         type="button"
                         size="sm"
-                        title="Remove"
+                        title="Xóa"
                         className="bg-red-500 hover:bg-red-700 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -971,7 +963,7 @@ export default function ProductForm({
                       </div>
                       <div>
                         <span className="font-medium text-gray-700">
-                          Quantity:
+                          Số lượng:
                         </span>
                         <p className="text-gray-600">
                           {variant.quantityAvailable || 0}
@@ -979,7 +971,7 @@ export default function ProductForm({
                       </div>
                       <div>
                         <span className="font-medium text-gray-700">
-                          Price:
+                          Giá:
                         </span>
                         <p className="text-gray-600">
                           {Number(variant.originalPrice || 0).toLocaleString(
@@ -990,10 +982,10 @@ export default function ProductForm({
                       </div>
                       <div>
                         <span className="font-medium text-gray-700">
-                          Status:
+                          Trạng thái:
                         </span>
                         <p className="text-gray-600">
-                          {variant.isActive ? "Active" : "Inactive"}
+                          {variant.isActive ? "Hoạt động" : "Không hoạt động"}
                         </p>
                       </div>
                     </div>
@@ -1002,7 +994,7 @@ export default function ProductForm({
                       (variant.colorIds && variant.colorIds.length > 0)) && (
                       <div>
                         <span className="text-sm font-medium text-gray-700">
-                          Colors:
+                          Màu sắc:
                         </span>
                         <div className="flex flex-wrap gap-2 mt-2">
                           {/* If we have colors array directly, use it */}
@@ -1053,7 +1045,7 @@ export default function ProductForm({
                       (variant.productImages && variant.productImages.length > 0)) && (
                         <div>
                           <span className="text-sm font-medium text-gray-700">
-                            Images ({variant.productImagesIds?.length || variant.productImages?.length || 0}):
+                            Hình ảnh ({variant.productImagesIds?.length || variant.productImages?.length || 0}):
                           </span>
                           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 mt-2">
                             {/* If we have productImages array directly, use it */}
@@ -1130,18 +1122,18 @@ export default function ProductForm({
       <div className="flex justify-end gap-2 pt-2">
         <Button
           type="button"
-          className="h-10 w-24 bg-gray-600 hover:bg-gray-700 text-white"
+          className="h-10 bg-gray-600 hover:bg-gray-700 text-white"
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="submit"
-          className="h-10 w-24 bg-blue-600 hover:bg-blue-700 text-white"
+          className="h-10 bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
           disabled={loading}
         >
-          {loading ? "Saving..." : submitLabel}
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : submitLabel}
         </Button>
       </div>
 
@@ -1175,7 +1167,7 @@ export default function ProductForm({
             <div className="p-6 border-b sticky top-0 bg-white z-10">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold">
-                  Deleted Variants ({deletedVariants.length})
+                  Biến thể đã xóa ({deletedVariants.length})
                 </h2>
                 <Button
                   type="button"
@@ -1192,7 +1184,7 @@ export default function ProductForm({
             <div className="p-6">
               {deletedVariants.length === 0 ? (
                 <p className="text-center text-gray-500 py-8">
-                  No deleted variants
+                  Không có biến thể đã xóa nào
                 </p>
               ) : (
                 <div className="space-y-4">
@@ -1209,25 +1201,25 @@ export default function ProductForm({
                               {variant.sku}
                             </div>
                             <div>
-                              <span className="font-medium">Quantity:</span>{" "}
+                              <span className="font-medium">Số lượng:</span>{" "}
                               {variant.quantityAvailable}
                             </div>
                             <div>
-                              <span className="font-medium">Price:</span>{" "}
+                              <span className="font-medium">Giá:</span>{" "}
                               {Number(
                                 variant.originalPrice || 0
                               ).toLocaleString("es-US")}
                               đ
                             </div>
                             <div>
-                              <span className="font-medium">Status:</span>{" "}
-                              {variant.isActive ? "Active" : "Inactive"}
+                              <span className="font-medium">Trạng thái:</span>{" "}
+                              {variant.isActive ? "Hoạt động" : "Không hoạt động"}
                             </div>
                           </div>
                           {variant.colors && variant.colors.length > 0 && (
                             <div className="mt-2">
                               <span className="text-sm font-medium">
-                                Colors:
+                                Màu sắc:
                               </span>{" "}
                               <span className="text-sm text-gray-600">
                                 {variant.colors.map((c) => c.name).join(", ")}
@@ -1245,10 +1237,10 @@ export default function ProductForm({
                             <RotateCcw className="w-4 h-4" />
                           </Button>
                           <ConfirmPopover
-                            title="Permanently Delete?"
-                            message="The variant will be permanently removed from trash."
-                            confirmText="Delete"
-                            cancelText="Cancel"
+                            title="Xóa vĩnh viễn?"
+                            message="Biến thể sẽ bị xóa vĩnh viễn khỏi thùng rác."
+                            confirmText="Xóa"
+                            cancelText="Hủy"
                             onConfirm={() => permanentDeleteVariant(idx)}
                             confirmClassName="h-10 bg-red-600 hover:bg-red-700 text-white"
                             widthClass="w-[320px]"
@@ -1276,7 +1268,7 @@ export default function ProductForm({
                   onClick={() => setShowTrashDialog(false)}
                   className="bg-gray-500 hover:bg-gray-600 text-white"
                 >
-                  Close
+                  Đóng
                 </Button>
               </div>
             </div>
@@ -1349,7 +1341,7 @@ export default function ProductForm({
             >
               <img
                 src={selectedImage}
-                alt="Product variant"
+                alt="Biến thể sản phẩm"
                 className="max-w-full max-h-[80vh] object-contain rounded-lg"
               />
 

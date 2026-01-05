@@ -40,7 +40,7 @@ export default function AddProductPage() {
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Add Product</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm sản phẩm</h1>
         <ProductForm
           initial={initial}
           onCancel={() => router.back()}
@@ -89,16 +89,16 @@ export default function AddProductPage() {
               // Images are already added in the create payload, so we don't need addImagesToVariant
               // unless the API doesn't accept productImageIds in create
 
-              toast.success("Product created successfully!");
+              toast.success("Sản phẩm được tạo thành công!");
               router.push(Routes.productsManagement.products.root);
             } catch (error: any) {
               console.error("Failed to create product:", error);
-              const errorMessage = error?.response?.data?.detail || error?.message || "Failed to create product";
+              const errorMessage = error?.response?.data?.detail || error?.message || "Không thể tạo sản phẩm";
               toast.error(errorMessage);
               throw error; // Re-throw to let ProductForm handle loading state
             }
           }}
-          submitLabel="Create"
+          submitLabel="Tạo"
         />
       </main>
     </div>

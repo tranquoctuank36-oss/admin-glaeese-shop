@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FloatingInput from "@/components/FloatingInput";
 import BannerUploader from "@/components/images/BrandImageUploader";
@@ -130,7 +131,7 @@ export default function BrandForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FloatingInput
           id="name"
-          label="Name"
+          label="Tên"
           required
           value={name}
           onChange={(v) => {
@@ -156,14 +157,14 @@ export default function BrandForm({
           />
           {name && (
             <p className="mt-1 text-xs text-gray-500">
-              Suggested: <span className="font-medium">{autoSlug}</span>
+              Gợi ý: <span className="font-medium">{autoSlug}</span>
             </p>
           )}
         </div>
 
         <FloatingInput
           id="isActive"
-          label="Active"
+          label="Hoạt động"
           as="select"
           value={isActive}
           onChange={(v) =>
@@ -175,14 +176,14 @@ export default function BrandForm({
           }
           disabled={loading}
           options={[
-            { value: "yes", label: "Yes" },
-            { value: "no", label: "No" },
+            { value: "yes", label: "Có" },
+            { value: "no", label: "Không" },
           ]}
         />
 
         <FloatingInput
           id="priority"
-          label="Priority (0–100)"
+          label="Mức ưu tiên (0–100)"
           type="number"
           min={0}
           max={100}
@@ -205,7 +206,7 @@ export default function BrandForm({
 
       <FloatingInput
         id="websiteUrl"
-        label="Website URL"
+        label="URL trang web"
         value={websiteUrl}
         onChange={setWebsiteUrl}
         disabled={loading}
@@ -213,7 +214,7 @@ export default function BrandForm({
 
       <FloatingInput
         id="description"
-        label="Description"
+        label="Mô tả"
         as="textarea"
         rows={4}
         value={description}
@@ -222,7 +223,7 @@ export default function BrandForm({
       />
 
       <BannerUploader
-        label="Banner Image"
+        label="Hình ảnh banner"
         value={banner}
         onChange={(v) => setBanner(v)}
         disabled={loading}
@@ -234,19 +235,19 @@ export default function BrandForm({
       <div className="flex justify-end gap-2 pt-2">
         <Button
           type="button"
-          className="h-10 w-20 bg-gray-500 hover:bg-gray-700 text-white"
+          className="h-10 bg-gray-500 hover:bg-gray-700 text-white"
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="submit"
-          className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
+          className="h-10 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
           disabled={loading || !canSubmit}
-          title={!canSubmit ? "Please check your inputs" : submitLabel}
+          title={!canSubmit ? "Vui lòng kiểm tra dữ liệu nhập" : submitLabel}
         >
-          {loading ? "Saving..." : submitLabel}
+          {loading ? <Loader className="w-4 h-4 animate-spin" /> : submitLabel}
         </Button>
       </div>
     </form>

@@ -34,8 +34,8 @@ const handleError = (err: unknown, msg: string) => {
 
 function toUser(row: any): User {
   if (!row) return row;
-  const firstName = row.first_name ?? row.firstName ?? null;
-  const lastName = row.last_name ?? row.lastName ?? null;
+  const firstName = row.profile?.firstName ?? row.first_name ?? row.firstName ?? null;
+  const lastName = row.profile?.lastName ?? row.last_name ?? row.lastName ?? null;
   const fullName =
     [firstName, lastName].filter(Boolean).join(" ") ||
     row.name;
@@ -46,8 +46,8 @@ function toUser(row: any): User {
     firstName,
     lastName,
     fullName,
-    gender: row.gender ?? null,
-    dateOfBirth: row.date_of_birth ?? row.dateOfBirth ?? null,
+    gender: row.profile?.gender ?? row.gender ?? null,
+    dateOfBirth: row.profile?.dateOfBirth ?? row.date_of_birth ?? row.dateOfBirth ?? null,
     roles: Array.isArray(row.roles) ? row.roles : (row.role ? [row.role] : ["customer"]),
     status: row.status ?? row.statuses ?? "active",
     emailVerifiedAt: row.email_verified_at ?? row.emailVerifiedAt ?? null,
@@ -107,10 +107,21 @@ export interface UserAddress {
   id: string;
   recipientName: string;
   recipientPhone: string;
-  provinceName: string;
-  districtName: string;
-  wardName: string;
   addressLine: string;
+  ward: {
+    id: number;
+    name: string;
+    districtId: number;
+  };
+  district: {
+    id: number;
+    name: string;
+    provinceId: string;
+  };
+  province: {
+    id: number;
+    name: string;
+  };
   ghnDistrictId: number;
   ghnWardCode: string;
   isDefault: boolean;
@@ -192,8 +203,6 @@ export interface UserOrdersQuery {
   search?: string;
   status?: string;
   orderCode?: string;
-  sortField?: "createdAt";
-  sortOrder?: Order;
 }
 
 export async function getUserOrders(
@@ -208,8 +217,6 @@ export async function getUserOrders(
     if (query.search) params.search = query.search;
     if (query.status) params.status = query.status;
     if (query.orderCode) params.orderCode = query.orderCode;
-    if (query.sortField) params.sortField = query.sortField;
-    if (query.sortOrder) params.sortOrder = query.sortOrder;
 
     const res = await api.get(`/admin/users/${userId}/orders`, { params });
     return res.data;
@@ -220,7 +227,7 @@ export async function getUserOrders(
 
 export interface UpdateUserPayload {
   status?: UserStatus;
-  role?: UserRole;
+  roles?: UserRole[];
 }
 
 export async function updateUser(userId: string, payload: UpdateUserPayload): Promise<User> {

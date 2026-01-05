@@ -170,16 +170,16 @@ export default function ColorsTrashPage() {
                 onClick={() =>
                   router.push(Routes.productsManagement.colors.root)
                 }
-                title="Go Back"
+                title="Quay Lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Colors List
+                  Thùng Rác - Danh Sách Màu Sắc
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Restore or permanently delete removed colors
+                  Khôi phục hoặc xóa vĩnh viễn các màu sắc đã xóa
                 </p>
               </div>
             </div>
@@ -189,16 +189,16 @@ export default function ColorsTrashPage() {
           <ToolbarSearchFilters
             value={q.search}
             onSearchChange={(v) => setAndResetPage({ search: v, page: 1 })}
-            isActive={undefined as any}
+            isActive={q.isActive}
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by color name or slug or hex in trash..."
+            placeholder="Tìm kiếm theo tên màu sắc hoặc slug hoặc mã hex trong thùng rác..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -214,7 +214,7 @@ export default function ColorsTrashPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -222,10 +222,10 @@ export default function ColorsTrashPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                  } (nhấn để thay đổi)`
+                                : "Không sắp xếp (nhấn để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -246,19 +246,19 @@ export default function ColorsTrashPage() {
                       </th>
 
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Hex
+                        Mã Hex
                       </th>
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
+                        Hoạt động
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Deleted At
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Ngày Xóa
                       </th>
 
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành Động
                       </th>
                     </tr>
                   </thead>
@@ -304,25 +304,25 @@ export default function ColorsTrashPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {c.isActive ? "Yes" : "No"}
+                            {c.isActive ? "Có" : "Không"}
                           </span>
                         </td>
 
-                        <td className="px-6 py-4 whitespace-nowrapp text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-gray-600">
                           {formatDate(c.deletedAt)}
                         </td>
 
-                        <td className="px-6 py-3">
-                          <div className="flex items-center gap-3">
+                        <td className="px-6 py-3 text-center">
+                          <div className="flex items-center justify-center gap-3">
                             {/* Restore */}
                             <ConfirmPopover
                               open={isOpen(c.id, "restore")}
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(c.id, "restore") : null)
                               }
-                              title="Restore this color?"
+                              title="Khôi phục màu sắc này?"
                               message={<b>{c.name}</b>}
-                              confirmText="Restore"
+                              confirmText="Khôi phục"
                               onConfirm={async () => {
                                 setBusyId(c.id);
                                 try {
@@ -336,13 +336,12 @@ export default function ColorsTrashPage() {
                               confirmClassName="h-10 bg-emerald-600 hover:bg-emerald-700 text-white"
                               side="bottom"
                               sideOffset={8}
-                              widthClass="w-[200px]"
                             >
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-green-100 rounded-lg transition-colors"
                                 disabled={busyId === c.id}
-                                title="Restore"
+                                title="Khôi phục"
                                 onClick={() =>
                                   setOpenKey(keyOf(c.id, "restore"))
                                 }
@@ -361,9 +360,9 @@ export default function ColorsTrashPage() {
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(c.id, "delete") : null)
                               }
-                              title="Permanently delete this color?"
+                              title="Xóa vĩnh viễn màu sắc này?"
                               message={<b>{c.name}</b>}
-                              confirmText="Delete"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setBusyId(c.id);
                                 try {
@@ -383,7 +382,7 @@ export default function ColorsTrashPage() {
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                                 disabled={busyId === c.id}
-                                title="Delete permanently"
+                                title="Xóa vĩnh viễn"
                                 onClick={() =>
                                   setOpenKey(keyOf(c.id, "delete"))
                                 }
@@ -400,7 +399,7 @@ export default function ColorsTrashPage() {
                       <tr>
                         <td colSpan={6} className="px-6 py-10">
                           <p className="text-center text-gray-600">
-                            Trash is empty.
+                            Thùng rác đang trống
                           </p>
                         </td>
                       </tr>
@@ -413,7 +412,7 @@ export default function ColorsTrashPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

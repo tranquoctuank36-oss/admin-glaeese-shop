@@ -230,13 +230,13 @@ function DiscountsPage() {
       case "percentage":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-purple-100 text-purple-700">
-            Percentage
+            Phần trăm
           </span>
         );
       case "fixed":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-700">
-            Fixed Amount
+            Số tiền cố định
           </span>
         );
       default:
@@ -249,31 +249,31 @@ function DiscountsPage() {
       case "happening":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-            Happening
+            Đang diễn ra
           </span>
         );
       case "scheduled":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-            Scheduled
+            Đã lên lịch
           </span>
         );
       case "expired":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-            Expired
+            Hết hạn
           </span>
         );
       case "canceled":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-            Canceled
+            Đã hủy
           </span>
         );
       case "draft":
         return (
           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-            Draft
+            Nháp
           </span>
         );
       default:
@@ -302,10 +302,10 @@ function DiscountsPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Discount List {totalItems > 0 && `(${totalItems})`}
+                  Danh sách giảm giá {totalItems > 0 && `(${totalItems})`}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Create and manage product discounts and promotional pricing
+                  Tạo và quản lý giảm giá sản phẩm và giá khuyến mại
                 </p>
               </div>
             </div>
@@ -316,9 +316,9 @@ function DiscountsPage() {
                 onClick={() => router.push(Routes.sales.discounts.trash)}
               >
                 <Trash2 className="size-5" />
-                Trash Bin
+                Thùng rác
                 {trashCount > 0 && (
-                  <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
+                  <span className="ml-1 bg-white text-red-600 px-2 py-0.5 rounded-full text-xs font-semibold">
                     {trashCount}
                   </span>
                 )}
@@ -329,7 +329,7 @@ function DiscountsPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Discount
+                Thêm giảm giá
               </Button>
             </div>
           </div>
@@ -351,7 +351,7 @@ function DiscountsPage() {
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-                  placeholder="Search by name or slug..."
+                  placeholder="Tìm kiếm theo tên hoặc slug..."
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
@@ -364,7 +364,7 @@ function DiscountsPage() {
                 className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
               >
                 <Filter size={20} />
-                Filters
+                Bộ lọc
               </Button>
             </div>
 
@@ -381,7 +381,7 @@ function DiscountsPage() {
                   {/* Status Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
+                      Trạng thái
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -391,19 +391,19 @@ function DiscountsPage() {
                         setPage(1);
                       }}
                     >
-                      <option value="">All</option>
-                      <option value="draft">Draft</option>
-                      <option value="scheduled">Scheduled</option>
-                      <option value="happening">Happening</option>
-                      <option value="canceled">Canceled</option>
-                      <option value="expired">Expired</option>
+                      <option value="">Tất cả</option>
+                      <option value="draft">Nháp</option>
+                      <option value="scheduled">Đã lên lịch</option>
+                      <option value="happening">Đang diễn ra</option>
+                      <option value="canceled">Đã hủy</option>
+                      <option value="expired">Hết hạn</option>
                     </select>
                   </div>
 
                   {/* Type Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Type
+                      Loại
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -413,16 +413,16 @@ function DiscountsPage() {
                         setPage(1);
                       }}
                     >
-                      <option value="">All</option>
-                      <option value="fixed">Fixed</option>
-                      <option value="percentage">Percentage</option>
+                      <option value="">Tất cả</option>
+                      <option value="fixed">Số tiền cố định</option>
+                      <option value="percentage">Phần trăm</option>
                     </select>
                   </div>
 
                   {/* Valid From Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date
+                      Ngày bắt đầu
                     </label>
                     <input
                       type="datetime-local"
@@ -444,7 +444,7 @@ function DiscountsPage() {
                   {/* Valid To Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Date
+                      Ngày kết thúc
                     </label>
                     <input
                       type="datetime-local"
@@ -469,7 +469,7 @@ function DiscountsPage() {
                     onClick={handleReset}
                     className="px-4 py-2 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors"
                   >
-                    Reset
+                    Đặt lại
                   </Button>
                 </div>
               </motion.div>
@@ -488,103 +488,99 @@ function DiscountsPage() {
                 <thead className="bg-gray-100 border-b border-gray-300">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                      Name
+                      Tên
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                      Slug
+                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      Loại giảm giá
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                      Value
+                      Giá trị
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Max Discount
+                      Giảm tối đa
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Status
+                      Trạng thái
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      <div className="flex items-center justify-center gap-2">
-                        <span>Start Date</span>
-                        <button
-                          type="button"
-                          onClick={toggleStartAtSort}
-                          className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          title={
-                            sortField === "startAt"
-                              ? `Sorting: ${sortOrder} (click to change)`
-                              : "No sorting (click to sort by Start Date)"
-                          }
-                        >
-                          {sortField === "startAt" ? (
-                            sortOrder === "ASC" ? (
-                              <ArrowUpAZ className="size-5" />
+                      <div className="flex flex-col items-center gap-1">
+                        <span>Thời gian áp dụng</span>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={toggleStartAtSort}
+                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                            title={
+                              sortField === "startAt"
+                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
+                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày bắt đầu)"
+                            }
+                          >
+                            <span className="mr-1">Bắt đầu</span>
+                            {sortField === "startAt" ? (
+                              sortOrder === "ASC" ? (
+                                <ArrowUpAZ className="size-5" />
+                              ) : (
+                                <ArrowDownAZ className="size-5" />
+                              )
                             ) : (
-                              <ArrowDownAZ className="size-5" />
-                            )
-                          ) : (
-                            <ArrowUpDown className="size-5" />
-                          )}
-                        </button>
+                              <ArrowUpDown className="size-5" />
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={toggleEndAtSort}
+                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                            title={
+                              sortField === "endAt"
+                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
+                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày kết thúc)"
+                            }
+                          >
+                            <span className="mr-1">Kết thúc</span>
+                            {sortField === "endAt" ? (
+                              sortOrder === "ASC" ? (
+                                <ArrowUpAZ className="size-5" />
+                              ) : (
+                                <ArrowDownAZ className="size-5" />
+                              )
+                            ) : (
+                              <ArrowUpDown className="size-5" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      <div className="flex items-center justify-center gap-2">
-                        <span>End Date</span>
-                        <button
-                          type="button"
-                          onClick={toggleEndAtSort}
-                          className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          title={
-                            sortField === "endAt"
-                              ? `Sorting: ${sortOrder} (click to change)`
-                              : "No sorting (click to sort by End Date)"
-                          }
-                        >
-                          {sortField === "endAt" ? (
-                            sortOrder === "ASC" ? (
-                              <ArrowUpAZ className="size-5" />
+                      <div className="flex flex-col items-center gap-1">
+                        <span>Ngày tạo / hủy</span>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={toggleCreatedAtSort}
+                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
+                            title={
+                              sortField === "createdAt"
+                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
+                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày tạo)"
+                            }
+                          >
+                            <span className="mr-1">Tạo</span>
+                            {sortField === "createdAt" ? (
+                              sortOrder === "ASC" ? (
+                                <ArrowUpAZ className="size-5" />
+                              ) : (
+                                <ArrowDownAZ className="size-5" />
+                              )
                             ) : (
-                              <ArrowDownAZ className="size-5" />
-                            )
-                          ) : (
-                            <ArrowUpDown className="size-5" />
-                          )}
-                        </button>
+                              <ArrowUpDown className="size-5" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      <div className="flex items-center justify-center gap-2">
-                        <span>Created At</span>
-                        <button
-                          type="button"
-                          onClick={toggleCreatedAtSort}
-                          className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          title={
-                            sortField === "createdAt"
-                              ? `Sorting: ${sortOrder} (click to change)`
-                              : "No sorting (click to sort by Created At)"
-                          }
-                        >
-                          {sortField === "createdAt" ? (
-                            sortOrder === "ASC" ? (
-                              <ArrowUpAZ className="size-5" />
-                            ) : (
-                              <ArrowDownAZ className="size-5" />
-                            )
-                          ) : (
-                            <ArrowUpDown className="size-5" />
-                          )}
-                        </button>
-                      </div>
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Canceled At
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Actions
+                      Hành động
                     </th>
                   </tr>
                 </thead>
@@ -620,19 +616,16 @@ function DiscountsPage() {
                           <span className="text-sm font-medium text-gray-900">
                             {discount.name}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <code className="text-gray-600">
-                            {discount.slug || "-"}
-                          </code>
+                          <br />
+                          <code className="text-xs text-gray-500">Slug: {discount.slug || "-"}</code>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           {getTypeBadge(discount.type)}
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-base font-bold text-green-600">
+                          <span className="text-base font-bold text-green-600 whitespace-nowrap">
                             {discount.type === "percentage"
-                              ? `${parseFloat(discount.value)}%`
+                              ? `${parseFloat(discount.value) / 100}%`
                               : `${parseFloat(discount.value).toLocaleString(
                                   "en-US"
                                 )}đ`}
@@ -654,26 +647,34 @@ function DiscountsPage() {
                           {getStatusBadge(discount.status)}
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(discount.startAt)}
-                          </span>
+                          {formatDateTime(discount.startAt) === "-" && formatDateTime(discount.endAt) === "-" ? (
+                            <div className="flex justify-center items-center w-full min-w-[220px] text-gray-400">
+                              <span className="text-center ">-</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-center">-</span>
+                            </div>
+                          ) : (
+                            <div className="flex justify-between items-center w-full min-w-[220px] text-gray-600">
+                              <span className="text-left flex-1">{formatDateTime(discount.startAt)}</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-right flex-1">{formatDateTime(discount.endAt)}</span>
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(discount.endAt)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDate(discount.createdAt)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {discount.canceledAt
-                              ? formatDate(discount.canceledAt)
-                              : "-"}
-                          </span>
+                          {formatDate(discount.createdAt) === "-" && (!discount.canceledAt || formatDate(discount.canceledAt) === "-") ? (
+                            <div className="flex justify-center items-center w-full min-w-[180px] text-gray-400">
+                              <span className="text-center">-</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-center">-</span>
+                            </div>
+                          ) : (
+                            <div className="flex justify-between items-center w-full min-w-[180px] text-gray-600">
+                              <span className="text-left flex-1">{formatDate(discount.createdAt)}</span>
+                              <span className="mx-2 text-center">-</span>
+                              <span className="text-right flex-1">{discount.canceledAt ? formatDate(discount.canceledAt) : "-"}</span>
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 text-end whitespace-nowrap">
                           <div className="flex items-center justify-end gap-2">
@@ -771,7 +772,7 @@ function DiscountsPage() {
               <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 {/* Rows per page (left) */}
                 <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Rows per page:</span>
+                  <span>Số hàng mỗi trang:</span>
                   <select
                     className="h-9 rounded-md border border-gray-300 px-2 bg-white"
                     value={limit}

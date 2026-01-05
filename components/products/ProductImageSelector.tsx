@@ -1,11 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { getImages } from "@/services/imagesService";
 import { ImageItem } from "@/types/image";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 interface ProductImageSelectorProps {
@@ -26,7 +31,8 @@ export default function ProductImageSelector({
   const [images, setImages] = useState<ImageItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedImageIds, setSelectedImageIds] = useState<string[]>(selectedIds);
+  const [selectedImageIds, setSelectedImageIds] =
+    useState<string[]>(selectedIds);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -77,7 +83,7 @@ export default function ProductImageSelector({
       } else {
         // Select - check limit
         if (prev.length >= maxSelection) {
-          toast.error(`Maximum ${maxSelection} images allowed`);
+          toast.error(`Tối đa ${maxSelection} hình ảnh được phép`);
           return prev;
         }
         return [...prev, imageId];
@@ -92,13 +98,13 @@ export default function ProductImageSelector({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
+      <DialogContent
         className="flex flex-col"
-        style={{ maxWidth: '1200px', width: '98vw', maxHeight: '90vh' }}
+        style={{ maxWidth: "1200px", width: "98vw", maxHeight: "90vh" }}
       >
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            Select Product Images
+            Chọn hình ảnh sản phẩm
           </DialogTitle>
         </DialogHeader>
 
@@ -107,28 +113,31 @@ export default function ProductImageSelector({
           {selectedImageIds.length > 0 && (
             <div className="flex items-center justify-between pl-3 pr-3 bg-blue-50 border border-blue-200 rounded-lg">
               <span className="text-sm text-blue-700 font-medium">
-                Selected: {selectedImageIds.length} image{selectedImageIds.length !== 1 ? "s" : ""}
+                Đã chọn: {selectedImageIds.length} hình ảnh
               </span>
               <Button
                 type="button"
                 onClick={() => setSelectedImageIds([])}
                 className="text-xs bg-blue-50 hover:bg-blue-50 text-blue-600 hover:text-blue-800 underline hover:no-underline p-0"
               >
-                Clear all
+                Xóa tất cả
               </Button>
             </div>
           )}
 
           {/* Image Grid */}
           {loading && images.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">Loading images...</div>
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="size-8 animate-spin text-blue-600" />
+            </div>
           ) : images.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <ImagePlus className="size-16 mx-auto mb-4 text-gray-300" />
-              No images found. Please upload images first.
+              Không tìm thấy hình ảnh. Vui lòng tải lên hình ảnh trước.
             </div>
           ) : (
-            <div className="grid grid-cols-6 md:grid-cols-7 lg:grid-cols-8 gap-4 pb-4">{images.map((img) => {
+            <div className="grid grid-cols-6 md:grid-cols-7 lg:grid-cols-8 gap-4 pb-4">
+              {images.map((img) => {
                 const isSelected = selectedImageIds.includes(img.id);
                 return (
                   <div
@@ -140,7 +149,11 @@ export default function ProductImageSelector({
                         : "border-gray-200 hover:border-blue-500"
                     }`}
                   >
-                    <div className={`h-30 relative ${isSelected ? "bg-white" : "bg-white"}`}>
+                    <div
+                      className={`h-30 relative ${
+                        isSelected ? "bg-white" : "bg-white"
+                      }`}
+                    >
                       <img
                         src={img.publicUrl}
                         alt={img.altText || "Product image"}
@@ -148,8 +161,8 @@ export default function ProductImageSelector({
                           isSelected ? "brightness-90" : ""
                         }`}
                         style={{
-                filter: 'brightness(1.05) contrast(1.1)',
-              }}
+                          filter: "brightness(1.05) contrast(1.1)",
+                        }}
                       />
                       {isSelected && (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -191,7 +204,7 @@ export default function ProductImageSelector({
                 disabled={loading}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {loading ? "Loading..." : "Load More"}
+                {loading ? <Loader2 className="size-4 animate-spin" /> : "Tải thêm"}
               </Button>
             </div>
           )}
@@ -204,14 +217,14 @@ export default function ProductImageSelector({
             className="bg-gray-500 hover:bg-gray-700 text-white"
             onClick={() => onOpenChange(false)}
           >
-            Cancel
+            Hủy
           </Button>
           <Button
             type="button"
             onClick={handleConfirm}
             className="bg-blue-600 hover:bg-blue-700 text-white"
           >
-            Confirm ({selectedImageIds.length})
+            Xác nhận ({selectedImageIds.length})
           </Button>
         </div>
       </DialogContent>

@@ -23,8 +23,8 @@ export default function SearchableFloatingSelect({
   options,
   required,
   disabled,
-  placeholder = "Search...",
-  searchPlaceholder = "Type to search...",
+  placeholder = "Tìm kiếm...",
+  searchPlaceholder = "Nhập để tìm kiếm...",
 }: SearchableFloatingSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -99,7 +99,7 @@ export default function SearchableFloatingSelect({
 
       {/* Error Message */}
       {showError && (
-        <p className="text-xs text-red-500 mt-1">Please select an option</p>
+        <p className="text-xs text-red-500 mt-1">Vui lòng chọn một tùy chọn</p>
       )}
 
       {/* Dropdown */}
@@ -137,7 +137,7 @@ export default function SearchableFloatingSelect({
           <div className="max-h-60 overflow-y-auto">
             {filteredOptions.length === 0 ? (
               <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                No results found
+                Không tìm thấy kết quả
               </div>
             ) : (
               filteredOptions.map((opt) => (

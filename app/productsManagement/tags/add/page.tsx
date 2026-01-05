@@ -11,8 +11,8 @@ export default function AddTagPage() {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Add Tag</h1>
+      <main className="max-w-[600px] mx-auto py-6 px-4 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm Nhãn</h1>
 
         <TagForm
           initial={{ name: "", slug: "", isActive: true}}
@@ -20,9 +20,9 @@ export default function AddTagPage() {
           onSubmit={async (values) => {
             await createTag(values);
             router.push(Routes.productsManagement.tags.root);
-            toast.success("Tag created successfully!");
+            toast.success("Nhãn đã được tạo thành công!");
           }}
-          submitLabel="Create"
+          submitLabel="Tạo"
         />
       </main>
     </div>

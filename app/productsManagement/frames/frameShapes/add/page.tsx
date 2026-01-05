@@ -11,18 +11,18 @@ export default function AddFrameShapesPage() {
   
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Add Frame Shape</h1>
+      <main className="max-w-[600px] mx-auto py-6 px-4 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm Hình Dạng Khung</h1>
 
-        <FrameShapeForm
+        <FrameShapeForm 
           initial={{ name: "", slug: "", isActive: true }}
           onCancel={() => router.back()}
           onSubmit={async (values) => {
             await createFrameShapes(values);
             router.push(Routes.productsManagement.frames.frameShapes.root);
-            toast.success("Frame Shape created successfully!");
+            toast.success("Hình dạng khung đã được tạo thành công!");
           }}
-          submitLabel="Create"
+          submitLabel="Tạo"
         />
       </main>
     </div>

@@ -61,7 +61,7 @@ export default memo(function TablePagination({
       className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${className}`}
     >
       <div className="text-sm text-gray-600">
-        {total === 0 ? "No records" : `Showing ${fromIdx}-${toIdx} of ${total}`}
+        {total === 0 ? "Không có bản ghi" : `Hiển thị ${fromIdx}-${toIdx} trong tổng số ${total}`}
       </div>
 
       <div className="flex items-center gap-2">
@@ -73,7 +73,7 @@ export default memo(function TablePagination({
           >
             {pageSizeOptions.map((opt) => (
               <option key={opt} value={opt}>
-                {opt} / page
+                {opt} / trang
               </option>
             ))}
           </select>

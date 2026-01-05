@@ -140,8 +140,8 @@ export default function TagsPage() {
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Tags List {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
-              <p className="text-gray-600 mt-1">Manage product tags</p>
+              <h1 className="text-3xl font-bold text-gray-800">Danh Sách Nhãn {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
+              <p className="text-gray-600 mt-1">Quản lý nhãn sản phẩm</p>
             </div>
 
             <div className="flex gap-2">
@@ -152,7 +152,7 @@ export default function TagsPage() {
                 }
               >
                 <Trash2 className="size-5" />
-                Trash Bin
+                Thùng Rác
                 {trashCount > 0 && (
                   <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
                     {trashCount}
@@ -165,7 +165,7 @@ export default function TagsPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Tag
+                Thêm Nhãn
               </Button>
             </div>
           </div>
@@ -177,12 +177,12 @@ export default function TagsPage() {
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by tag name or slug..."
+            placeholder="Tìm kiếm theo tên nhãn hoặc slug..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -198,7 +198,7 @@ export default function TagsPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -206,10 +206,10 @@ export default function TagsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                  } (nhấn để thay đổi)`
+                                : "Không sắp xếp (nhấn để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -228,12 +228,12 @@ export default function TagsPage() {
                         Slug
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
+                        Hoạt Động
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày Tạo
                           </span>
                           <button
                             type="button"
@@ -241,10 +241,10 @@ export default function TagsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "createdAt"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                  } (nhấn để thay đổi)`
+                                : "Không sắp xếp (nhấn để sắp xếp theo Ngày Tạo)"
                             }
                           >
                             {q.sortField === "createdAt" ? (
@@ -259,8 +259,8 @@ export default function TagsPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành Động
                       </th>
                     </tr>
                   </thead>
@@ -280,18 +280,18 @@ export default function TagsPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {t.isActive ? "Yes" : "No"}
+                            {t.isActive ? "Có" : "Không"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-gray-600">
+                        <td className="px-6 py-4 text-gray-600 text-center">
                           {fmt(t.createdAt)}
                         </td>
                         <td className="px-6 py-3">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-center gap-2">
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Chỉnh Sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.productsManagement.tags.edit.replace(
@@ -309,9 +309,9 @@ export default function TagsPage() {
                             <ConfirmPopover
                               open={openId === t.id}
                               onOpenChange={(o) => setOpenId(o ? t.id : null)}
-                              title="Remove this tag?"
+                              title="Xóa nhãn này?"
                               message={<b>{t.name}</b>}
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setDeletingId(t.id);
                                 try {
@@ -330,7 +330,7 @@ export default function TagsPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Remove"
+                                title="Xóa"
                                 onClick={() => setOpenId(t.id)}
                                 disabled={deletingId === t.id}
                               >
@@ -345,7 +345,7 @@ export default function TagsPage() {
                       <tr>
                         <td colSpan={7} className="px-6 py-8">
                           <div className="text-center text-gray-600">
-                            Tags is empty.
+                            Chưa có nhãn nào.
                           </div>
                         </td>
                       </tr>
@@ -357,7 +357,7 @@ export default function TagsPage() {
 
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

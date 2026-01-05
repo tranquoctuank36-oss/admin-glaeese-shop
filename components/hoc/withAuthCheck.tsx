@@ -31,7 +31,7 @@ export function withAuthCheck<T extends object>(Component: React.ComponentType<T
             <div className="h-12 w-12 rounded-full border-4 border-gray-200"></div>
             <div className="h-12 w-12 rounded-full border-4 border-transparent border-t-gray-500 animate-spin absolute inset-0"></div>
           </div>
-          <p className="text-lg">Loading...</p>
+          <p className="text-lg">Đang tải...</p>
         </div>
       );
     }
@@ -50,9 +50,9 @@ export function withAuthCheck<T extends object>(Component: React.ComponentType<T
               <div className="h-12 w-12 rounded-xl bg-gray-100 flex items-center justify-center mb-4">
                 <LockKeyhole className="h-6 w-6 text-gray-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Please Login</h3>
+              <h3 className="text-xl font-semibold mb-2">Vui lòng đăng nhập</h3>
               <p className="text-gray-700 mb-6">
-                You need to log in to view Dashboard data and administrative features.
+                Bạn cần đăng nhập để xem dữ liệu bảng điều khiển và các tính năng quản trị.
               </p>
               <Button
                 onClick={() => setIsLoginDialogOpen(true)}
@@ -60,10 +60,10 @@ export function withAuthCheck<T extends object>(Component: React.ComponentType<T
                   transition text-gray-500 hover:text-gray-800"
               >
                 <LogIn className="h-4 w-4" />
-                Log in
+                Đăng nhập
               </Button>
               <span className="text-sm text-gray-600 mt-3">
-                Don't have an account? Contact the administrator.
+                Chưa có tài khoản? Liên hệ quản trị viên.
               </span>
             </motion.div>
           </div>

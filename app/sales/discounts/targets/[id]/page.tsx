@@ -256,7 +256,7 @@ function DiscountTargetsPage() {
                         SKU
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        ON HAND
+                        Stock
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Original Price

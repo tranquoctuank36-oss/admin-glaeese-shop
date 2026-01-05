@@ -18,6 +18,10 @@ export default function EditDiscountPage() {
     const fetchDiscount = async () => {
       try {
         const discount = await getDiscountById(id);
+        // Convert percentage value from backend (divide by 100)
+        if (discount.type === "percentage" && discount.value) {
+          discount.value = String(parseFloat(discount.value) / 100);
+        }
         setInitialData(discount);
       } catch (error: any) {
         toast.error(

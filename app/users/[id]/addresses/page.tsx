@@ -38,7 +38,7 @@ function UserAddressesPage() {
       } catch (e) {
         console.error("Failed to fetch addresses:", e);
         if (alive) {
-          setError("Failed to load addresses");
+          setError("Không thể tải địa chỉ");
         }
       } finally {
         if (alive) {
@@ -56,7 +56,7 @@ function UserAddressesPage() {
     return (
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         </main>
       </div>
     );
@@ -67,20 +67,20 @@ function UserAddressesPage() {
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
           <div className="text-center gap-3 mb-6">
-            <p className="text-red-600 mb-4">{error}</p>
-            <Button
-              size="icon-lg"
-              className="hover:bg-gray-300 rounded-full bg-gray-200"
-              onClick={() => router.push(Routes.users.details.replace('[id]', userId))}
-              title="Back"
-            >
-              <ArrowLeft className="text-gray-700 size-7" />
-            </Button>
-            <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3 mb-6">
+              <Button
+                size="icon-lg"
+                className="hover:bg-gray-300 rounded-full bg-gray-200"
+                onClick={() => router.push(Routes.users.details.replace('[id]', userId))}
+                title="Quay lại"
+              >
+                <ArrowLeft className="text-gray-700 size-7" />
+              </Button>
               <h1 className="text-3xl font-bold text-gray-800">
-                User Addresses
+                Địa chỉ người dùng
               </h1>
             </div>
+            <p className="text-red-600 mb-4">{error}</p>
           </div>
         </main>
       </div>
@@ -101,16 +101,13 @@ function UserAddressesPage() {
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
               onClick={() => router.push(Routes.users.details.replace('[id]', userId))}
-              title="Back"
+              title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />
             </Button>
 
             <div className="flex items-end gap-3 ">
-              <h1 className="text-3xl font-bold text-gray-800">User Addresses</h1>
-              <p className="text-gray-600">
-                Total {meta?.totalItems || 0} address(es)
-              </p>
+              <h1 className="text-3xl font-bold text-gray-800">Địa chỉ người dùng ({meta?.totalItems || 0})</h1>
             </div>
           </div>
         </motion.div>
@@ -123,7 +120,7 @@ function UserAddressesPage() {
             className="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center"
           >
             <MapPin size={64} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-600 text-lg">No addresses found</p>
+            <p className="text-gray-600 text-lg">Không tìm thấy địa chỉ</p>
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -141,7 +138,7 @@ function UserAddressesPage() {
                   <div className="absolute top-4 right-4">
                     <span className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full">
                       <CheckCircle2 size={14} />
-                      Default
+                      Mặc định
                     </span>
                   </div>
                 )}
@@ -161,17 +158,17 @@ function UserAddressesPage() {
                 </div>
 
                 <div className="grid grid-cols-[160px_1fr] gap-y-1 text-sm text-gray-700">
-                  <p className="font-semibold">House Number / Street:</p>
+                  <p className="font-semibold">Số nhà / Đường:</p>
                   <p>{address.addressLine}</p>
 
-                  <p className="font-semibold">Ward / Commune:</p>
-                  <p>{address.wardName}</p>
+                  <p className="font-semibold">Phường / Xã:</p>
+                  <p>{address.ward?.name || "-"}</p>
 
-                  <p className="font-semibold">District:</p>
-                  <p>{address.districtName}</p>
+                  <p className="font-semibold">Quận / Huyện:</p>
+                  <p>{address.district?.name || "-"}</p>
 
-                  <p className="font-semibold">Province / City:</p>
-                  <p>{address.provinceName}</p>
+                  <p className="font-semibold">Tỉnh / Thành phố:</p>
+                  <p>{address.province?.name || "-"}</p>
                 </div>
               </motion.div>
             ))}

@@ -561,7 +561,7 @@ function DiscountsTrashPage() {
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           <span className="text-base font-bold text-green-600">
                             {discount.type === "percentage"
-                              ? `${parseFloat(discount.value)}%`
+                              ? `${parseFloat(discount.value) / 100}%`
                               : `${parseFloat(discount.value).toLocaleString("en-US")}đ`}
                           </span>
                         </td>
@@ -678,7 +678,7 @@ function DiscountsTrashPage() {
                           colSpan={11}
                           className="px-6 py-8 text-center text-gray-500"
                         >
-                          Trash is empty.
+                          Thùng rác đang trống.
                         </td>
                       </tr>
                     )}

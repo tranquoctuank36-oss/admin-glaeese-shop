@@ -39,14 +39,14 @@ export default function EditFrameTypePage() {
     };
   }, [id]);
 
-  if (loading) return <p className="p-6 flex items-center justify-center">Loading...</p>;
-  if (!initial) return <p className="p-6 text-red-600">Frame Type Not found.</p>;
+  if (loading) return <p className="p-6 flex items-center justify-center">Đang tải...</p>;
+  if (!initial) return <p className="p-6 text-red-600">Không tìm thấy Loại gọng.</p>;
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
+      <main className="max-w-[600px] mx-auto py-6 px-4 lg:px-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">
-          Edit Frame Type
+          Chỉnh Sửa Loại Gọng
         </h1>
 
         <FrameTypeForm
@@ -55,9 +55,9 @@ export default function EditFrameTypePage() {
           onSubmit={async (values) => {
             await updateFrameTypes(id, values);
             router.push(Routes.productsManagement.frames.frameTypes.root);
-            toast.success("Frame Type updated successfully!");
+            toast.success("Loại gọng đã được cập nhật thành công!");
           }}
-          submitLabel="Update"
+          submitLabel="Cập nhật"
         />
       </main>
     </div>

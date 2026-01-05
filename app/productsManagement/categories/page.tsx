@@ -44,9 +44,12 @@ function statusBadgeClass(status?: string | null) {
 }
 function formatStatusLabel(status?: string | null) {
   if (!status) return "-";
-  return String(status)
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const statusMap: Record<string, string> = {
+    published: "Đã xuất bản",
+    draft: "Bản nháp",
+    unpublished: "Chưa xuất bản"
+  };
+  return statusMap[String(status).toLowerCase()] || "-";
 }
 
 export default function CategoriesPage() {
@@ -204,9 +207,9 @@ export default function CategoriesPage() {
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Categories</h1>
+              <h1 className="text-3xl font-bold text-gray-800">Danh sách danh mục</h1>
               <p className="text-gray-600 mt-1">
-                Manage categories (flat list)
+                Quản lý danh mục (danh sách phẳng)
               </p>
             </div>
 
@@ -218,7 +221,7 @@ export default function CategoriesPage() {
                 }
               >
                 <ListTree className="size-5" />
-                View as tree
+                Xem dạng cây
               </Button>
 
               <Button
@@ -228,7 +231,7 @@ export default function CategoriesPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Category
+                Thêm danh mục
               </Button>
             </div>
           </div>
@@ -255,12 +258,12 @@ export default function CategoriesPage() {
                 setLevel(patch.depth);
               }
             }}
-            placeholder="Search by name or slug…"
+            placeholder="Tìm kiếm theo tên hoặc slug..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -270,13 +273,13 @@ export default function CategoriesPage() {
           >
             <div className="rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="table-auto w-max min-w-[1440px]">
+                <table className="table-auto">
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
-                      <th className="px-6 py-4 w-60 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                      <th className="px-4 py-3 w-60 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -295,19 +298,16 @@ export default function CategoriesPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 w-50 text-left text-xs font-semibold text-gray-600 uppercase">
+                      <th className="px-4 py-3 w-50 text-left text-xs font-bold text-gray-600 uppercase">
                         Slug
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Relative URL
+                      <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Trạng thái
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày tạo
                           </span>
                           <button
                             type="button"
@@ -315,10 +315,10 @@ export default function CategoriesPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "createdAt"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "A-Z" : "Z-A"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Ngày tạo)"
                             }
                           >
                             {q.sortField === "createdAt" ? (
@@ -333,10 +333,10 @@ export default function CategoriesPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Priority
+                            Mức ưu tiên
                           </span>
                           <button
                             type="button"
@@ -344,10 +344,10 @@ export default function CategoriesPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "priority"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Priority)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "Thấp" : "Cao"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Mức ưu tiên)"
                             }
                           >
                             {q.sortField === "priority" ? (
@@ -362,10 +362,10 @@ export default function CategoriesPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Level
+                            Cấp độ
                           </span>
                           <button
                             type="button"
@@ -373,10 +373,10 @@ export default function CategoriesPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "level"
-                                ? `Sorting: ${
-                                    q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Level)"
+                                ? `Sắp xếp: ${
+                                    q.sortOrder === "ASC" ? "Thấp" : "Cao"
+                                  } (click để thay đổi)`
+                                : "Chưa sắp xếp (click để sắp xếp theo Cấp độ)"
                             }
                           >
                             {q.sortField === "level" ? (
@@ -391,9 +391,9 @@ export default function CategoriesPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-semibold text-gray-600 uppercase">
-                        Actions
-                      </th>
+                      <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                        Hành động
+                      </th> 
                     </tr>
                   </thead>
 
@@ -403,7 +403,7 @@ export default function CategoriesPage() {
                         key={c.id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-6 py-4">
+                        <td className="px-4 py-3">
                           <div
                             className="flex flex-col"
                             style={{ paddingLeft: (c.level ?? 0) * 24 }}
@@ -412,30 +412,15 @@ export default function CategoriesPage() {
                             {c.description && (
                               <p className="text-xs text-gray-600 mt-1 italic line-clamp-1">
                                 <span className="text-gray-700 not-italic">
-                                  Description:
+                                  Mô tả:
                                 </span>{" "}
                                 {c.description}
                               </p>
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-gray-600">{c.slug}</td>
-                        <td className="px-6 py-4">
-                          {c.relativeUrl ? (
-                            <a
-                              href={c.relativeUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              title={c.relativeUrl}
-                              className="text-blue-600 underline block max-w-[200px] truncate"
-                            >
-                              {c.relativeUrl}
-                            </a>
-                          ) : (
-                            <span className="text-gray-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-4 py-3 text-gray-600">{c.slug}</td>
+                        <td className="px-4 py-3 text-center whitespace-nowrap">
                           <span
                             className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${statusBadgeClass(
                               c.categoryStatus
@@ -444,19 +429,19 @@ export default function CategoriesPage() {
                             {formatStatusLabel(c.categoryStatus)}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-gray-600">
+                        <td className="px-4 py-3 text-gray-600 text-center">
                           {fmt(c.createdAt)}
                         </td>
-                        <td className="px-6 py-4 text-center text-gray-600">
+                        <td className="px-4 py-3 text-center text-gray-600">
                           {c.priority ?? "-"}
                         </td>
-                        <td className="px-6 py-4 text-center text-gray-600">{c.level}</td>
-                        <td className="px-6 py-3">
+                        <td className="px-4 py-3 text-center text-gray-600">{c.level}</td>
+                        <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                              title="View Details"
+                              title="Xem chi tiết"
                               onClick={() =>
                                 router.push(
                                   Routes.productsManagement.categories.viewDetails.replace(
@@ -475,7 +460,7 @@ export default function CategoriesPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.productsManagement.categories.edit.replace(
@@ -491,14 +476,14 @@ export default function CategoriesPage() {
                             <ConfirmPopover
                               open={openId === c.id}
                               onOpenChange={(o) => setOpenId(o ? c.id : null)}
-                              title=" Remove Category?"
+                              title="Xóa danh mục này?"
                               message={
                                 <div>
-                                  Are you sure you want to remove{" "}
-                                  <strong>{c.name || "this category"}</strong>?
+                                  Bạn có chắc chắn muốn xóa{" "}
+                                  <strong>{c.name || "danh mục này"}</strong>?
                                 </div>
                               }
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setDeletingId(c.id);
                                 try {
@@ -517,7 +502,7 @@ export default function CategoriesPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg"
-                                title="Remove"
+                                title="Xóa"
                                 onClick={() => setOpenId(c.id)}
                                 disabled={deletingId === c.id}
                               >
@@ -533,7 +518,7 @@ export default function CategoriesPage() {
                       <tr>
                         <td colSpan={8} className="px-6 py-8">
                           <div className="text-center text-gray-600">
-                            Categories is empty.
+                            Danh sách danh mục trống.
                           </div>
                         </td>
                       </tr>
@@ -545,7 +530,7 @@ export default function CategoriesPage() {
 
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Số hàng mỗi trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

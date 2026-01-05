@@ -18,18 +18,18 @@ export default function SalesOverviewChart() {
   useEffect(() => {
     const data = {
       sales: [
-        { month: "Jan", sales: 4100 },
-        { month: "Feb", sales: 3800 },
-        { month: "Mar", sales: 5200 },
-        { month: "Apr", sales: 4700 },
-        { month: "May", sales: 6900 },
-        { month: "Jun", sales: 6200 },
-        { month: "Jul", sales: 7500 },
-        { month: "Aug", sales: 2900 },
-        { month: "Sep", sales: 6700 },
-        { month: "Oct", sales: 6300 },
-        { month: "Nov", sales: 7100 },
-        { month: "Dec", sales: 7600 },
+        { month: "T1", sales: 4100 },
+        { month: "T2", sales: 3800 },
+        { month: "T3", sales: 5200 },
+        { month: "T4", sales: 4700 },
+        { month: "T5", sales: 6900 },
+        { month: "T6", sales: 6200 },
+        { month: "T7", sales: 7500 },
+        { month: "T8", sales: 2900 },
+        { month: "T9", sales: 6700 },
+        { month: "T10", sales: 6300 },
+        { month: "T11", sales: 7100 },
+        { month: "T12", sales: 7600 },
       ],
     };
     setSalesData(data.sales);
@@ -43,7 +43,7 @@ export default function SalesOverviewChart() {
       transition={{ delay: 0.4, duration: 0.5 }}
     >
       <h2 className="text-base md:text-lg font-semibold mb-4 text-gray-800 text-center md:text-left">
-        Sales Overview
+        Tổng quan bán hàng
       </h2>
 
       <div className="h-64 md:h-80">

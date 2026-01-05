@@ -43,9 +43,33 @@ function statusBadgeClass(status?: string | null) {
 
 function formatStatusLabel(status?: string | null) {
   if (!status) return "-";
-  return String(status)
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const statusMap: Record<string, string> = {
+    "published": "Đã xuất bản",
+    "draft": "Bản nháp",
+    "unlisted": "Chưa liệt kê",
+    "archived": "Đã lưu trữ"
+  };
+  return statusMap[String(status).toLowerCase()] || "-";
+}
+
+function formatProductType(type?: string | null) {
+  if (!type) return "—";
+  const typeMap: Record<string, string> = {
+    "eyeglasses": "Gọng kính",
+    "sunglasses": "Kính mát"
+  };
+  return typeMap[type] || type;
+}
+
+function formatGender(gender?: string | null) {
+  if (!gender) return "—";
+  const genderMap: Record<string, string> = {
+    "male": "Nam",
+    "female": "Nữ",
+    "unisex": "Unisex",
+    "kid": "Trẻ em"
+  };
+  return genderMap[gender] || gender;
 }
 
 function fmt(iso?: string | null) {
@@ -242,11 +266,11 @@ function ProductsTrashPage() {
                   <ArrowLeft className="text-gray-700 size-7" />
                 </Button>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Products List
+                  Thùng rác – Danh sách sản phẩm
                 </h1>
               </div>
               <p className="text-gray-600 mt-1 ml-12">
-                Restore or permanently delete products
+                Khôi phục hoặc xóa vĩnh viễn sản phẩm
               </p>
             </div>
           </div>
@@ -264,7 +288,7 @@ function ProductsTrashPage() {
                 } as any);
               }
             }}
-            placeholder="Search deleted products..."
+            placeholder="Tìm kiếm sản phẩm đã xóa..."
           />
         </motion.div>
 
@@ -276,28 +300,28 @@ function ProductsTrashPage() {
             className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between"
           >
             <div className="text-blue-800 font-medium">
-              {selectedProducts.length} product(s) selected
+              {selectedProducts.length} sản phẩm được chọn
             </div>
             <div className="flex gap-2">
               <ConfirmPopover
-                title="Restore Products?"
-                message={`Are you sure you want to restore ${selectedProducts.length} product(s)?`}
-                confirmText="Restore"
+                title="Khôi phục sản phẩm?"
+                message={`Bạn có chắc chắn muốn khôi phục ${selectedProducts.length} sản phẩm?`}
+                confirmText="Khôi phục"
                 onConfirm={handleBulkRestore}
                 confirmClassName="h-10 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
                 <Button className="px-4 py-2 bg-white border border-green-300 text-green-700 rounded-lg hover:bg-green-50">
-                  Restore Selected
+                  Khôi phục được chọn
                 </Button>
               </ConfirmPopover>
               <ConfirmPopover
-                title="Permanently Delete Products?"
-                message={`Are you sure you want to permanently delete ${selectedProducts.length} product(s)?`}
-                confirmText="Delete Permanently"
+                title="Xóa vĩnh viễn sản phẩm?"
+                message={`Bạn có chắc chắn muốn xóa vĩnh viễn ${selectedProducts.length} sản phẩm?`}
+                confirmText="Xóa vĩnh viễn"
                 onConfirm={handleBulkDelete}
               >
                 <Button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                  Delete Permanently
+                  Xóa vĩnh viễn
                 </Button>
               </ConfirmPopover>
             </div>
@@ -316,7 +340,7 @@ function ProductsTrashPage() {
             </div>
           )}
           <div className="overflow-x-auto">
-            <table className="table-auto w-max min-w-[1440px]">
+            <table className="w-full">
               <thead className="bg-gray-100 border-b border-gray-300">
                 <tr>
                   <th className="px-6 py-4 text-left">
@@ -327,10 +351,10 @@ function ProductsTrashPage() {
                       className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     />
                   </th>
-                  <th className="px-6 py-4 w-50 text-left text-xs font-semibold text-gray-600 uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-600">
-                        Name
+                      <span className="text-xs font-bold text-gray-600 truncate max-w-[320px]">
+                        Tên
                       </span>
                       <button
                         type="button"
@@ -349,22 +373,19 @@ function ProductsTrashPage() {
                       </button>
                     </div>
                   </th>
-                  <th className="px-6 py-4 w-50 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    Slug
+                  <th className="px-6 py-4 w-40 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Danh mục
                   </th>
-                  <th className="px-6 py-4 w-40 text-left text-xs font-bold text-gray-600 uppercase">
-                    Category
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Hiệu suất
                   </th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase">
-                    Performance
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Trạng thái
                   </th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrapp">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    <div className="flex items-center gap-2">
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    <div className="flex items-center justify-center gap-2">
                       <span className="text-xs font-bold text-gray-600">
-                        Deleted At
+                        Ngày xóa
                       </span>
                       <button
                         type="button"
@@ -390,8 +411,8 @@ function ProductsTrashPage() {
                       </button>
                     </div>
                   </th>
-                  <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    Actions
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Hành động 
                   </th>
                 </tr>
               </thead>
@@ -402,7 +423,7 @@ function ProductsTrashPage() {
                       colSpan={11}
                       className="px-6 py-8 text-center text-gray-500"
                     >
-                      Loading…
+                      Đang tải…
                     </td>
                   </tr>
                 ) : rows.length === 0 ? (
@@ -411,7 +432,7 @@ function ProductsTrashPage() {
                       colSpan={11}
                       className="px-6 py-8 text-center text-gray-500 italic"
                     >
-                      Trash is empty.
+                      Thùng rác trống.
                     </td>
                   </tr>
                 ) : (
@@ -443,38 +464,36 @@ function ProductsTrashPage() {
                             />
                           ) : (
                             <div className="w-15 h-15 bg-gray-200 rounded-lg flex items-center justify-center">
-                              <span className="text-gray-400 text-xs">No image</span>
+                              <span className="text-gray-400 text-xs">Không có hình ảnh</span>
                             </div>
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
                               {product.name}
                             </div>
-
+                            <div className="text-xs text-gray-500 mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                              {product.slug}
+                            </div>
                             <div className="text-sm text-gray-600 mt-0.5 whitespace-nowrap">
                               {product.brand?.name} ·{" "}
-                              {product.productVariants?.length} variants
+                              {product.productVariants?.length} biến thể
                             </div>
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4 text-gray-600">
-                        {product.slug}
-                      </td>
-
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm">
                           <div className="font-medium text-gray-800">
-                            {product.productType ?? "—"}
+                            {formatProductType(product.productType)}
                           </div>
                           <div className="text-gray-600">
-                            {product.gender ?? "—"}
+                            {formatGender(product.gender)}
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center gap-1">
                           <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
                             <span>🛒 {product.totalSold ?? 0}</span>
@@ -483,7 +502,7 @@ function ProductsTrashPage() {
                           </div>
                           <div className="text-xs text-gray-600 flex items-center gap-1">
                             <span className="text-yellow-500">⭐</span>
-                            <span>{product.averageRating ?? 0} / 5</span>
+                            <span>{Math.round(product.averageRating ?? 0)} / 5</span>
                           </div>
                         </div>
                       </td>
@@ -498,38 +517,24 @@ function ProductsTrashPage() {
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 text-gray-600">
+                      <td className="px-6 py-4 text-gray-600 text-center whitespace-nowrap">
                         {fmt(product.deletedAt)}
                       </td>
 
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          {/* <Button
-                            size="icon-sm"
-                            className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                            title="View Details"
-                            onClick={() =>
-                              router.push(
-                                Routes.productsManagement.products.details(
-                                  product.id
-                                )
-                              )
-                            }
-                          >
-                            <Eye className="text-blue-600 size-5" />
-                          </Button> */}
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
                           <ConfirmPopover
-                            title="Restore Product?"
+                            title="Khôi phục sản phẩm?"
                             message={
                               <div>
-                                Are you sure you want to restore{" "}
+                                Bạn có chắc chắn muốn khôi phục{" "}
                                 <strong>
-                                  {product.name || "this product"}
+                                  {product.name || "sản phẩm này"}
                                 </strong>
                                 ?
                               </div>
                             }
-                            confirmText="Restore"
+                            confirmText="Khôi phục"
                             onConfirm={() =>
                               handleRestore(product.id, product.name)
                             }
@@ -538,7 +543,7 @@ function ProductsTrashPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors "
-                              title="Restore"
+                              title="Khôi phục"
                             >
                               <RotateCcw className="text-green-600 size-5" />
                             </Button>
@@ -547,17 +552,17 @@ function ProductsTrashPage() {
                             |
                           </span>
                           <ConfirmPopover
-                            title="Permanently Delete Product"
+                            title="Xóa vĩnh viễn sản phẩm"
                             message={
                               <div>
-                                Are you sure you want to delete{" "}
+                                Bạn có chắc chắn muốn xóa{" "}
                                 <strong>
-                                  {product.name || "this product"}
+                                  {product.name || "sản phẩm này"}
                                 </strong>
                                 ?
                               </div>
                             }
-                            confirmText="Delete"
+                            confirmText="Xóa vĩnh viễn"
                             onConfirm={() =>
                               handlePermanentDelete(product.id, product.name)
                             }
@@ -565,7 +570,7 @@ function ProductsTrashPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                              title="Delete Permanently"
+                              title="Xóa vĩnh viễn"
                             >
                               <Trash2 className="text-red-600 size-5" />
                             </Button>
@@ -583,9 +588,9 @@ function ProductsTrashPage() {
           <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
             {/* Rows per page (left) */}
             <div className="flex items-center gap-3 text-sm text-gray-700">
-              <span>Rows per page:</span>
+              <span>Số hàng mỗi trang:</span>
               <select
-                className="h-9 rounded-md border border-gray-300 px-3 bg-white"
+                className="h-9 rounded-md border border-gray-300 px-2 bg-white"
                 value={q.limit}
                 onChange={(e) =>
                   setAndResetPage({ limit: Number(e.target.value), page: 1 })
@@ -626,7 +631,7 @@ function ProductsTrashPage() {
             <Button
               className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
               onClick={() => setLightboxImage(null)}
-              title="Close"
+              title="Đóng"
             >
               <X className="w-6 h-6 text-gray-800" />
             </Button>

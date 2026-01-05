@@ -163,16 +163,16 @@ export default function TagsTrashPage() {
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
                 onClick={() => router.push(Routes.productsManagement.tags.root)}
-                title="Go Back"
+                title="Quay Lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin – Tags List
+                  Thùng Rác - Danh Sách Nhãn
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Restore or permanently delete removed tags
+                  Khôi phục hoặc xóa vĩnh viễn các nhãn đã xóa
                 </p>
               </div>
             </div>
@@ -181,16 +181,16 @@ export default function TagsTrashPage() {
           <ToolbarSearchFilters
             value={q.search}
             onSearchChange={(v) => setAndResetPage({ search: v, page: 1 })}
-            isActive={undefined as any}
+            isActive={q.isActive}
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by tag name or slug in trash…"
+            placeholder="Tìm kiếm theo tên nhãn hoặc slug trong thùng rác…"
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -206,7 +206,7 @@ export default function TagsTrashPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -214,10 +214,10 @@ export default function TagsTrashPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  }`
-                                : "No sorting (click to sort by Name)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -236,13 +236,13 @@ export default function TagsTrashPage() {
                         Slug
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
+                        Hoạt Động
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Deleted At
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Ngày Xóa
                       </th>
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành Động
                       </th>
                     </tr>
                   </thead>
@@ -268,22 +268,22 @@ export default function TagsTrashPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {t.isActive ? "Yes" : "No"}
+                            {t.isActive ? "Có" : "Không"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrapp text-gray-600">
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-600 text-center">
                           {formatDate(t.deletedAt || (t as any).deleted_at)}
                         </td>
                         <td className="px-6 py-3">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center justify-center gap-3">
                             <ConfirmPopover
                               open={isOpen(t.id, "restore")}
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(t.id, "restore") : null)
                               }
-                              title="Restore this tag?"
+                              title="Khôi phục nhãn này?"
                               message={<b>{t.name}</b>}
-                              confirmText="Restore"
+                              confirmText="Khôi Phục"
                               onConfirm={async () => {
                                 setBusyId(t.id);
                                 try {
@@ -303,7 +303,7 @@ export default function TagsTrashPage() {
                                 size="icon-sm"
                                 className="p-2 hover:bg-green-100 rounded-lg transition-colors"
                                 disabled={busyId === t.id}
-                                title="Restore"
+                                title="Khôi Phục"
                                 onClick={() =>
                                   setOpenKey(keyOf(t.id, "restore"))
                                 }
@@ -321,9 +321,9 @@ export default function TagsTrashPage() {
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(t.id, "delete") : null)
                               }
-                              title="Permanently delete this tag?"
+                              title="Xóa vĩnh viễn nhãn này?"
                               message={<b>{t.name}</b>}
-                              confirmText="Delete"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setBusyId(t.id);
                                 try {
@@ -343,7 +343,7 @@ export default function TagsTrashPage() {
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                                 disabled={busyId === t.id}
-                                title="Delete permanently"
+                                title="Xóa Vĩnh Viễn"
                                 onClick={() =>
                                   setOpenKey(keyOf(t.id, "delete"))
                                 }
@@ -359,7 +359,7 @@ export default function TagsTrashPage() {
                       <tr>
                         <td colSpan={5} className="px-6 py-10">
                           <p className="text-center text-gray-600">
-                            Trash is empty.
+                            Thùng rác đang trống.
                           </p>
                         </td>
                       </tr>
@@ -371,7 +371,7 @@ export default function TagsTrashPage() {
 
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

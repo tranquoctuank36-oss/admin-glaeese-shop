@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { getImages } from "@/services/imagesService";
 import { ImageItem } from "@/types/image";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Loader2 } from "lucide-react";
 
 interface DiscountImageSelectorProps {
   open: boolean;
@@ -75,16 +75,18 @@ export default function DiscountImageSelector({
         style={{ maxWidth: '1200px', width: '98vw', maxHeight: '90vh' }}
       >
         <DialogHeader>
-          <DialogTitle>Select Banner Image</DialogTitle>
+          <DialogTitle>Chọn hình ảnh Banner</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto min-h-0">
           {loading && page === 1 ? (
-            <div className="text-center py-8 text-gray-500">Loading images...</div>
+            <div className="flex justify-center items-center py-8">
+              <Loader2 className="size-8 animate-spin text-blue-600" />
+            </div>
           ) : images.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <ImagePlus className="size-16 mx-auto mb-4 text-gray-300" />
-              <p>No images found. Please upload images first.</p>
+              <p>Không tìm thấy hình ảnh. Vui lòng tải lên hình ảnh trước.</p>
             </div>
           ) : (
             <>
@@ -113,7 +115,7 @@ export default function DiscountImageSelector({
                     disabled={loading}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    {loading ? "Loading..." : "Load More"}
+                    {loading ? <Loader2 className="size-4 animate-spin" /> : "Tải thêm"}
                   </Button>
                 </div>
               )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Loader } from "lucide-react";
 import FloatingInput from "@/components/FloatingInput";
 import { Button } from "@/components/ui/button";
 import { CategoryTree, getCategoriesTree } from "@/services/categoryService";
@@ -157,8 +158,6 @@ export default function CategoryForm({
     setLoading(true);
     setErr("");
 
-    const prevPath = [...path];
-    const prevParentId = parentId;
 
     try {
       const cleanedRelative = normalizeRelative(relativeUrl);
@@ -218,7 +217,7 @@ export default function CategoryForm({
       {/* Name */}
       <FloatingInput
         id="name"
-        label="Name"
+        label="Tên"
         required
         value={name}
         disabled={loading}
@@ -242,7 +241,7 @@ export default function CategoryForm({
       />
       {name && (
         <p className="-mt-2 text-xs text-gray-500">
-          Suggested: <span className="font-medium">{autoSlug}</span>
+          Gợi ý: <span className="font-medium">{autoSlug}</span>
         </p>
       )}
 
@@ -250,7 +249,7 @@ export default function CategoryForm({
       <div className="space-y-4">
         <FloatingInput
           id="parent-lv0"
-          label="Parent (Level 0)"
+          label="Danh mục cha (Cấp 0)"
           as="select"
           disabled={loading || loadingTree}
           value={path[0] ?? (parentId === NO_PARENT ? NO_PARENT : "")}
@@ -264,7 +263,7 @@ export default function CategoryForm({
             setParentId(v);
           }}
           options={[
-            { value: NO_PARENT as any, label: "No parent" },
+            { value: NO_PARENT as any, label: "Không có cha" },
             ...childrenOf(null).map((r) => ({ value: r.id, label: r.name })),
           ]}
         />
@@ -273,7 +272,7 @@ export default function CategoryForm({
         {path[0] && (
           <FloatingInput
             id="parent-lv1"
-            label="Parent (Level 1)"
+            label="Danh mục cha (Cấp 1)"
             as="select"
             disabled={loading || loadingTree}
             value={
@@ -296,7 +295,7 @@ export default function CategoryForm({
               }
             }}
             options={[
-              { value: NO_PARENT as any, label: "No parent" },
+              { value: NO_PARENT as any, label: "Không có cha" },
               ...childrenOf(path[0]!).map((c) => ({
                 value: c.id,
                 label: c.name,
@@ -321,7 +320,7 @@ export default function CategoryForm({
             <FloatingInput
               key={`parent-lv${nextLevel}`}
               id={`parent-lv${nextLevel}`}
-              label={`Parent (Level ${nextLevel})`}
+              label={`Danh mục cha (Cấp ${nextLevel})`}
               as="select"
               disabled={loading || loadingTree}
               value={selectValue}
@@ -343,7 +342,7 @@ export default function CategoryForm({
                 }
               }}
               options={[
-                { value: NO_PARENT as any, label: "No parent" },
+                { value: NO_PARENT as any, label: "Không có cha" },
                 ...kids.map((c) => ({ value: c.id, label: c.name })),
               ]}
             />
@@ -354,18 +353,17 @@ export default function CategoryForm({
       {/* Relative URL */}
       <FloatingInput
         id="relativeUrl"
-        label="Relative URL (e.g., products?productType=Eyeglasses&gender=Male)"
+        label="URL tương đối (ví dụ: products?productType=Eyeglasses&gender=Male)"
         required
         value={relativeUrl}
         onChange={(v) => setRelativeUrl(v)}
-        // placeholder="products?productType=eyeglasses&gender=male"
         disabled={loading}
       />
 
       {/* Description */}
       <FloatingInput
         id="description"
-        label="Description"
+        label="Mô tả"
         as="textarea"
         rows={4}
         value={description}
@@ -376,7 +374,7 @@ export default function CategoryForm({
       {/* Priority 0..100 */}
       <div className="w-full">
         <label htmlFor="priority" className="block text-sm text-gray-600 mb-1">
-          Priority (0–100)
+          Mức ưu tiên (0–100)
         </label>
         <input
           id="priority"
@@ -398,7 +396,7 @@ export default function CategoryForm({
       {/* Status */}
       <FloatingInput
         id="categoryStatus"
-        label="Status"
+        label="Trạng thái"
         as="select"
         disabled={loading}
         value={categoryStatus}
@@ -410,9 +408,9 @@ export default function CategoryForm({
           )
         }
         options={[
-          { value: "draft", label: "Draft" },
-          { value: "published", label: "Published" },
-          { value: "unpublished", label: "Unpublished" },
+          { value: "draft", label: "Bản nháp" },
+          { value: "published", label: "Đã xuất bản" },
+          { value: "unpublished", label: "Chưa xuất bản" },
         ]}
       />
 
@@ -420,20 +418,17 @@ export default function CategoryForm({
       <div className="flex justify-end gap-2 pt-2">
         <Button
           type="button"
-          className="h-10 w-24 bg-gray-500 hover:bg-gray-700 text-white"
+          className="h-10 bg-gray-500 hover:bg-gray-700 text-white"
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="submit"
-          className="h-10 w-24 bg-blue-600 hover:bg-blue-700 text-white"
-          disabled={
-            loading || !name.trim() || !displaySlug || !relativeUrl.trim()
-          }
+          className="h-10 bg-blue-600 hover:bg-blue-700 text-white"
         >
-          {loading ? "Saving..." : submitLabel}
+          {loading ? <Loader className="w-4 h-4 animate-spin" /> : submitLabel}
         </Button>
       </div>
 

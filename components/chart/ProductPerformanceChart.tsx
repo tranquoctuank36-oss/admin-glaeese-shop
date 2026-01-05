@@ -26,31 +26,31 @@ export default function ProductPerformanceChart() {
   useEffect(() => {
     const data: productPerformance[] = [
       {
-        name: "Men's Glasses",
+        name: "Kính nam",
         retention: 5200,
         revenue: 2800,
         profit: 2600,
       },
       {
-        name: "Women's Glasses",
+        name: "Kính nữ",
         retention: 4200,
         revenue: 2600,
         profit: 3200,
       },
       {
-        name: "Kids' Glasses",
+        name: "Kính trẻ em",
         retention: 2900,
         revenue: 6900,
         profit: 3900,
       },
       {
-        name: "Sports Glasses",
+        name: "Kính thể thao",
         retention: 2500,
         revenue: 4100,
         profit: 2500,
       },
       {
-        name: "Safety Glasses",
+        name: "Kính bảo hộ",
         retention: 1900,
         revenue: 9400,
         profit: 2700,
@@ -67,7 +67,7 @@ export default function ProductPerformanceChart() {
       transition={{ delay: 0.4, duration: 0.5 }}
     >
       <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-4 text-center md:text-left">
-        Product Performance
+        Hiệu suất sản phẩm
       </h2>
 
       <div className="h-64 md:h-80">
@@ -107,21 +107,21 @@ export default function ProductPerformanceChart() {
             />
             <Bar
               dataKey="retention"
-              name="Retention"
+              name="Duy trì"
               fill="#fd9b70ff"
               radius={[4, 4, 0, 0]}
               animationDuration={2000}
             />
             <Bar
               dataKey="revenue"
-              name="Revenue"
+              name="Doanh thu"
               fill="#77c2ffff"
               radius={[4, 4, 0, 0]}
               animationDuration={2000}
             />
             <Bar
               dataKey="profit"
-              name="Profit"
+              name="Lợi nhuận"
               fill="#55e1c7ff"
               radius={[4, 4, 0, 0]}
               animationDuration={2000}

@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import FloatingInput from "@/components/FloatingInput";
 import { toast } from "react-hot-toast";
+import { Loader2 } from "lucide-react";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -129,7 +130,7 @@ export default function VoucherForm({
 
       // Only include value for non-free_shipping types
       if (type !== "free_shipping") {
-        payload.value = value || "0";
+        payload.value = type === "percentage" ? String(parseFloat(value || "0") * 100) : (value || "0");
       }
 
       // Only include maxDiscountValue for percentage type
@@ -156,7 +157,7 @@ export default function VoucherForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FloatingInput
           id="code"
-          label="Voucher Code"
+          label="Mã phiếu"
           required
           value={code}
           onChange={(v) => setCode(v.toUpperCase())}
@@ -165,7 +166,7 @@ export default function VoucherForm({
 
         <FloatingInput
           id="type"
-          label="Type"
+          label="Loại"
           as="select"
           required
           value={type}
@@ -174,16 +175,16 @@ export default function VoucherForm({
           }
           disabled={loading || !canUpdateType}
           options={[
-            { value: "fixed", label: "Fixed Amount" },
-            { value: "percentage", label: "Percentage" },
-            { value: "free_shipping", label: "Free Shipping" },
+            { value: "fixed", label: "Số tiền cố định" },
+            { value: "percentage", label: "Phần trăm" },
+            { value: "free_shipping", label: "Miễn phí vận chuyển" },
           ]}
         />
       </div>
 
       <FloatingInput
         id="description"
-        label="Description"
+        label="Mô tả"
         as="textarea"
         rows={3}
         required
@@ -199,7 +200,7 @@ export default function VoucherForm({
               <div className="relative">
                 <FloatingInput
                   id="value"
-                  label="Discount Percentage"
+                  label="Phần trăm giảm giá"
                   type="text"
                   required
                   value={value}
@@ -224,7 +225,7 @@ export default function VoucherForm({
               <div className="relative">
                 <FloatingInput
                   id="value"
-                  label="Discount Amount"
+                  label="Số tiền giảm giá"
                   type="text"
                   value={formatNumber(value)}
                   onChange={(v) => {
@@ -245,7 +246,7 @@ export default function VoucherForm({
             )}
             {type === "percentage" && (
               <p className="mt-1 text-xs text-gray-500">
-                Must be between 0 and 100
+                Phải nằm trong khoảng từ 0 đến 100
               </p>
             )}
           </div>
@@ -254,7 +255,7 @@ export default function VoucherForm({
         <div className="relative">
           <FloatingInput
             id="minOrderAmount"
-            label="Minimum Order Amount"
+            label="Giá trị đơn hàng tối thiểu"
             type="text"
             required
             value={formatNumber(minOrderAmount)}
@@ -305,7 +306,7 @@ export default function VoucherForm({
           <div className="relative">
             <FloatingInput
               id="maxDiscountValue"
-              label="Maximum Discount Value"
+              label="Giá trị giảm giá tối đa"
               type="text"
               value={formatNumber(maxDiscountValue)}
               onChange={(v) => {
@@ -332,7 +333,7 @@ export default function VoucherForm({
             htmlFor="validFrom"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Valid From <span className="text-red-500">*</span>
+            Có hiệu lực từ <span className="text-red-500">*</span>
           </label>
           <input
             type="datetime-local"
@@ -351,7 +352,7 @@ export default function VoucherForm({
             htmlFor="validTo"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Valid To <span className="text-red-500">*</span>
+            Có hiệu lực đến <span className="text-red-500">*</span>
           </label>
           <input
             type="datetime-local"
@@ -368,7 +369,7 @@ export default function VoucherForm({
 
       {validFrom && validTo && new Date(validTo) <= new Date(validFrom) && (
         <p className="text-sm text-red-600">
-          Valid To must be after Valid From
+          Thời gian kết thúc phải sau thời gian bắt đầu
         </p>
       )}
 
@@ -379,15 +380,15 @@ export default function VoucherForm({
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="submit"
           className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
           disabled={loading || !canSubmit}
-          title={!canSubmit ? "Please check your inputs" : submitLabel}
+          title={!canSubmit ? "Vui lòng kiểm tra dữ liệu nhập" : submitLabel}
         >
-          {loading ? "Saving..." : submitLabel}
+          {loading ? <Loader2 className="animate-spin" size={20} /> : submitLabel}
         </Button>
       </div>
     </form>

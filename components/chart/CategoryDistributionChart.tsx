@@ -19,11 +19,11 @@ export default function CategoryDistributionChart() {
   useEffect(() => {
     const data = {
       categories: [
-        { name: "Men’s Glasses", value: 4500 },
-        { name: "Women’s Glasses", value: 3200 },
-        { name: "Kids’ Glasses", value: 2800 },
-        { name: "Sports Glasses", value: 3900 },
-        { name: "Safety Glasses", value: 2000 },
+        { name: "Kính Nam", value: 4500 },
+        { name: "Kính Nữ", value: 3200 },
+        { name: "Kính Trẻ Em", value: 2800 },
+        { name: "Kính Thể Thao", value: 3900 },
+        { name: "Kính Bảo Hộ", value: 2000 },
       ],
     };
     setCategoryData(data.categories);
@@ -90,7 +90,7 @@ export default function CategoryDistributionChart() {
       transition={{ delay: 0.3, duration: 0.5 }}
     >
       <h2 className="text-base md:text-lg font-semibold mb-4 text-gray-800 text-center md:text-left">
-        Category Distribution
+        Phân bố theo danh mục
       </h2>
 
       <div className="h-64 md:h-80">

@@ -31,11 +31,11 @@ const OrderDistributionChart = () => {
   useEffect(() => {
     const data = {
       orderStatus: [
-        { name: "PENDING", value: 3500 },
-        { name: "COMPLETED", value: 3000 },
-        { name: "CANCELLED", value: 2000 },
-        { name: "REFUNDED", value: 3900 },
-        { name: "PROCESSING", value: 2800 },
+        { name: "Đang chờ", value: 3500 },
+        { name: "Hoàn thành", value: 3000 },
+        { name: "Đã hủy", value: 2000 },
+        { name: "Hoàn tiền", value: 3900 },
+        { name: "Đang xử lý", value: 2800 },
       ],
     };
     setOrderStatusData(data.orderStatus);
@@ -89,7 +89,7 @@ const OrderDistributionChart = () => {
       transition={{ delay: 0.3, duration: 0.5 }}
     >
       <h2 className="text-base md:text-lg font-semibold mb-4 text-gray-800 text-center md:text-left">
-        Order Status Distribution
+        Phân bố trạng thái đơn hàng
       </h2>
 
       <div className="w-full h-64 md:h-80">

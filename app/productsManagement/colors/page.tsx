@@ -148,9 +148,9 @@ export default function ColorsPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-3">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Colors List {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Danh Sách Màu Sắc {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
                 <p className="text-gray-600 mt-1">
-                  Manage all available colors for your products
+                  Quản lý tất cả các màu sắc có săn cho các sản phẩm của bạn
                 </p>
               </div>
             </div>
@@ -163,7 +163,7 @@ export default function ColorsPage() {
                 }
               >
                 <Trash2 className="size-5" />
-                Trash Bin
+                Thùng Rác
                 {trashCount > 0 && (
                   <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
                     {trashCount}
@@ -177,7 +177,7 @@ export default function ColorsPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Color
+                Thêm Màu Sắc
               </Button>
             </div>
           </div>
@@ -189,12 +189,12 @@ export default function ColorsPage() {
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by color name or slug or hex..."
+            placeholder="Tìm kiếm theo tên màu sắc hoặc slug hoặc mã hex..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -210,7 +210,7 @@ export default function ColorsPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -218,10 +218,10 @@ export default function ColorsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -241,15 +241,15 @@ export default function ColorsPage() {
                         Slug
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Hex
+                        Mã Hex
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
+                        Hoạt động
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày Tạo
                           </span>
                           <button
                             type="button"
@@ -257,10 +257,10 @@ export default function ColorsPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "createdAt"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Ngày Tạo)"
                             }
                           >
                             {q.sortField === "createdAt" ? (
@@ -275,8 +275,8 @@ export default function ColorsPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành Động
                       </th>
                     </tr>
                   </thead>
@@ -317,21 +317,21 @@ export default function ColorsPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {color.isActive ? "Yes" : "No"}
+                            {color.isActive ? "Có" : "Không"}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center">
                           <span className="text-gray-600">
                             {formatDate(color.createdAt) || "-"}
                           </span>
                         </td>
 
-                        <td className="px-6 py-3">
-                          <div className="flex items-center gap-2">
+                        <td className="px-6 py-3 text-center">
+                          <div className="flex items-center justify-center gap-2">
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Chỉnh Sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.productsManagement.colors.edit.replace(
@@ -352,9 +352,9 @@ export default function ColorsPage() {
                               onOpenChange={(o) =>
                                 setOpenId(o ? color.id : null)
                               }
-                              title="Remove this color?"
+                              title="Xóa màu sắc này?"
                               message={<b>{color.name}</b>}
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setDeletingId(color.id);
                                 try {
@@ -373,7 +373,7 @@ export default function ColorsPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Remove"
+                                title="Xóa"
                                 onClick={() => setOpenId(color.id)}
                                 disabled={deletingId === color.id}
                               >
@@ -389,7 +389,7 @@ export default function ColorsPage() {
                       <tr>
                         <td colSpan={5} className="px-6 py-6">
                           <div className="text-center text-gray-600">
-                            Colors is empty.
+                            Chưa có màu sắc nào.
                           </div>
                         </td>
                       </tr>
@@ -402,7 +402,7 @@ export default function ColorsPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

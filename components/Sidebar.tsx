@@ -83,7 +83,7 @@ export default function Sidebar() {
                   <Link href={item.href}>
                     <div
                       className={`flex items-center p-4 text-sm font-medium rounded-lg transition-colors hover:bg-gray-300 mb-2${
-                        isActive ? " bg-gray-300" : ""
+                        isParentActive ? " bg-gray-300" : ""
                       }`}
                     >
                       <Icon size={20} style={{ minWidth: 20 }} />

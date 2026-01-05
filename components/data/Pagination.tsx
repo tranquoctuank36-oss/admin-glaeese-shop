@@ -39,8 +39,8 @@ export default function Pagination({
         className="h-9 px-3 cursor-pointer"
         disabled={disableFirst}
         onClick={() => !disableFirst && onChange(1)}
-        title="First Page"
-        aria-label="First Page"
+        title="Trang đầu"
+        aria-label="Trang đầu"
       >
         <ChevronsLeft size={16} />
       </Button>
@@ -51,14 +51,14 @@ export default function Pagination({
         className="h-9 px-3 cursor-pointer"
         disabled={disablePrev}
         onClick={() => !disablePrev && onChange(page - 1)}
-        title="Previous Page"
-        aria-label="Previous Page"
+        title="Trang trước"
+        aria-label="Trang trước"
       >
         <ChevronLeft size={16} />
       </Button>
 
       <span className="text-sm text-gray-600">
-        Page <b>{page}</b>{totalPages ? <> / {totalPages}</> : null}
+        Trang <b>{page}</b>{totalPages ? <> / {totalPages}</> : null}
       </span>
 
       {/* Next */}
@@ -67,8 +67,8 @@ export default function Pagination({
         className="h-9 px-3 cursor-pointer"
         disabled={disableNext}
         onClick={() => !disableNext && onChange(page + 1)}
-        title="Next Page"
-        aria-label="Next Page"
+        title="Trang sau"
+        aria-label="Trang sau"
       >
         <ChevronRight size={16} />
       </Button>
@@ -81,8 +81,8 @@ export default function Pagination({
         onClick={() =>
           !disableLast && totalPages !== undefined && onChange(totalPages)
         }
-        title="Last Page"
-        aria-label="Last Page"
+        title="Trang cuối"
+        aria-label="Trang cuối"
       >
         <ChevronsRight size={16} />
       </Button>

@@ -18,6 +18,14 @@ export type ListQueryState = {
   ownerType?: "all" | "product_variant" | "brand" | "discount";
   roles?: string[];
   statuses?: string[];
+  startDate?: string;
+  endDate?: string;
+  minGrandTotal?: string;
+  maxGrandTotal?: string;
+  status?: string;
+  paymentStatus?: string;
+  paymentMethod?: string;
+  preset?: string;
 };
 
 const DEFAULT_ALLOWED_SORT_BY = ["name", "createdAt"] as const;
@@ -88,6 +96,14 @@ export function useListQuery<
     depth: undefined,
     roles: undefined,
     statuses: undefined,
+    startDate: undefined,
+    endDate: undefined,
+    minGrandTotal: undefined,
+    maxGrandTotal: undefined,
+    status: undefined,
+    paymentStatus: undefined,
+    paymentMethod: undefined,
+    preset: undefined,
     ...initial,
   });
 
@@ -129,11 +145,20 @@ export function useListQuery<
         ? q.productStatus
         : q.imageStatus && q.imageStatus !== "all"
         ? q.imageStatus
+        : q.status
+        ? q.status
         : undefined,
       ownerType: q.ownerType && q.ownerType !== "all" ? q.ownerType : undefined,
       ...(typeof (q as any).depth !== "undefined" ? { depth: (q as any).depth } : {}),
       ...(q.roles && q.roles.length > 0 ? { roles: q.roles } : {}),
       ...(q.statuses && q.statuses.length > 0 ? { statuses: q.statuses } : {}),
+      ...(q.startDate ? { startDate: q.startDate } : {}),
+      ...(q.endDate ? { endDate: q.endDate } : {}),
+      ...(q.minGrandTotal ? { minGrandTotal: q.minGrandTotal } : {}),
+      ...(q.maxGrandTotal ? { maxGrandTotal: q.maxGrandTotal } : {}),
+      ...(q.paymentStatus ? { paymentStatus: q.paymentStatus } : {}),
+      ...(q.paymentMethod ? { paymentMethod: q.paymentMethod } : {}),
+      ...(q.preset ? { preset: q.preset } : {}),
       ...extraFilters,
     };
 
@@ -154,6 +179,14 @@ export function useListQuery<
     q.depth,
     q.roles,
     q.statuses,
+    q.startDate,
+    q.endDate,
+    q.minGrandTotal,
+    q.maxGrandTotal,
+    q.status,
+    q.paymentStatus,
+    q.paymentMethod,
+    q.preset,
     allowedsortField,
     mapSearchToParam,
     extraFilters,

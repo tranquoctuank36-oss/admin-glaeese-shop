@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import FloatingInput from "@/components/FloatingInput";
-import { ImagePlus, X, Upload } from "lucide-react";
+import { ImagePlus, X, Upload, Loader2 } from "lucide-react";
 import {
   getPresignedUrl,
   uploadWithPresignedUrl,
@@ -45,7 +45,7 @@ export default function ImageForm({
     selectedFiles.forEach((selectedFile) => {
       // Validate file type
       if (!selectedFile.type.startsWith("image/")) {
-        setErrors((prev) => ({ ...prev, file: "Please select image files only" }));
+        setErrors((prev) => ({ ...prev, file: "Vui lòng chọn tệp hình ảnh" }));
         hasError = true;
         return;
       }
@@ -54,7 +54,7 @@ export default function ImageForm({
       if (selectedFile.size > 5 * 1024 * 1024) {
         setErrors((prev) => ({
           ...prev,
-          file: "Each file size must be less than 5MB",
+          file: "Mỗi tệp phải nhỏ hơn 5MB",
         }));
         hasError = true;
         return;
@@ -89,11 +89,11 @@ export default function ImageForm({
     const newErrors: Record<string, string> = {};
 
     if (files.length === 0) {
-      newErrors.file = "Please select at least one image file";
+      newErrors.file = "Vui lòng chọn ít nhất một tệp hình ảnh";
     }
 
     if (!ownerType) {
-      newErrors.ownerType = "Please select image type";
+      newErrors.ownerType = "Vui lòng chọn loại hình ảnh";
     }
 
     setErrors(newErrors);
@@ -144,7 +144,7 @@ export default function ImageForm({
         {/* Owner Image Type */}
         <FloatingInput
           id="ownerType"
-          label="Image Type"
+          label="Loại Hình Ảnh"
           as="select"
           value={ownerType}
           onChange={(value) =>
@@ -153,16 +153,16 @@ export default function ImageForm({
           disabled={loading}
           required
           options={[
-            { value: "product_variant", label: "Product Variant" },
-            { value: "brand", label: "Brand" },
-            { value: "discount", label: "Discount" },
+            { value: "product_variant", label: "Biến Thể Sản Phẩm" },
+            { value: "brand", label: "Thương Hiệu" },
+            { value: "discount", label: "Khuyến Mãi" },
           ]}
         />
 
         {/* File Upload */}
         <div className="mt-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Image Files <span className="text-red-500">*</span>
+            Tệp Hình Ảnh <span className="text-red-500">*</span>
           </label>
 
           <div
@@ -194,7 +194,7 @@ export default function ImageForm({
                 />
                 <Upload className="size-12 text-gray-400 mb-3" />
                 <span className="text-sm text-gray-600 font-medium">
-                  Click to select images (multiple)
+                  Nhấp để chọn hình ảnh
                 </span>
                 {/* <span className="text-xs text-gray-500 mt-1">
                   Max 5MB per file
@@ -252,7 +252,7 @@ export default function ImageForm({
                   />
                   <ImagePlus className="size-8 text-gray-400 mb-2" />
                   <span className="text-sm text-gray-600 font-medium">
-                    Add more images
+                    Thêm hình ảnh khác
                   </span>
                 </label>
               </div>
@@ -265,7 +265,7 @@ export default function ImageForm({
 
           {files.length > 0 && (
             <p className="mt-2 text-sm text-gray-600">
-              Selected: <strong>{files.length}</strong> image{files.length !== 1 ? "s" : ""}
+              Được chọn: <strong>{files.length}</strong> hình ảnh{files.length !== 1 ? "" : ""}
             </p>
           )}
         </div>
@@ -282,19 +282,18 @@ export default function ImageForm({
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="h-10 w-20 px-6 bg-gray-500 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium"
+            className="h-10 px-6 bg-gray-500 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium"
           >
-            Cancel
+            Hủy
           </Button>
           <Button
             type="submit"
             disabled={loading}
-            className="h-10 w-20 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium inline-flex items-center gap-2"
+            className="h-10 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium inline-flex items-center gap-2"
           >
             {loading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                {/* Uploading... */}
+                <Loader2 className="size-4 animate-spin" />
               </>
             ) : (
               <>

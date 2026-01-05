@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import FloatingInput from "@/components/FloatingInput";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 function slugify(input: string) {
@@ -66,7 +67,7 @@ export default function ColorForm({
       });
     } catch (err: any) {
       const detail = err?.response?.data?.detail;
-      toast.error(detail || "Failed to save color. Please try again.");
+      toast.error(detail || "Không thể lưu màu sắc. Vui lòng thử lại.");
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,7 @@ export default function ColorForm({
     >
       <FloatingInput
         id="name"
-        label="Name"
+        label="Tên"
         required
         value={name}
         onChange={(v) => {
@@ -106,7 +107,7 @@ export default function ColorForm({
       </div>
       {name && (
         <p className="-mt-2 text-xs text-gray-500">
-          Suggested: <span className="font-medium">{autoSlug}</span>
+          Đề xuất: <span className="font-medium">{autoSlug}</span>
         </p>
       )}
 
@@ -114,7 +115,7 @@ export default function ColorForm({
         <div className="flex items-center gap-3">
           <FloatingInput
             id="hexCode"
-            label="Hex code (#RRGGBB or #RGB)"
+            label="Mã Hex (#RRGGBB hoặc #RGB)"
             value={hexCode}
             disabled={loading}
             required
@@ -143,21 +144,21 @@ export default function ColorForm({
         </div>
         {hexCode && (
           <p className="text-xs text-gray-800">
-            Hex code cannot exceed 7 characters.
+            Mã Hex không được vượt quá 7 ký tự.
           </p>
         )}
       </div>
 
       <FloatingInput
         id="isActive"
-        label="Active"
+        label="Hoạt động"
         as="select"
         value={isActiveStr}
         onChange={(v) => setIsActiveStr(v === "true" ? "true" : "false")}
         disabled={loading}
         options={[
-          { value: "true", label: "Yes" },
-          { value: "false", label: "No" },
+          { value: "true", label: "Có" },
+          { value: "false", label: "Không" },
         ]}
       />
 
@@ -165,18 +166,18 @@ export default function ColorForm({
       <div className="flex justify-end gap-2 pt-2">
         <Button
           type="button"
-          className="h-10 w-20 bg-gray-500 hover:bg-gray-700 text-white"
+          className="h-10 bg-gray-500 hover:bg-gray-700 text-white"
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="submit"
-          className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white"
+          className="h-10 bg-blue-600 hover:bg-blue-700 text-white"
           disabled={loading || !name.trim()}
         >
-          {loading ? "Saving..." : submitLabel}
+          {loading ? <Loader2 className="size-5 animate-spin" /> : submitLabel}
         </Button>
       </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
 import FloatingInput from "@/components/FloatingInput";
 import { Button } from "@/components/ui/button";
 
@@ -68,7 +69,7 @@ export default function FrameShapeForm({
     >
       <FloatingInput
         id="name"
-        label="Name"
+        label="Tên"
         required
         value={name}
         onChange={(v) => {
@@ -93,38 +94,37 @@ export default function FrameShapeForm({
       />
       {name && (
         <p className="-mt-2 text-xs text-gray-500">
-          Suggested: <span className="font-medium">{autoSlug}</span>
+          Đề xuất: <span className="font-medium">{autoSlug}</span>
         </p>
       )}
 
       <FloatingInput
         id="isActive"
-        label="Active"
+        label="Hoạt động"
         as="select"
         value={isActiveStr}
         onChange={(v) => setIsActiveStr(v === "true" ? "true" : "false")}
         disabled={loading}
         options={[
-          { value: "true", label: "Yes" },
-          { value: "false", label: "No" },
+          { value: "true", label: "Có" },
+          { value: "false", label: "Không" },
         ]}
       />
 
       <div className="flex justify-end gap-2 pt-2">
         <Button
           type="button"
-          className="h-10 w-20 bg-gray-500 hover:bg-gray-700 text-white"
+          className="h-10 bg-gray-500 hover:bg-gray-700 text-white"
           onClick={onCancel}
           disabled={loading}
         >
-          Cancel
+          Hủy
         </Button>
         <Button
           type="submit"
-          className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white"
-          disabled={loading || !name.trim()}
+          className="h-10 bg-blue-600 hover:bg-blue-700 text-white"
         >
-          {loading ? "Saving..." : submitLabel}
+          {loading ? <Loader2 className="size-5 animate-spin" /> : submitLabel}
         </Button>
       </div>
       {error && <p className="text-red-500 flex justify-center">{error}</p>}

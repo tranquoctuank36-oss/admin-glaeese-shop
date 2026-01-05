@@ -139,44 +139,23 @@ export default function FrameShapesPage() {
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[1440px] mx-auto py-6 px-4 lg:px-8">
+      <main className="max-w-[1440px] mx-auto">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div className="flex items-center gap-3">
-              <Button
-                size="icon-lg"
-                className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() =>
-                  router.push(Routes.productsManagement.frames.root)
-                }
-                title="Go Back"
-              >
-                <ArrowLeft className="text-gray-700 size-7" />
-              </Button>
-
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">
-                  Frame Shapes List
-                </h1>
-                <p className="text-gray-600 mt-1">
-                  Manage all available frame shapes for your products
-                </p>
-              </div>
-            </div>
-
+          <div className="flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4 mb-6">
             <div className="flex gap-2">
-              <Button
-                className="flex h-12 items-center gap-2 bg-red-500 hover:bg-red-700 text-white text-base"
+              {/* <Button
+                className="flex h-12 items-center gap-2 bg-red-500 hover:bg-red-700 text-white text-base disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() =>
                   router.push(
                     Routes.productsManagement.frames.frameShapes.trash
                   )
                 }
+                disabled={trashCount === 0}
               >
                 <Trash2 className="size-5" />
                 Trash Bin
@@ -185,7 +164,7 @@ export default function FrameShapesPage() {
                     {trashCount}
                   </span>
                 )}
-              </Button>
+              </Button> */}
               <Button
                 onClick={() =>
                   router.push(Routes.productsManagement.frames.frameShapes.add)
@@ -193,7 +172,7 @@ export default function FrameShapesPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Shape
+                Thêm Hình Dạng
               </Button>
             </div>
           </div>
@@ -205,12 +184,12 @@ export default function FrameShapesPage() {
             onFiltersChange={(patch) =>
               setAndResetPage({ ...(patch as any), page: 1 })
             }
-            placeholder="Search by shape name or slug..."
+            placeholder="Tìm kiếm theo tên hình dạng hoặc slug..."
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -226,7 +205,7 @@ export default function FrameShapesPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Name
+                            Tên
                           </span>
                           <button
                             type="button"
@@ -234,10 +213,10 @@ export default function FrameShapesPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
                             title={
                               q.sortField === "name"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Name)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Tên)"
                             }
                           >
                             {q.sortField === "name" ? (
@@ -257,12 +236,12 @@ export default function FrameShapesPage() {
                         Slug
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Active
+                        Hoạt động
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        <div className="flex items-center gap-2">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <div className="flex items-center justify-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày Tạo
                           </span>
                           <button
                             type="button"
@@ -270,10 +249,10 @@ export default function FrameShapesPage() {
                             className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                             title={
                               q.sortField === "createdAt"
-                                ? `Sorting: ${
+                                ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "ASC" : "DESC"
-                                  } (click to change)`
-                                : "No sorting (click to sort by Created At)"
+                                  } (nhấp để thay đổi)`
+                                : "Không sắp xếp (nhấp để sắp xếp theo Ngày Tạo)"
                             }
                           >
                             {q.sortField === "createdAt" ? (
@@ -288,8 +267,8 @@ export default function FrameShapesPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        Hành Động
                       </th>
                     </tr>
                   </thead>
@@ -316,17 +295,17 @@ export default function FrameShapesPage() {
                                 : "bg-red-100 text-red-700"
                             }`}
                           >
-                            {shape.isActive ? "Yes" : "No"}
+                            {shape.isActive ? "Có" : "Không"}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center">
                           <span className="text-gray-600">
                             {formatDate(shape.createdAt) || "-"}
                           </span>
                         </td>
 
-                        <td className="px-6 py-3">
-                          <div className="flex items-center gap-2">
+                        <td className="px-6 py-3 text-center">
+                          <div className="flex items-center justify-center gap-2">
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
@@ -406,7 +385,7 @@ export default function FrameShapesPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Hàng trên trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

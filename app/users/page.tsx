@@ -31,6 +31,23 @@ function formatDate(iso?: string) {
   return `${dd}/${mm}/${yyyy}`;
 }
 
+function getRoleLabel(role: string): string {
+  const roleMap: Record<string, string> = {
+    admin: "Admin",
+    customer: "Khách hàng",
+  };
+  return roleMap[role] || role;
+}
+
+function getStatusLabel(status: string): string {
+  const statusMap: Record<string, string> = {
+    active: "Hoạt động",
+    inactive: "Không hoạt động",
+    suspended: "Bị khóa",
+  };
+  return statusMap[status] || status;
+}
+
 function UsersPage() {
   const router = useRouter();
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
@@ -220,10 +237,11 @@ function UsersPage() {
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Users List {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+                  Danh sách người dùng{" "}
+                  {meta?.totalItems !== undefined && `(${meta.totalItems})`}
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Manage user accounts and permissions
+                  Quản lý tài khoản và quyền người dùng
                 </p>
               </div>
             </div>
@@ -244,14 +262,14 @@ function UsersPage() {
               }
               setAndResetPage(updates);
             }}
-            placeholder="Search by email..."
+            placeholder="Tìm kiếm theo email..."
             userRole={(q.roles || []) as any}
             userStatus={(q.statuses || []) as any}
           />
         </motion.div>
 
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p className="text-center text-gray-600">Đang tải...</p>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -294,10 +312,10 @@ function UsersPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Role
+                            Vai trò
                           </span>
                           <button
                             type="button"
@@ -317,22 +335,10 @@ function UsersPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 min-w-[150px] text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Name
-                      </th>
-
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Gender
-                      </th>
-
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Date of Birth
-                      </th>
-
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2 justify-center">
                           <span className="text-xs font-bold text-gray-600">
-                            Status
+                            Trạng thái
                           </span>
                           <button
                             type="button"
@@ -352,10 +358,10 @@ function UsersPage() {
                         </div>
                       </th>
 
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Created At
+                            Ngày tạo
                           </span>
                           <button
                             type="button"
@@ -382,8 +388,16 @@ function UsersPage() {
                         </div>
                       </th>
 
-                      <th className="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-gray-600">
+                            Ngày xác minh Email
+                          </span>
+                        </div>
+                      </th>
+
+                      <th className="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Hành động
                       </th>
                     </tr>
                   </thead>
@@ -396,57 +410,49 @@ function UsersPage() {
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <Mail size={18} className="text-gray-400" />
-                            <span className="text-gray-800 font-medium">
-                              {user.email}
-                            </span>
+                            <div>
+                              <span className="text-gray-800 font-medium block">
+                                {user.email}
+                              </span>
+                              <span className="text-gray-600 text-sm">
+                                Tên: {user.fullName || "-"}
+                              </span>
+                            </div>
                           </div>
                         </td>
 
-                        <td className="px-6 py-4">
-                          <span
-                            className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getRoleBadgeClass(
-                              user.roles[0] || "customer"
-                            )}`}
-                          >
-                            {(user.roles[0] || "customer").charAt(0).toUpperCase() +
-                              (user.roles[0] || "customer").slice(1)}
-                          </span>
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <UserIcon size={16} className="text-gray-400" />
-                            <span className="text-gray-700">
-                              {user.fullName || "-"}
-                            </span>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-wrap gap-1">
+                            {user.roles && user.roles.length > 0 ? (
+                              user.roles.map((role) => (
+                                <span
+                                  key={role}
+                                  className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getRoleBadgeClass(
+                                    role
+                                  )}`}
+                                >
+                                  {getRoleLabel(role)}
+                                </span>
+                              ))
+                            ) : (
+                              <span
+                                className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getRoleBadgeClass(
+                                  "customer"
+                                )}`}
+                              >
+                                {getRoleLabel("customer")}
+                              </span>
+                            )}
                           </div>
                         </td>
 
-                        <td className="px-6 py-4 text-center">
-                          <span className="text-gray-600 capitalize">
-                            {user.gender || "-"}
-                          </span>
-                        </td>
-
-                        <td className="px-6 py-4 text-center">
-                          <span className="text-gray-600">
-                            {user.dateOfBirth
-                              ? new Date(user.dateOfBirth).toLocaleDateString(
-                                  "en-GB"
-                                )
-                              : "-"}
-                          </span>
-                        </td>
-
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           <span
                             className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getStatusBadgeClass(
                               user.status
                             )}`}
                           >
-                            {user.status.charAt(0).toUpperCase() +
-                              user.status.slice(1)}
+                            {getStatusLabel(user.status)}
                           </span>
                         </td>
 
@@ -456,12 +462,22 @@ function UsersPage() {
                           </span>
                         </td>
 
+                        <td className="px-6 py-4 text-center">
+                          <span className="text-gray-600">
+                            {user.emailVerifiedAt
+                              ? new Date(
+                                  user.emailVerifiedAt
+                                ).toLocaleDateString("en-GB")
+                              : "-"}
+                          </span>
+                        </td>
+
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-center gap-2">
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                              title="View Details"
+                              title="Xem chi tiết"
                               onClick={() =>
                                 router.push(
                                   Routes.users.details.replace("[id]", user.id)
@@ -478,7 +494,7 @@ function UsersPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Chỉnh sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.users.edit.replace("[id]", user.id)
@@ -496,7 +512,7 @@ function UsersPage() {
                       <tr>
                         <td colSpan={8} className="px-6 py-6">
                           <div className="text-center text-gray-600">
-                            No users found.
+                            Không tìm thấy người dùng.
                           </div>
                         </td>
                       </tr>
@@ -509,7 +525,7 @@ function UsersPage() {
             {/* Pagination */}
             <div className="flex items-center justify-between p-4">
               <div className="flex items-center gap-2 text-sm">
-                <span>Rows per page:</span>
+                <span>Số hàng mỗi trang:</span>
                 <select
                   className="border rounded-md px-2 py-1"
                   value={q.limit}

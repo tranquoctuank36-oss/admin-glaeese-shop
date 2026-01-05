@@ -39,13 +39,13 @@ export default function EditTagPage() {
     };
   }, [id]);
 
-  if (loading) return <p className="p-6 flex items-center justify-center">Loading...</p>;
-  if (!initial) return <p className="p-6 text-red-600">Tag not found.</p>;
+  if (loading) return <p className="p-6 flex items-center justify-center">Đang tải...</p>;
+  if (!initial) return <p className="p-6 text-red-600">Không tìm thấy nhãn.</p>;
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Edit Tag</h1>
+      <main className="max-w-[600px] mx-auto py-6 px-4 lg:px-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Chỉnh Sửa Nhãn</h1>
 
         <TagForm
           initial={initial}
@@ -53,9 +53,9 @@ export default function EditTagPage() {
           onSubmit={async (values) => {
             await updateTag(id, values);
             router.push(Routes.productsManagement.tags.root);
-            toast.success("Tag updated successfully!");
+            toast.success("Nhãn đã được cập nhật thành công!");
           }}
-          submitLabel="Update"
+          submitLabel="Cập Nhật"
         />
       </main>
     </div>

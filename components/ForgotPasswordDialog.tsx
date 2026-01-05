@@ -43,7 +43,7 @@ export default function ForgotPasswordDialog({
 
   const handleForgot = async () => {
     if (!isValidEmail(email.trim()) && email.trim() !== "") {
-      setErrorMsg("Please enter a valid email address.");
+      setErrorMsg("Vui lòng nhập địa chỉ email hợp lệ.");
       setForceValidate(true);
       return;
     }
@@ -59,7 +59,7 @@ export default function ForgotPasswordDialog({
       const elapsed = Date.now() - startedAt;
       if (elapsed < MIN_SPIN_MS) await sleep(MIN_SPIN_MS - elapsed);
 
-      toast.success("Email sent successfully! Please check your inbox.", {
+      toast.success("Email đã được gửi thành công! Vui lòng kiểm tra hộp thư của bạn.", {
         duration: 2000,
         position: "top-center",
       });
@@ -73,9 +73,9 @@ export default function ForgotPasswordDialog({
       if (elapsed < MIN_SPIN_MS) await sleep(MIN_SPIN_MS - elapsed);
 
       if (isAxiosLikeError(err) && err.response?.status === 400) {
-        setErrorMsg("This email is not registered.");
+        setErrorMsg("Email này chưa được đăng ký.");
       } else {
-        setErrorMsg("Failed to send reset link. Please try again later!");
+        setErrorMsg("Không thể gửi liên kết đặt lại. Vui lòng thử lại sau!");
       }
     } finally {
       setLoading(false);
@@ -90,18 +90,17 @@ export default function ForgotPasswordDialog({
       >
         <DialogHeader>
           <DialogTitle className="mt-2 text-center text-2xl font-bold">
-            Forgot password?
+            Quên mật khẩu?
           </DialogTitle>
           <DialogDescription className="mt-5 text-center text-base text-gray-500 font-bold">
-            Enter your email address and we will send you a link to reset your
-            password.
+            Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn liên kết để đặt lại mật khẩu.
           </DialogDescription>
         </DialogHeader>
 
         <div className="mt-4 space-y-4">
           <FloatingInput
             id="email"
-            label="* Email Address"
+            label="* Địa chỉ Email"
             type="email"
             required
             value={email}
@@ -121,7 +120,7 @@ export default function ForgotPasswordDialog({
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              <span className="font-semibold text-lg">Send Me the Link</span>
+              <span className="font-semibold text-lg">Gửi liên kết cho tôi</span>
             )}
           </Button>
 
@@ -133,7 +132,7 @@ export default function ForgotPasswordDialog({
               onSwitchToLogin?.();
             }}
           >
-            Actually, I remember my password
+            Thực ra, tôi nhớ mật khẩu của mình
           </Button>
         </div>
       </DialogContent>

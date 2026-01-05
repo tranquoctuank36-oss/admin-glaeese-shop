@@ -22,16 +22,16 @@ export default function AddCategoryPage() {
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Add Category</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm danh mục</h1>
         <CategoryForm
           initial={initial}
           onCancel={() => router.back()}
           onSubmit={async (v) => {
             await createCategory(v);
             router.push(Routes.productsManagement.categories.root);
-            toast.success("Category created successfully!");
+            toast.success("Danh mục đã được tạo thành công!");
           }}
-          submitLabel="Create"
+          submitLabel="Tạo"
         />
       </main>
     </div>

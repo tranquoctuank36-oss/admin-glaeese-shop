@@ -33,9 +33,12 @@ function statusBadgeClass(status?: string | null) {
 }
 function formatStatusLabel(status?: string | null) {
   if (!status) return "-";
-  return String(status)
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const statusMap: Record<string, string> = {
+    published: "Đã xuất bản",
+    draft: "Bản nháp",
+    unpublished: "Chưa xuất bản"
+  };
+  return statusMap[String(status).toLowerCase()] || "-";
 }
 
 export default function CategoryDetailPage() {
@@ -62,12 +65,12 @@ export default function CategoryDetailPage() {
           try {
             const p = await getCategoryById((c as any).parentId as string);
             if (!alive) return;
-            setParentName(p?.name ?? "No parent");
+            setParentName(p?.name ?? "Không có cha");
           } catch {
-            setParentName("No parent");
+            setParentName("Không có cha");
           }
         } else {
-          setParentName("No parent");
+          setParentName("Không có cha");
         }
       } finally {
         if (alive) setLoading(false);
@@ -98,8 +101,8 @@ export default function CategoryDetailPage() {
                 <ArrowLeft className="text-gray-700 size-6" />
               </Button>
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Category Details</h1>
-                <p className="text-sm text-gray-500 mt-1">View complete information</p>
+                <h1 className="text-3xl font-bold text-gray-800">Chi tiết danh mục</h1>
+                <p className="text-sm text-gray-500 mt-1">Xem thông tin đầy đủ</p>
               </div>
             </div>
             
@@ -114,7 +117,7 @@ export default function CategoryDetailPage() {
                   className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
                 >
                   <Edit size={20} />
-                  Edit Category
+                  Sửa danh mục
                 </Button>
               </motion.div>
             )}
@@ -127,7 +130,7 @@ export default function CategoryDetailPage() {
               className="flex flex-col items-center justify-center py-20"
             >
               <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="text-gray-600 text-lg">Loading category details…</p>
+              <p className="text-gray-600 text-lg">Đang tải chi tiết danh mục…</p>
             </motion.div>
           ) : !data ? (
             <motion.div
@@ -135,7 +138,7 @@ export default function CategoryDetailPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center"
             >
-              <p className="text-red-600 text-xl font-semibold">Category not found.</p>
+              <p className="text-red-600 text-xl font-semibold">Không tìm thấy danh mục.</p>
             </motion.div>
           ) : (
             <motion.div
@@ -149,7 +152,7 @@ export default function CategoryDetailPage() {
                 transition={{ duration: 0.2 }}
                 className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-6">
                   <div className="flex-1">
                     <h2 className="text-4xl font-bold mb-3">{data.name}</h2>
                     <p className="text-blue-100 text-lg font-medium">{(data as any).slug}</p>
@@ -160,6 +163,13 @@ export default function CategoryDetailPage() {
                     </span>
                   </div>
                 </div>
+                {(data as any).description && (
+                  <div className="pt-6 border-t border-blue-400">
+                    <p className="text-blue-100 leading-relaxed whitespace-pre-line">
+                      Mô tả: {(data as any).description}
+                    </p>
+                  </div>
+                )}
               </motion.div>
 
               {/* Info Grid */}
@@ -176,7 +186,7 @@ export default function CategoryDetailPage() {
                       <Calendar className="size-6 text-purple-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500 font-medium mb-1">Created At</p>
+                      <p className="text-sm text-gray-500 font-medium mb-1">Ngày tạo</p>
                       <p className="text-xl font-bold text-gray-800">{fmt((data as any).createdAt)}</p>
                     </div>
                   </div>
@@ -194,7 +204,7 @@ export default function CategoryDetailPage() {
                       <Hash className="size-6 text-orange-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500 font-medium mb-1">Priority</p>
+                      <p className="text-sm text-gray-500 font-medium mb-1">Mức ưu tiên</p>
                       <p className="text-xl font-bold text-gray-800">{Number((data as any).priority ?? 0)}</p>
                     </div>
                   </div>
@@ -212,7 +222,7 @@ export default function CategoryDetailPage() {
                       <Layers className="size-6 text-green-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500 font-medium mb-1">Level</p>
+                      <p className="text-sm text-gray-500 font-medium mb-1">Cấp độ</p>
                       <p className="text-xl font-bold text-gray-800">{(data as any).level ?? "-"}</p>
                     </div>
                   </div>
@@ -230,7 +240,7 @@ export default function CategoryDetailPage() {
                       <FolderTree className="size-6 text-indigo-600" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-500 font-medium mb-1">Parent Category</p>
+                      <p className="text-sm text-gray-500 font-medium mb-1">Danh mục cha</p>
                       <p className="text-xl font-bold text-gray-800">{parentName}</p>
                     </div>
                   </div>
@@ -249,7 +259,7 @@ export default function CategoryDetailPage() {
                     <LinkIcon className="size-6 text-blue-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-gray-500 font-medium mb-2">Relative URL</p>
+                    <p className="text-sm text-gray-500 font-medium mb-2">URL tương đối</p>
                     {((data as any).relativeUrl as string) ? (
                       <a 
                         href={(data as any).relativeUrl} 
@@ -264,22 +274,6 @@ export default function CategoryDetailPage() {
                     )}
                   </div>
                 </div>
-              </motion.div>
-
-              {/* Description Card */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-                className="bg-white rounded-2xl p-8 transition-all"
-              >
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                  <span className="w-1 h-6 bg-blue-600 rounded-full"></span>
-                  Description
-                </h3>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-line text-base">
-                  {(data as any).description || "-"}
-                </p>
               </motion.div>
             </motion.div>
           )}

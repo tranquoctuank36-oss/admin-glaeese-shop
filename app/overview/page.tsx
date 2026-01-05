@@ -20,25 +20,25 @@ const OverviewPage = () => {
           transition={{ duration: 0.5 }}
         >
           <StatCard
-            name="Total Sales"
+            name="Tổng doanh thu"
             icon={DollarSign}
             value="182,450đ"
             color="blue"
           />
           <StatCard
-            name="Total Clients"
+            name="Tổng khách hàng"
             icon={Users}
             value="1,437"
             color="green"
           />
           <StatCard
-            name="Total Products"
+            name="Tổng sản phẩm"
             icon={ShoppingBag}
             value="674"
             color="purple"
           />
           <StatCard
-            name="Stock"
+            name="Tồn kho"
             icon={SquareActivity}
             value="12,845"
             color="orange"

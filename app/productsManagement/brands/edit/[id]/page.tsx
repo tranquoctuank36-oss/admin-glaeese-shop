@@ -55,23 +55,23 @@ export default function EditBrandPage() {
   const onSubmit = async (values: BrandFormValues) => {
     await updateBrand(id, values as any);
     router.push(Routes.productsManagement.brands.root);
-    toast.success("Brand updated successfully!");
+    toast.success("Đã cập nhật thương hiệu thành công!");
   };
 
   if (loading)
-    return <p className="p-6 flex items-center justify-center">Loading...</p>;
-  if (!initial) return <p className="p-6 text-red-600">Brand not found.</p>;
+    return <p className="p-6 flex items-center justify-center">Đang tải...</p>;
+  if (!initial) return <p className="p-6 text-red-600">Không tìm thấy thương hiệu.</p>;
 
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">Edit Brand</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-6">Sửa thương hiệu</h1>
         </div>
 
         <BrandForm
           initial={initial}
-          submitLabel="Update"
+          submitLabel="Cập nhật"
           onSubmit={onSubmit}
           onCancel={() => router.back()}
         />

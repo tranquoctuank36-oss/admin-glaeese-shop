@@ -43,9 +43,33 @@ function statusBadgeClass(status?: string | null) {
 }
 function formatStatusLabel(status?: string | null) {
   if (!status) return "-";
-  return String(status)
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const statusMap: Record<string, string> = {
+    "published": "Đã xuất bản",
+    "draft": "Bản nháp",
+    "unlisted": "Chưa liệt kê",
+    "archived": "Đã lưu trữ"
+  };
+  return statusMap[String(status).toLowerCase()] || "-";
+}
+
+function formatProductType(type?: string | null) {
+  if (!type) return "—";
+  const typeMap: Record<string, string> = {
+    "eyeglasses": "Gọng kính",
+    "sunglasses": "Kính mát"
+  };
+  return typeMap[type] || type;
+}
+
+function formatGender(gender?: string | null) {
+  if (!gender) return "—";
+  const genderMap: Record<string, string> = {
+    "male": "Nam",
+    "female": "Nữ",
+    "unisex": "Unisex",
+    "kid": "Trẻ em"
+  };
+  return genderMap[gender] || gender;
 }
 
 function fmt(iso?: string) {
@@ -218,10 +242,10 @@ function ProductsPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Products List {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+                Danh sách sản phẩm {meta?.totalItems !== undefined && `(${meta.totalItems})`}
               </h1>
               <p className="text-gray-600 mt-1">
-                Manage your eyewear inventory
+                Quản lý kho hàng kính mắt của bạn
               </p>
             </div>
             <div className="flex gap-3">
@@ -232,7 +256,7 @@ function ProductsPage() {
                 className="flex h-12 items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-base"
               >
                 <Trash2 size={20} />
-                Trash Bin
+                Thùng rác
                 {trashCount > 0 && (
                   <span className="top-2 right-2 bg-white text-red-600 text-xs font-bold px-2 py-0.5 rounded-full shadow">
                     {trashCount}
@@ -246,7 +270,7 @@ function ProductsPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Add Product
+                Thêm sản phẩm
               </Button>
             </div>
           </div>
@@ -264,7 +288,7 @@ function ProductsPage() {
                 } as any);
               }
             }}
-            placeholder="Search by product name or slug or description..."
+            placeholder="Tìm kiếm theo tên, slug hoặc mô tả sản phẩm..."
           />
 
           {/* <ProductListToolbar
@@ -286,17 +310,17 @@ function ProductsPage() {
             className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-center justify-between"
           >
             <div className="text-blue-800 font-medium">
-              {selectedProducts.length} product(s) selected
+              {selectedProducts.length} sản phẩm được chọn
             </div>
             <div className="flex gap-2">
               <ConfirmPopover
-                title="Are you sure you want to delete the selected products?"
-                message={`${selectedProducts.length} product(s)`}
-                confirmText="Remove"
+                title="Bạn có chắc chắn muốn xóa các sản phẩm đã chọn?"
+                message={`${selectedProducts.length} sản phẩm`}
+                confirmText="Xóa"
                 onConfirm={handleBulkDelete}
               >
                 <Button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                  Delete Selected
+                  Xóa được chọn
                 </Button>
               </ConfirmPopover>
             </div>
@@ -315,10 +339,10 @@ function ProductsPage() {
             </div>
           )}
           <div className="overflow-x-auto">
-            <table className="table-auto w-max min-w-[1440px]">
+            <table className="w-full">
               <thead className="bg-gray-100 border-b border-gray-300">
                 <tr>
-                  <th className="px-6 py-4 text-left">
+                  <th className="px-6 py-4 text-center">
                     <input
                       type="checkbox"
                       checked={allSelected}
@@ -326,10 +350,10 @@ function ProductsPage() {
                       className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     />
                   </th>
-                  <th className="px-6 py-4 w-50 text-left text-xs font-semibold text-gray-600 uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-600">
-                        Name
+                      <span className="text-xs font-bold text-gray-600 truncate max-w-[320px]">
+                        Tên
                       </span>
                       <button
                         type="button"
@@ -348,22 +372,19 @@ function ProductsPage() {
                       </button>
                     </div>
                   </th>
-                  <th className="px-6 py-4 w-50 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    Slug
+                  <th className="px-6 py-4 w-40 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Danh mục
                   </th>
-                  <th className="px-6 py-4 w-40 text-left text-xs font-bold text-gray-600 uppercase">
-                    Category
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Hiệu suất
                   </th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase">
-                    Performance
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Trạng thái
                   </th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrapp">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-bold text-gray-600">
-                        Created At
+                        Ngày tạo
                       </span>
                       <button
                         type="button"
@@ -371,10 +392,10 @@ function ProductsPage() {
                         className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
                         title={
                           q.sortField === "createdAt"
-                            ? `Sorting: ${
-                                q.sortOrder === "ASC" ? "ASC" : "DESC"
-                              } (click to change)`
-                            : "No sorting (click to sort by Created At)"
+                            ? `Sắp xếp: ${
+                                q.sortOrder === "ASC" ? "Tăng" : "Giảm"
+                              } (nhấp để thay đổi)`
+                            : "Không sắp xếp (nhấp để sắp xếp theo Ngày tạo)"
                         }
                       >
                         {q.sortField === "createdAt" ? (
@@ -389,8 +410,8 @@ function ProductsPage() {
                       </button>
                     </div>
                   </th>
-                  <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    Actions
+                  <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
+                    Hành động
                   </th>
                 </tr>
               </thead>
@@ -401,7 +422,7 @@ function ProductsPage() {
                       colSpan={10}
                       className="px-6 py-8 text-center text-gray-500"
                     >
-                      Loading…
+                      Đang tải…
                     </td>
                   </tr>
                 ) : rows.length === 0 ? (
@@ -410,7 +431,7 @@ function ProductsPage() {
                       colSpan={10}
                       className="px-6 py-8 text-center text-gray-500 italic"
                     >
-                      Products is empty.
+                      Danh sách sản phẩm trống.
                     </td>
                   </tr>
                 ) : (
@@ -431,7 +452,7 @@ function ProductsPage() {
                         />
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-3">
                           {product.thumbnailUrl ? (
                             <img
@@ -442,38 +463,36 @@ function ProductsPage() {
                             />
                           ) : (
                             <div className="w-15 h-15 bg-gray-200 rounded-lg flex items-center justify-center">
-                              <span className="text-gray-400 text-xs">No image</span>
+                              <span className="text-gray-400 text-xs">Không có hình ảnh</span>
                             </div>
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis">
                               {product.name}
                             </div>
-
+                            <div className="text-xs text-gray-500 mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                              {product.slug}
+                            </div>
                             <div className="text-sm text-gray-600 mt-0.5 whitespace-nowrap">
                               {product.brand?.name} ·{" "}
-                              {product.productVariants?.length} variants
+                              {product.productVariants?.length} biến thể
                             </div>
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4 text-gray-600">
-                        {product.slug}
-                      </td>
-
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm">
                           <div className="font-medium text-gray-800">
-                            {product.productType ?? "—"}
+                            {formatProductType(product.productType)}
                           </div>
                           <div className="text-gray-600">
-                            {product.gender ?? "—"}
+                            {formatGender(product.gender)}
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col items-center gap-1">
                           <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
                             <span>🛒 {product.totalSold ?? 0}</span>
@@ -482,12 +501,12 @@ function ProductsPage() {
                           </div>
                           <div className="text-xs text-gray-600 flex items-center gap-1">
                             <span className="text-yellow-500">⭐</span>
-                            <span>{product.averageRating ?? 0} / 5</span>
+                            <span>{Math.round(product.averageRating ?? 0)} / 5</span>
                           </div>
                         </div>
                       </td>
 
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-4 text-center whitespace-nowrap">
                         <span
                           className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${statusBadgeClass(
                             product.productStatus
@@ -497,7 +516,7 @@ function ProductsPage() {
                         </span>
                       </td>
 
-                      <td className="px-6 py-4 text-gray-600">
+                      <td className="px-6 py-4 text-gray-600 text-center whitespace-nowrap">
                         {fmt(product.createdAt)}
                       </td>
 
@@ -506,7 +525,7 @@ function ProductsPage() {
                           <Button
                             size="icon-sm"
                             className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                            title="View Details"
+                            title="Xem chi tiết"
                             onClick={() =>
                               router.push(
                                 Routes.productsManagement.products.details(
@@ -523,7 +542,7 @@ function ProductsPage() {
                           <Button
                             size="icon-sm"
                             className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                            title="Edit"
+                            title="Sửa"
                             onClick={() =>
                               router.push(
                                 Routes.productsManagement.products.edit(
@@ -538,9 +557,9 @@ function ProductsPage() {
                             |
                           </span>
                           <ConfirmPopover
-                            title="Are you sure you want to delete the product?"
+                            title="Bạn có chắc chắn muốn xóa sản phẩm này?"
                             message={<b>{product.name}</b>}
-                            confirmText="Remove"
+                            confirmText="Xóa"
                             onConfirm={() =>
                               handleDelete(product.id, product.name)
                             }
@@ -548,7 +567,7 @@ function ProductsPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                              title="Remove"
+                              title="Xóa"
                             >
                               <Trash2 className="text-red-600 size-5" />
                             </Button>
@@ -566,7 +585,7 @@ function ProductsPage() {
           <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
             {/* Rows per page (left) */}
             <div className="flex items-center gap-3 text-sm text-gray-700">
-              <span>Rows per page:</span>
+              <span>Số hàng mỗi trang:</span>
               <select
                 className="h-9 rounded-md border border-gray-300 px-2 bg-white"
                 value={q.limit}
@@ -609,7 +628,7 @@ function ProductsPage() {
             <Button
               className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
               onClick={() => setLightboxImage(null)}
-              title="Close"
+              title="Đóng"
             >
               <X className="w-6 h-6 text-gray-800" />
             </Button>
