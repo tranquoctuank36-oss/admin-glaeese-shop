@@ -65,7 +65,7 @@ export default function StatCard({
           </p>
           <p className={`text-3xl font-bold ${styles.valueColor}`}>{value}</p>
           {count !== undefined && (
-            <p className="text-xs text-gray-500 mt-1">{count} mục</p>
+            <p className="text-xs text-gray-500 mt-1">{count} sản phẩm</p>
           )}
         </div>
         <Icon className={styles.iconColor} size={40} />

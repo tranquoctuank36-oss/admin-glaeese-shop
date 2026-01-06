@@ -1,56 +1,145 @@
 "use client";
 
-import StatCard from "@/components/StatCard";
-import { DollarSign, ShoppingBag, SquareActivity, Users } from "lucide-react";
-import { motion } from "framer-motion";
-import SalesOverViewChart from "@/components/chart/SalesOverViewChart";
-import CategoryDistributionChart from "@/components/chart/CategoryDistributionChart";
-import OrderDistributionChart from "@/components/chart/OrderDistributionChart";
-import ProductPerformanceChart from "@/components/chart/ProductPerformanceChart";
+import { useState, useEffect } from "react";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
+import type { StatsPeriod, DashboardStats } from "@/types/dashboard";
+import { dashboardService } from "@/services/dashboardService";
+import { GRID_LAYOUTS } from "@/lib/dashboardUtils";
+
+// Components
+import PeriodSelector from "@/components/dashboard/PeriodSelector";
+import OverviewCards from "@/components/dashboard/cards/OverviewCards";
+import AdditionalStatsCards from "@/components/dashboard/cards/AdditionalStatsCards";
+import RevenueLineChart from "@/components/dashboard/charts/RevenueLineChart";
+import OrdersPieChart from "@/components/dashboard/charts/OrdersPieChart";
+import CategoryDonutChart from "@/components/dashboard/charts/CategoryDonutChart";
+import PaymentMethodsBar from "@/components/dashboard/charts/PaymentMethodsBar";
+import TopProductsTable from "@/components/dashboard/tables/TopProductsTable";
+import LowStockTable from "@/components/dashboard/tables/LowStockTable";
+import RecentOrdersList from "@/components/dashboard/lists/RecentOrdersList";
+import RecentReviewsList from "@/components/dashboard/lists/RecentReviewsList";
+import DashboardSkeleton from "@/components/dashboard/DashboardSkeleton";
+import DashboardError from "@/components/dashboard/DashboardError";
 
 const OverviewPage = () => {
+  const [period, setPeriod] = useState<StatsPeriod>("month");
+  const [data, setData] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await dashboardService.getFullStats({ period });
+      setData(result);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+    // Auto-refresh every 5 minutes
+    const interval = setInterval(fetchDashboardData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [period]);
+
+  if (error) {
+    return (
+      <div className="flex-1 overflow-auto relative z-10">
+        <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
+          <DashboardError error={error} refetch={fetchDashboardData} />
+        </main>
+      </div>
+    );
+  }
+
+  if (loading && !data) {
+    return (
+      <div className="flex-1 overflow-auto relative z-10">
+        <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
+          <DashboardSkeleton />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <main className="max-w-7xl mx-auto py-4 px-4 lg:px-8">
-        <motion.div
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <StatCard
-            name="Tổng doanh thu"
-            icon={DollarSign}
-            value="182,450đ"
-            color="blue"
-          />
-          <StatCard
-            name="Tổng khách hàng"
-            icon={Users}
-            value="1,437"
-            color="green"
-          />
-          <StatCard
-            name="Tổng sản phẩm"
-            icon={ShoppingBag}
-            value="674"
-            color="purple"
-          />
-          <StatCard
-            name="Tồn kho"
-            icon={SquareActivity}
-            value="12,845"
-            color="orange"
-          />
-        </motion.div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <SalesOverViewChart />
-          <CategoryDistributionChart />
-          <OrderDistributionChart />
-          <ProductPerformanceChart />
+      <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <p className="text-sm text-gray-500 mt-1">
+              Tổng quan về hoạt động kinh doanh
+            </p>
+          </div>
+          <PeriodSelector value={period} onChange={setPeriod} />
         </div>
+
+        {/* Overview Cards */}
+        <OverviewCards data={data?.overview || null} loading={loading} />
+
+        {/* Charts Row 1 */}
+        <div className={GRID_LAYOUTS.twoColumns}>
+          <RevenueLineChart
+            data={data?.revenue.revenueByPeriod || []}
+            loading={loading}
+          />
+          <OrdersPieChart
+            data={data?.orders.ordersByStatus || []}
+            loading={loading}
+          />
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className={GRID_LAYOUTS.twoColumns}>
+          <CategoryDonutChart
+            data={data?.categories.topCategories || []}
+            loading={loading}
+          />
+          <PaymentMethodsBar
+            data={data?.paymentMethods || []}
+            loading={loading}
+          />
+        </div>
+
+        {/* Tables */}
+        <div className={GRID_LAYOUTS.twoColumns}>
+          <TopProductsTable
+            data={data?.products.topSellingProducts || []}
+            loading={loading}
+          />
+          <LowStockTable
+            data={data?.products.lowStockAlerts || []}
+            loading={loading}
+          />
+        </div>
+
+        {/* Recent Activities */}
+        <div className={GRID_LAYOUTS.twoColumns}>
+          <RecentOrdersList
+            data={data?.recentOrders || []}
+            loading={loading}
+          />
+          <RecentReviewsList
+            data={data?.recentReviews || []}
+            loading={loading}
+          />
+        </div>
+
+        {/* Additional Stats Cards */}
+        <AdditionalStatsCards
+          returns={data?.returns || null}
+          refunds={data?.refunds || null}
+          promotions={data?.promotions || null}
+          inventory={data?.inventory || null}
+          loading={loading}
+        />
       </main>
     </div>
   );
