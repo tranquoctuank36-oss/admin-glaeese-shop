@@ -10,10 +10,10 @@ import type { Product, ProductType, Gender } from "@/types/product";
 
 // Helper functions to normalize API values
 function normalizeProductType(value?: string | null): ProductType {
-  if (!value) return "Eyeglasses";
+  if (!value) return "Frame";
   const lower = value.toLowerCase();
   if (lower === "sunglasses") return "Sunglasses";
-  return "Eyeglasses";
+  return "Frame";
 }
 
 function normalizeGender(value?: string | null): Gender {

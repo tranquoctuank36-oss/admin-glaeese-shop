@@ -60,31 +60,31 @@ function getStatusBadge(status: string) {
     case "happening":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          Happening
+          Đang diễn ra
         </span>
       );
     case "scheduled":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          Scheduled
+          Đã lên lịch
         </span>
       );
     case "expired":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-          Expired
+          Hết hạn
         </span>
       );
     case "canceled":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-          Canceled
+          Đã hủy
         </span>
       );
     case "draft":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-          Draft
+          Nháp
         </span>
       );
     default:
@@ -97,13 +97,13 @@ function getTypeBadge(type: string) {
     case "percentage":
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-purple-100 text-purple-700">
-          Percentage
+          Phần trăm
         </span>
       );
     case "fixed":
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-700">
-          Fixed Amount
+          Số tiền cố định
         </span>
       );
     default:
@@ -128,14 +128,19 @@ function DiscountsTrashPage() {
 
   const [busyId, setBusyId] = useState<string | null>(null);
   const [openKey, setOpenKey] = useState<string | null>(null);
-  const [lightboxImage, setLightboxImage] = useState<{ url: string; alt: string } | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{
+    url: string;
+    alt: string;
+  } | null>(null);
   const [type, setType] = useState<string>("");
   const [status, setStatus] = useState<string>("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  
-  const currentVietnamTime = dayjs().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DDTHH:mm");
+
+  const currentVietnamTime = dayjs()
+    .tz("Asia/Ho_Chi_Minh")
+    .format("YYYY-MM-DDTHH:mm");
   const keyOf = (id: string, action: "restore" | "delete") => `${id}|${action}`;
   const isOpen = (id: string, action: "restore" | "delete") =>
     openKey === keyOf(id, action);
@@ -149,8 +154,12 @@ function DiscountsTrashPage() {
         limit: itemsPerPage,
         type: type as any,
         status: status as any,
-        startDate: startDate ? dayjs.tz(startDate, "Asia/Ho_Chi_Minh").utc().toISOString() : undefined,
-        endDate: endDate ? dayjs.tz(endDate, "Asia/Ho_Chi_Minh").utc().toISOString() : undefined,
+        startDate: startDate
+          ? dayjs.tz(startDate, "Asia/Ho_Chi_Minh").utc().toISOString()
+          : undefined,
+        endDate: endDate
+          ? dayjs.tz(endDate, "Asia/Ho_Chi_Minh").utc().toISOString()
+          : undefined,
         sortField: sortField as any,
         sortOrder,
         isDeleted: true,
@@ -162,7 +171,7 @@ function DiscountsTrashPage() {
       setHasPrev(currentPage > 1);
     } catch (error: any) {
       console.error("Failed to fetch deleted discounts:", error);
-      toast.error(error?.response?.data?.detail || "Failed to load trash");
+      toast.error(error?.response?.data?.detail || "Không thể tải thùng rác");
       setDiscounts([]);
     } finally {
       setLoading(false);
@@ -171,7 +180,17 @@ function DiscountsTrashPage() {
 
   useEffect(() => {
     fetchDiscounts();
-  }, [currentPage, itemsPerPage, searchTerm, type, status, startDate, endDate, sortField, sortOrder]);
+  }, [
+    currentPage,
+    itemsPerPage,
+    searchTerm,
+    type,
+    status,
+    startDate,
+    endDate,
+    sortField,
+    sortOrder,
+  ]);
 
   const backIfEmpty = () => {
     setCurrentPage((prev) => Math.max(1, prev - 1));
@@ -181,7 +200,7 @@ function DiscountsTrashPage() {
     try {
       setBusyId(id);
       await restoreDiscount(id);
-      toast.success("Discount restored successfully");
+      toast.success("Đã khôi phục giảm giá thành công");
       const next = discounts.filter((d) => d.id !== id);
       setDiscounts(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
@@ -190,7 +209,7 @@ function DiscountsTrashPage() {
       const detail =
         error?.response?.data?.detail ||
         error?.detail ||
-        "Failed to restore discount";
+        "Không thể khôi phục giảm giá";
       toast.error(detail);
     } finally {
       setBusyId(null);
@@ -202,7 +221,7 @@ function DiscountsTrashPage() {
     try {
       setBusyId(id);
       await forceDeleteDiscount(id);
-      toast.success("Discount permanently deleted");
+      toast.success("Đã xóa vĩnh viễn giảm giá");
       const next = discounts.filter((d) => d.id !== id);
       setDiscounts(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
@@ -211,7 +230,7 @@ function DiscountsTrashPage() {
       const detail =
         error?.response?.data?.detail ||
         error?.detail ||
-        "Failed to delete permanently";
+        "Không thể xóa vĩnh viễn";
       toast.error(detail);
     } finally {
       setBusyId(null);
@@ -288,10 +307,10 @@ function DiscountsTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin - Discounts
+                  Thùng rác - Giảm giá
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Restore or permanently delete discounts
+                  Khôi phục hoặc xóa vĩnh viễn giảm giá
                 </p>
               </div>
             </div>
@@ -307,11 +326,14 @@ function DiscountsTrashPage() {
             {/* Search Bar */}
             <div className="flex items-center gap-3">
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-                  placeholder="Search by name or slug..."
+                  placeholder="Tìm kiếm theo tên hoặc slug..."
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -324,7 +346,7 @@ function DiscountsTrashPage() {
                 className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
               >
                 <Filter size={20} />
-                Filters
+                Bộ lọc
               </Button>
             </div>
 
@@ -337,11 +359,11 @@ function DiscountsTrashPage() {
                 transition={{ duration: 0.2 }}
                 className="mt-4 border-t border-gray-200 pt-4"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   {/* Status Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
+                      Trạng thái
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -351,19 +373,19 @@ function DiscountsTrashPage() {
                         setCurrentPage(1);
                       }}
                     >
-                      <option value="">All</option>
-                      <option value="draft">Draft</option>
-                      <option value="scheduled">Scheduled</option>
-                      <option value="happening">Happening</option>
-                      <option value="canceled">Canceled</option>
-                      <option value="expired">Expired</option>
+                      <option value="">Tất cả</option>
+                      <option value="draft">Nháp</option>
+                      <option value="scheduled">Đã lên lịch</option>
+                      <option value="happening">Đang diễn ra</option>
+                      <option value="canceled">Đã hủy</option>
+                      <option value="expired">Hết hạn</option>
                     </select>
                   </div>
 
                   {/* Type Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Type
+                      Loại
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -373,16 +395,40 @@ function DiscountsTrashPage() {
                         setCurrentPage(1);
                       }}
                     >
-                      <option value="">All</option>
-                      <option value="fixed">Fixed</option>
-                      <option value="percentage">Percentage</option>
+                      <option value="">Tất cả</option>
+                      <option value="fixed">Số tiền cố định</option>
+                      <option value="percentage">Phần trăm</option>
+                    </select>
+                  </div>
+
+                  {/* Sort Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sắp xếp
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                      value={`${sortField}-${sortOrder}`}
+                      onChange={(e) => {
+                        const [field, order] = e.target.value.split('-') as [typeof sortField, typeof sortOrder];
+                        setSortField(field);
+                        setSortOrder(order);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <option value="deletedAt-DESC">Ngày xóa giảm dần</option>
+                      <option value="deletedAt-ASC">Ngày xóa tăng dần</option>
+                      <option value="startAt-DESC">Ngày bắt đầu giảm dần</option>
+                      <option value="startAt-ASC">Ngày bắt đầu tăng dần</option>
+                      <option value="endAt-DESC">Ngày kết thúc giảm dần</option>
+                      <option value="endAt-ASC">Ngày kết thúc tăng dần</option>
                     </select>
                   </div>
 
                   {/* Start Date Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Start Date
+                      Ngày bắt đầu
                     </label>
                     <input
                       type="datetime-local"
@@ -403,7 +449,7 @@ function DiscountsTrashPage() {
                   {/* End Date Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      End Date
+                      Ngày kết thúc
                     </label>
                     <input
                       type="datetime-local"
@@ -427,7 +473,7 @@ function DiscountsTrashPage() {
                     onClick={handleReset}
                     className="px-4 py-2 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors"
                   >
-                    Reset
+                    Đặt lại
                   </Button>
                 </div>
               </motion.div>
@@ -443,7 +489,7 @@ function DiscountsTrashPage() {
           >
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <p className="text-gray-600 text-lg">Loading...</p>
+                <p className="text-gray-600 text-lg">Đang tải...</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -451,88 +497,22 @@ function DiscountsTrashPage() {
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Slug
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Type
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Value
+                        Tên
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Max Discount
+                        Giá trị
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Status
+                        Trạng thái
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Start Date</span>
-                          <button
-                            type="button"
-                            onClick={toggleStartAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          >
-                            {sortField === "startAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
+                        <div className="flex flex-col items-center gap-1">
+                          <span>Thời gian áp dụng</span>  
+                          
                         </div>
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>End Date</span>
-                          <button
-                            type="button"
-                            onClick={toggleEndAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          >
-                            {sortField === "endAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Deleted At</span>
-                          <button
-                            type="button"
-                            onClick={toggleDeletedAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          >
-                            {sortField === "deletedAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Canceled At
-                    </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                        Thao tác
                       </th>
                     </tr>
                   </thead>
@@ -549,61 +529,47 @@ function DiscountsTrashPage() {
                           <span className="text-sm font-medium text-gray-900">
                             {discount.name}
                           </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <code className="text-gray-600">
-                            {discount.slug || "-"}
-                          </code>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {getTypeBadge(discount.type)}
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-base font-bold text-green-600">
-                            {discount.type === "percentage"
-                              ? `${parseFloat(discount.value) / 100}%`
-                              : `${parseFloat(discount.value).toLocaleString("en-US")}đ`}
+                          <br />
+                          <span className="text-left">
+                            {getTypeBadge(discount.type)}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {discount.maxDiscountValue ? (
-                            <span className="text-sm font-semibold text-gray-600">
-                              {Number(discount.maxDiscountValue).toLocaleString(
-                                "en-US"
-                              )}
-                              đ
+                          <div className="flex flex-col gap-1">
+                            <span className="text-base font-bold text-green-600 whitespace-nowrap">
+                              {discount.type === "percentage"
+                                ? `${parseFloat(discount.value) / 100}%`
+                                : `${parseFloat(discount.value).toLocaleString(
+                                    "en-US"
+                                  )}đ`}
                             </span>
-                          ) : (
-                            <span className="text-gray-400 text-sm">-</span>
-                          )}
+                            {discount.maxDiscountValue ? (
+                              <span className="text-sm font-semibold text-gray-600">
+                                Tối đa: {Number(discount.maxDiscountValue).toLocaleString(
+                                  "en-US"
+                                )}đ
+                              </span>
+                            ) : (
+                              <span className="text-gray-400 text-sm">-</span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           {getStatusBadge(discount.status)}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(discount.startAt)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(discount.endAt)}
-                          </span>
-                        </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDate((discount as any).deletedAt)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {discount.canceledAt
-                              ? formatDate(discount.canceledAt)
-                              : "-"}
-                          </span>
+                          <div className="flex flex-col gap-1 min-w-[150px]">
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(discount.startAt)}
+                            </span>
+                            <span className="text-xs text-gray-400">đến</span>
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(discount.endAt)}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-end whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-2">
+                          <div className="flex items-center justify-center gap-2">
                             <ConfirmPopover
                               open={isOpen(discount.id, "restore")}
                               onOpenChange={(o) =>
@@ -611,14 +577,14 @@ function DiscountsTrashPage() {
                                   o ? keyOf(discount.id, "restore") : null
                                 )
                               }
-                              title="Restore this discount"
+                              title="Khôi phục giảm giá"
                               message={
                                 <div>
-                                  Are you sure you want to restore{" "}
+                                  Bạn có chắc muốn khôi phục{" "}
                                   <strong>{discount.name}</strong>?
                                 </div>
                               }
-                              confirmText="Restore"
+                              confirmText="Khôi phục"
                               onConfirm={() => handleRestore(discount.id)}
                               confirmDisabled={busyId === discount.id}
                               confirmLoading={busyId === discount.id}
@@ -645,14 +611,14 @@ function DiscountsTrashPage() {
                                   o ? keyOf(discount.id, "delete") : null
                                 )
                               }
-                              title="Permanently delete"
+                              title="Xóa vĩnh viễn"
                               message={
                                 <div>
-                                  Are you sure you want to permanently delete{" "}
+                                  Bạn có chắc muốn xóa vĩnh viễn{" "}
                                   <strong>{discount.name}</strong>?
                                 </div>
                               }
-                              confirmText="Delete"
+                              confirmText="Xóa"
                               onConfirm={() => handleForceDelete(discount.id)}
                               confirmDisabled={busyId === discount.id}
                               confirmLoading={busyId === discount.id}
@@ -690,7 +656,7 @@ function DiscountsTrashPage() {
             {!loading && discounts.length > 0 && (
               <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Rows per page:</span>
+                  <span>Số hàng mỗi trang:</span>
                   <select
                     className="h-9 rounded-md border border-gray-300 px-2 bg-white"
                     value={itemsPerPage}

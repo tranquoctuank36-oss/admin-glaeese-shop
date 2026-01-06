@@ -58,31 +58,31 @@ function getStatusBadge(status: string) {
     case "happening":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          Happening
+          Đang diễn ra
         </span>
       );
     case "scheduled":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          Scheduled
+          Đã lên lịch
         </span>
       );
     case "expired":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-          Expired
+          Hết hạn
         </span>
       );
     case "canceled":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-          Canceled
+          Đã hủy
         </span>
       );
     case "draft":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-          Draft
+          Bản nháp
         </span>
       );
     default:
@@ -95,13 +95,13 @@ function getTypeBadge(type: string) {
     case "percentage":
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-purple-100 text-purple-700">
-          Percentage
+          Phần trăm
         </span>
       );
     case "fixed":
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-700">
-          Fixed Amount
+          Số tiền cố định
         </span>
       );
     default:
@@ -258,7 +258,7 @@ function DiscountDetailsPage() {
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-8 px-4 lg:px-8">
           <div className="flex items-center justify-center py-20">
-            <p className="text-gray-600 text-lg">Loading...</p>
+            <p className="text-gray-600 text-lg">Đang tải...</p>
           </div>
         </main>
       </div>
@@ -270,7 +270,7 @@ function DiscountDetailsPage() {
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[1440px] mx-auto py-8 px-4 lg:px-8">
           <div className="flex items-center justify-center py-20">
-            <p className="text-red-600 text-lg">Discount not found</p>
+            <p className="text-red-600 text-lg">Không tìm thấy mã giảm giá</p>
           </div>
         </main>
       </div>
@@ -328,7 +328,7 @@ function DiscountDetailsPage() {
                 disabled={busyAction}
               >
                 <Calendar size={18} />
-                Schedule
+                Lên lịch
               </Button>
 
               {discount.status === "scheduled" && (
@@ -620,7 +620,7 @@ function DiscountDetailsPage() {
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-gray-800">
-                Schedule Discount
+                Lên lịch giảm giá
               </DialogTitle>
             </DialogHeader>
 
@@ -701,7 +701,7 @@ function DiscountDetailsPage() {
                 disabled={busyAction}
                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg"
               >
-                Cancel
+                Hủy
               </Button>
               <Button
                 onClick={handleSchedule}

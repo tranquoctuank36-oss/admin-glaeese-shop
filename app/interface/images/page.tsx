@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Pagination from "@/components/data/Pagination";
 import { useListQuery } from "@/components/data/useListQuery";
+import { Routes } from "@/lib/routes";
 import { getImages, bulkDeleteImages } from "@/services/imagesService";
 import { ImageItem } from "@/types/image";
 import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
@@ -109,7 +110,7 @@ export default function ImagesPage() {
       await bulkDeleteImages(selectedImages);
       setRows((prev) => prev.filter((r) => !selectedImages.includes(r.id)));
       setSelectedImages([]);
-      toast.success(`${selectedImages.length} image(s) deleted successfully`);
+      toast.success(`${selectedImages.length} hình ảnh đã được xóa thành công!`);
     } catch (e: any) {
       console.error("Bulk delete failed:", e);
       const errorMessage = e?.response?.data?.detail || e?.detail || "Failed to delete images";
@@ -157,7 +158,7 @@ export default function ImagesPage() {
               </div>
             </div>
             <Button
-              onClick={() => router.push("/productsManagement/images/add")}
+              onClick={() => router.push(Routes.interface.images.add)}
               className="flex items-center gap-2 h-12 bg-blue-600 hover:bg-blue-700 text-white text-base transition-all"
             >
               <Plus size={20} />
@@ -203,7 +204,7 @@ export default function ImagesPage() {
             >
               <Button className="h-12 px-4 py-2 bg-red-500 text-white/90 rounded-lg hover:bg-red-700">
                 <Trash2 className="text-white/90 size-5" />
-                Xóa Các HÌnh Được Chọn
+                Xóa các hình được chọn
               </Button>
             </ConfirmPopover>
             {/* <ConfirmPopover
@@ -381,15 +382,23 @@ export default function ImagesPage() {
                                 ? "bg-purple-100 text-purple-700"
                                 : image.ownerType === "discount"
                                 ? "bg-orange-100 text-orange-700"
+                                : image.ownerType === "review"
+                                ? "bg-yellow-100 text-yellow-700"
+                                : image.ownerType === "order_return"
+                                ? "bg-red-100 text-red-700"
                                 : "bg-gray-100 text-gray-700"
                             }`}
                           >
                             {image.ownerType === "product_variant" || image.ownerType === "product"
-                              ? "Biến Thể Sản Phẩm"
+                              ? "Sản Phẩm"
                               : image.ownerType === "brand"
                               ? "Thương Hiệu"
                               : image.ownerType === "discount"
-                              ? "Khuyến Mãi"
+                              ? "Giảm giá"
+                              : image.ownerType === "review"
+                              ? "Đánh Giá"
+                              : image.ownerType === "order_return"
+                              ? "Trả hàng"
                               : image.ownerType.charAt(0).toUpperCase() + image.ownerType.slice(1)}
                           </span>
                         </td>

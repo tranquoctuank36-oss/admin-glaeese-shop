@@ -157,7 +157,7 @@ export default function VoucherForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FloatingInput
           id="code"
-          label="Mã phiếu"
+          label="Mã giảm giá"
           required
           value={code}
           onChange={(v) => setCode(v.toUpperCase())}
@@ -278,7 +278,7 @@ export default function VoucherForm({
         {(type === "free_shipping" || type === "fixed") && (
           <FloatingInput
             id="maxUsage"
-            label="Maximum Usage Count"
+            label="Số lần sử dụng tối đa"
             type="number"
             required
             min={0}
@@ -294,7 +294,7 @@ export default function VoucherForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FloatingInput
             id="maxUsage"
-            label="Maximum Usage Count"
+            label="Số lần sử dụng tối đa"
             type="number"
             required
             min={0}

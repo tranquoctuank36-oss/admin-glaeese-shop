@@ -79,7 +79,7 @@ function VouchersPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [sortField, setSortField] = useState<
     "validFrom" | "validTo" | "createdAt"
-  >("validTo");
+  >("createdAt");
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -287,7 +287,9 @@ function VouchersPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách phiếu giảm giá {totalPages > 0 && `(${(currentPage - 1) * itemsPerPage + vouchers.length})`}
+                  Danh sách phiếu giảm giá{" "}
+                  {totalPages > 0 &&
+                    `(${(currentPage - 1) * itemsPerPage + vouchers.length})`}
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
                   Tạo và quản lý mã phiếu và chiến dịch khuyến mại
@@ -362,11 +364,11 @@ function VouchersPage() {
                 transition={{ duration: 0.2 }}
                 className="mt-4 border-t border-gray-200 pt-4"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   {/* Status Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
+                      Trạng thái
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -376,18 +378,18 @@ function VouchersPage() {
                         setCurrentPage(1);
                       }}
                     >
-                      <option value="all">All</option>
-                      <option value="upcoming">Upcoming</option>
-                      <option value="happening">Happening</option>
-                      <option value="canceled">Canceled</option>
-                      <option value="expired">Expired</option>
+                      <option value="all">Tất cả</option>
+                      <option value="upcoming">Sắp diễn ra</option>
+                      <option value="happening">Đang diễn ra</option>
+                      <option value="canceled">Đã hủy</option>
+                      <option value="expired">Hết hạn</option>
                     </select>
                   </div>
 
                   {/* Type Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Type
+                      Loại
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -397,17 +399,41 @@ function VouchersPage() {
                         setCurrentPage(1);
                       }}
                     >
-                      <option value="all">All</option>
-                      <option value="fixed">Fixed</option>
-                      <option value="percentage">Percentage</option>
-                      <option value="free_shipping">Free Shipping</option>
+                      <option value="all">Tất cả</option>
+                      <option value="fixed">Số tiền cố định</option>
+                      <option value="percentage">Phần trăm</option>
+                      <option value="free_shipping">Miễn phí vận chuyển</option>
+                    </select>
+                  </div>
+
+                  {/* Sort Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sắp xếp
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                      value={`${sortField}-${sortOrder}`}
+                      onChange={(e) => {
+                        const [field, order] = e.target.value.split('-') as [typeof sortField, typeof sortOrder];
+                        setSortField(field);
+                        setSortOrder(order);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <option value="createdAt-DESC">Ngày tạo giảm dần</option>
+                      <option value="createdAt-ASC">Ngày tạo tăng dần</option>
+                      <option value="validFrom-DESC">Ngày bắt đầu giảm dần</option>
+                      <option value="validFrom-ASC">Ngày bắt đầu tăng dần</option>
+                      <option value="validTo-DESC">Ngày kết thúc giảm dần</option>
+                      <option value="validTo-ASC">Ngày kết thúc tăng dần</option>
                     </select>
                   </div>
 
                   {/* Valid From Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Valid From
+                      Ngày bắt đầu
                     </label>
                     <input
                       type="datetime-local"
@@ -418,7 +444,11 @@ function VouchersPage() {
                         const newValidFrom = e.target.value;
                         setValidFromFilter(newValidFrom);
                         // If Valid To is set and is less than new Valid From, reset Valid To
-                        if (validToFilter && newValidFrom && newValidFrom > validToFilter) {
+                        if (
+                          validToFilter &&
+                          newValidFrom &&
+                          newValidFrom > validToFilter
+                        ) {
                           setValidToFilter("");
                         }
                         setCurrentPage(1);
@@ -429,7 +459,7 @@ function VouchersPage() {
                   {/* Valid To Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Valid To
+                      Ngày kết thúc
                     </label>
                     <input
                       type="datetime-local"
@@ -465,7 +495,7 @@ function VouchersPage() {
                     }}
                     className="px-4 py-2 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors"
                   >
-                    Reset
+                    Đặt lại
                   </Button>
                 </div>
               </motion.div>
@@ -481,7 +511,7 @@ function VouchersPage() {
           >
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <p className="text-gray-600 text-lg">Loading vouchers...</p>
+                <p className="text-gray-600 text-lg">Đang tải mã giảm giá...</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -489,19 +519,13 @@ function VouchersPage() {
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Mã
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Loại giảm giá
+                        Mã giảm giá
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Giá trị
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Đơn tối thiểu
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Giảm tối đa
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Trạng thái
@@ -512,7 +536,7 @@ function VouchersPage() {
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex flex-col items-center gap-1">
                           <span>Thời gian áp dụng</span>
-                          <div className="flex gap-2">
+                          {/* <div className="flex gap-2">
                             <button
                               type="button"
                               onClick={toggleValidFromSort}
@@ -555,39 +579,12 @@ function VouchersPage() {
                                 <ArrowUpDown className="size-5" />
                               )}
                             </button>
-                          </div>
+                          </div> */}
                         </div>
                       </th>
-                      
 
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex flex-col items-center gap-1">
-                          <span>Ngày tạo / Hủy</span>
-                          <button
-                            type="button"
-                            onClick={toggleCreatedAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                            title={
-                              sortField === "createdAt"
-                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
-                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày tạo)"
-                            }
-                          >
-                            <span className="mr-1">Tạo</span>
-                            {sortField === "createdAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Hành động
+                        Thao tác
                       </th>
                     </tr>
                   </thead>
@@ -605,43 +602,42 @@ function VouchersPage() {
                             <code className="text-gray-600 text-lg font-semibold">
                               {voucher.code}
                             </code>
-                            <span className="text-xs text-gray-500 truncate">
-                              Mô tả: {voucher.description || "-"}
+                            <span className="text-left whitespace-nowrap">
+                              {getTypeBadge(voucher.type)}
                             </span>
                           </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {getTypeBadge(voucher.type)}
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-base font-bold text-green-600">
-                            {voucher.type === "percentage"
-                              ? `${
-                                  Number(voucher.value) > 100
-                                    ? Number(voucher.value) / 100
-                                    : voucher.value
-                                }%`
-                              : voucher.type === "free_shipping"
-                              ? "Free"
-                              : `${Number(voucher.value).toLocaleString(
+                          <div className="flex flex-col gap-1">
+                            <span className="text-base font-bold text-green-600 whitespace-nowrap">
+                              {voucher.type === "percentage"
+                                ? `${
+                                    Number(voucher.value) > 100
+                                      ? Number(voucher.value) / 100
+                                      : voucher.value
+                                  }%`
+                                : voucher.type === "free_shipping"
+                                ? "Free"
+                                : `${Number(voucher.value).toLocaleString(
+                                    "en-US"
+                                  )}đ`}
+                            </span>
+                            {voucher.maxDiscountValue ? (
+                              <span className="text-sm font-semibold text-gray-600">
+                                Tối đa: {Number(voucher.maxDiscountValue).toLocaleString(
                                   "en-US"
-                                )}đ`}
-                          </span>
+                                )}đ
+                              </span>
+                            ) : (
+                              <span className="text-gray-400 text-sm">-</span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-sm text-gray-600">
+                          <span className="text-base text-gray-600">
                             {voucher.minOrderAmount
                               ? `${Number(
                                   voucher.minOrderAmount
-                                ).toLocaleString("en-US")}đ`
-                              : "-"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-sm text-gray-600">
-                            {voucher.maxDiscountValue
-                              ? `${Number(
-                                  voucher.maxDiscountValue
                                 ).toLocaleString("en-US")}đ`
                               : "-"}
                           </span>
@@ -660,37 +656,17 @@ function VouchersPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {formatDateTime(voucher.validFrom) === "-" && formatDateTime(voucher.validTo) === "-" ? (
-                            <div className="flex justify-center items-center w-full min-w-[220px] text-gray-400">
-                              <span className="text-center">-</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-center">-</span>
-                            </div>
-                          ) : (
-                            <div className="flex justify-between items-center w-full min-w-[220px] text-gray-600">
-                              <span className="text-left flex-1">{formatDateTime(voucher.validFrom)}</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-right flex-1">{formatDateTime(voucher.validTo)}</span>
-                            </div>
-                          )}
-                        </td>
-                        
 
-                        <td className="px-6 py-4 text-center whitespace-nowrap min-w-[180px]">
-                          {formatDate(voucher.createdAt) === "-" && (!voucher.canceledAt || formatDate(voucher.canceledAt) === "-") ? (
-                            <div className="flex justify-center items-center w-full min-w-[180px] text-gray-400">
-                              <span className="text-center">-</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-center">-</span>
-                            </div>
-                          ) : (
-                            <div className="flex justify-between items-center w-full min-w-[180px] text-gray-600">
-                              <span className="text-left flex-1">{formatDate(voucher.createdAt)}</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-right flex-1">{voucher.canceledAt ? formatDate(voucher.canceledAt) : "-"}</span>
-                            </div>
-                          )}
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <div className="flex flex-col gap-1 min-w-[150px]">
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(voucher.validFrom)}
+                            </span>
+                            <span className="text-xs text-gray-400">đến</span>
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(voucher.validTo)}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-end whitespace-nowrap">
                           <div className="flex items-center justify-end gap-2">

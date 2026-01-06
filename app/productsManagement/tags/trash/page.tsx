@@ -162,7 +162,7 @@ export default function TagsTrashPage() {
               <Button
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() => router.push(Routes.productsManagement.tags.root)}
+                onClick={() => router.back()}
                 title="Quay Lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
@@ -242,7 +242,7 @@ export default function TagsTrashPage() {
                         Ngày Xóa
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Hành Động
+                        Thao tác
                       </th>
                     </tr>
                   </thead>

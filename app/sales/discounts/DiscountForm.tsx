@@ -52,7 +52,7 @@ interface DiscountFormProps {
 
 export function DiscountForm({
   initial,
-  submitLabel = "Save",
+  submitLabel = "Lưu",
   onSubmit,
   onCancel,
 }: DiscountFormProps) {

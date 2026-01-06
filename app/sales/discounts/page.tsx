@@ -377,7 +377,7 @@ function DiscountsPage() {
                 transition={{ duration: 0.2 }}
                 className="mt-4 border-t border-gray-200 pt-4"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   {/* Status Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -416,6 +416,30 @@ function DiscountsPage() {
                       <option value="">Tất cả</option>
                       <option value="fixed">Số tiền cố định</option>
                       <option value="percentage">Phần trăm</option>
+                    </select>
+                  </div>
+
+                  {/* Sort Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sắp xếp
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                      value={`${sortField}-${sortOrder}`}
+                      onChange={(e) => {
+                        const [field, order] = e.target.value.split('-') as [typeof sortField, typeof sortOrder];
+                        setSortField(field);
+                        setSortOrder(order);
+                        setPage(1);
+                      }}
+                    >
+                      <option value="createdAt-DESC">Ngày tạo giảm dần</option>
+                      <option value="createdAt-ASC">Ngày tạo tăng dần</option>
+                      <option value="startAt-DESC">Ngày bắt đầu giảm dần</option>
+                      <option value="startAt-ASC">Ngày bắt đầu tăng dần</option>
+                      <option value="endAt-DESC">Ngày kết thúc giảm dần</option>
+                      <option value="endAt-ASC">Ngày kết thúc tăng dần</option>
                     </select>
                   </div>
 
@@ -491,13 +515,7 @@ function DiscountsPage() {
                       Tên
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Loại giảm giá
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                       Giá trị
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Giảm tối đa
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       Trạng thái
@@ -505,82 +523,11 @@ function DiscountsPage() {
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                       <div className="flex flex-col items-center gap-1">
                         <span>Thời gian áp dụng</span>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={toggleStartAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                            title={
-                              sortField === "startAt"
-                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
-                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày bắt đầu)"
-                            }
-                          >
-                            <span className="mr-1">Bắt đầu</span>
-                            {sortField === "startAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={toggleEndAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                            title={
-                              sortField === "endAt"
-                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
-                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày kết thúc)"
-                            }
-                          >
-                            <span className="mr-1">Kết thúc</span>
-                            {sortField === "endAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
+                        
                       </div>
                     </th>
                     <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      <div className="flex flex-col items-center gap-1">
-                        <span>Ngày tạo / hủy</span>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={toggleCreatedAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                            title={
-                              sortField === "createdAt"
-                                ? `Đang sắp xếp: ${sortOrder} (nhấp để thay đổi)`
-                                : "Chưa sắp xếp (nhấp để sắp xếp theo ngày tạo)"
-                            }
-                          >
-                            <span className="mr-1">Tạo</span>
-                            {sortField === "createdAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                      Hành động
+                      Thao tác
                     </th>
                   </tr>
                 </thead>
@@ -591,7 +538,7 @@ function DiscountsPage() {
                         colSpan={13}
                         className="px-6 py-8 text-center text-gray-500"
                       >
-                        Loading discounts...
+                        Đang tải...
                       </td>
                     </tr>
                   ) : discounts.length === 0 ? (
@@ -600,7 +547,7 @@ function DiscountsPage() {
                         colSpan={13}
                         className="px-6 py-8 text-center text-gray-500"
                       >
-                        No discounts found
+                        Không có giảm giá nào được tìm thấy.
                       </td>
                     </tr>
                   ) : (
@@ -617,66 +564,45 @@ function DiscountsPage() {
                             {discount.name}
                           </span>
                           <br />
-                          <code className="text-xs text-gray-500">Slug: {discount.slug || "-"}</code>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {getTypeBadge(discount.type)}
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-base font-bold text-green-600 whitespace-nowrap">
-                            {discount.type === "percentage"
-                              ? `${parseFloat(discount.value) / 100}%`
-                              : `${parseFloat(discount.value).toLocaleString(
-                                  "en-US"
-                                )}đ`}
+                          <span className="text-left">
+                            {getTypeBadge(discount.type)}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {discount.maxDiscountValue ? (
-                            <span className="text-sm font-semibold text-gray-600">
-                              {Number(discount.maxDiscountValue).toLocaleString(
-                                "en-US"
-                              )}
-                              đ
+                          <div className="flex flex-col gap-1">
+                            <span className="text-base font-bold text-green-600 whitespace-nowrap">
+                              {discount.type === "percentage"
+                                ? `${parseFloat(discount.value) / 100}%`
+                                : `${parseFloat(discount.value).toLocaleString(
+                                    "en-US"
+                                  )}đ`}
                             </span>
-                          ) : (
-                            <span className="text-gray-400 text-sm">-</span>
-                          )}
+                            {discount.maxDiscountValue ? (
+                              <span className="text-sm font-semibold text-gray-600">
+                                Tối đa: {Number(discount.maxDiscountValue).toLocaleString(
+                                  "en-US"
+                                )}đ
+                              </span>
+                            ) : (
+                              <span className="text-gray-400 text-sm">-</span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           {getStatusBadge(discount.status)}
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {formatDateTime(discount.startAt) === "-" && formatDateTime(discount.endAt) === "-" ? (
-                            <div className="flex justify-center items-center w-full min-w-[220px] text-gray-400">
-                              <span className="text-center ">-</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-center">-</span>
-                            </div>
-                          ) : (
-                            <div className="flex justify-between items-center w-full min-w-[220px] text-gray-600">
-                              <span className="text-left flex-1">{formatDateTime(discount.startAt)}</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-right flex-1">{formatDateTime(discount.endAt)}</span>
-                            </div>
-                          )}
+                          <div className="flex flex-col gap-1 min-w-[150px]">
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(discount.startAt)}
+                            </span>
+                            <span className="text-xs text-gray-400">đến</span>
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(discount.endAt)}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {formatDate(discount.createdAt) === "-" && (!discount.canceledAt || formatDate(discount.canceledAt) === "-") ? (
-                            <div className="flex justify-center items-center w-full min-w-[180px] text-gray-400">
-                              <span className="text-center">-</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-center">-</span>
-                            </div>
-                          ) : (
-                            <div className="flex justify-between items-center w-full min-w-[180px] text-gray-600">
-                              <span className="text-left flex-1">{formatDate(discount.createdAt)}</span>
-                              <span className="mx-2 text-center">-</span>
-                              <span className="text-right flex-1">{discount.canceledAt ? formatDate(discount.canceledAt) : "-"}</span>
-                            </div>
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-end whitespace-nowrap">
                           <div className="flex items-center justify-end gap-2">
                             <Button
                               size="icon-sm"

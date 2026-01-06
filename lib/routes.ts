@@ -65,10 +65,6 @@ export const Routes = {
       edit: "/productsManagement/tags/edit/[id]",
       trash: "/productsManagement/tags/trash",
     },
-    images: {
-      root: "/productsManagement/images",
-      add: "/productsManagement/images/add",
-    },
   },
 
   stocks: {
@@ -101,12 +97,27 @@ export const Routes = {
       trash: "/sales/discounts/trash",
     },
   },
+
+  interface: {
+    root: "/interface",
+    banners: {
+      root: "/interface/banners",
+      add: "/interface/banners/add",
+      edit: "/interface/banners/edit/[id]",
+    },
+    images: {
+      root: "/interface/images",
+      add: "/interface/images/add",
+    },
+  },
   
   orders: {
     root: "/orders",
+    all: "/orders/all",
     pending: "/orders/pending",
     packing: "/orders/packing",
-    all: "/orders/all",
+    returns: "/orders/returns",
+    returnDetails: (id: string) => `/orders/returns/details/${id}`,
     details: (id: string) => `/order-details/${id}`,
   },
   settings: "/settings",

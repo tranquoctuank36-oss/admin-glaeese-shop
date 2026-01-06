@@ -392,7 +392,7 @@ export default function CategoriesPage() {
                         </div>
                       </th>
                       <th className="px-4 py-3 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                        Hành động
+                        Thao tác
                       </th> 
                     </tr>
                   </thead>

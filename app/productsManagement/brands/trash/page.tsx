@@ -199,9 +199,7 @@ export default function BrandsTrashPage() {
               <Button
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() =>
-                  router.push(Routes.productsManagement.brands.root)
-                }
+                onClick={() => router.back()}
                 title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7"/>
@@ -316,7 +314,7 @@ export default function BrandsTrashPage() {
                       </th>
 
                       <th className="px-6 py-4 pl-8 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Hành động
+                        Thao tác
                       </th>
                     </tr>
                   </thead>

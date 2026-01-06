@@ -61,24 +61,47 @@ export default function Sidebar() {
             return (
               <div key={item.name}>
                 {hasSub ? (
-                  <div
-                    onClick={() => toggleSubmenu(item.name)}
-                    className={`flex items-center justify-between p-4 pr-3 text-sm font-medium rounded-lg transition-colors hover:bg-gray-300 mb-2 cursor-pointer${
-                      isParentActive ? " bg-gray-300" : ""
-                    }`}
-                  >
-                    <div className="flex items-center min-w-0 flex-1">
-                      <Icon size={20} className="flex-shrink-0" />
+                  item.name === "Đơn hàng" ? (
+                    <Link href={item.href}>
+                      <div
+                        onClick={() => toggleSubmenu(item.name)}
+                        className={`flex items-center justify-between p-4 pr-3 text-sm font-medium rounded-lg transition-colors hover:bg-gray-300 mb-2 cursor-pointer${
+                          isParentActive ? " bg-gray-300" : ""
+                        }`}
+                      >
+                        <div className="flex items-center min-w-0 flex-1">
+                          <Icon size={20} className="flex-shrink-0" />
+                          {isSidebarOpen && (
+                            <span className="ml-4 text-base truncate">{item.name}</span>
+                          )}
+                        </div>
+                        {isSidebarOpen && (
+                          <div className="flex-shrink-0 ml-2">
+                            {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  ) : (
+                    <div
+                      onClick={() => toggleSubmenu(item.name)}
+                      className={`flex items-center justify-between p-4 pr-3 text-sm font-medium rounded-lg transition-colors hover:bg-gray-300 mb-2 cursor-pointer${
+                        isParentActive ? " bg-gray-300" : ""
+                      }`}
+                    >
+                      <div className="flex items-center min-w-0 flex-1">
+                        <Icon size={20} className="flex-shrink-0" />
+                        {isSidebarOpen && (
+                          <span className="ml-4 text-base truncate">{item.name}</span>
+                        )}
+                      </div>
                       {isSidebarOpen && (
-                        <span className="ml-4 text-base truncate">{item.name}</span>
+                        <div className="flex-shrink-0 ml-2">
+                          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                        </div>
                       )}
                     </div>
-                    {isSidebarOpen && (
-                      <div className="flex-shrink-0 ml-2">
-                        {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                      </div>
-                    )}
-                  </div>
+                  )
                 ) : (
                   <Link href={item.href}>
                     <div
@@ -97,7 +120,7 @@ export default function Sidebar() {
                 {hasSub && isOpen && isSidebarOpen && (
                   <div className="mb-2 space-y-1">
                     {item.subItems!.map((sub) => {
-                      const subActive = pathname === sub.href || pathname.startsWith(sub.href);
+                      const subActive = pathname === sub.href;
                       const SubIcon = sub.icon ? ICONS[sub.icon] : null;
                       return (
                         <Link key={sub.name} href={sub.href}>

@@ -269,7 +269,7 @@ export default function FrameTypesPage() {
                         </div>
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Hành Động
+                        Thao tác
                       </th>
                     </tr>
                   </thead>

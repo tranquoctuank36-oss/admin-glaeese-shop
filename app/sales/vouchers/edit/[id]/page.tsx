@@ -56,8 +56,8 @@ export default function EditVoucherPage() {
       } catch (error: any) {
         console.error("Error fetching voucher:", error);
         const errorMessage = error?.response?.status === 404 
-          ? "Voucher not found. It may have been deleted."
-          : error?.response?.data?.detail || "Failed to load voucher";
+          ? "Mã giảm giá không tồn tại"
+          : error?.response?.data?.detail || "Không thể tải mã giảm giá";
         toast.error(errorMessage);
         router.push(Routes.sales.vouchers.root);
       } finally {
@@ -70,7 +70,7 @@ export default function EditVoucherPage() {
 
   const onSubmit = async (values: VoucherFormValues) => {
     await updateVoucher(voucherId, values as any);
-    toast.success("Voucher updated successfully!");
+    toast.success("Cập nhật mã giảm giá thành công!");
     router.push(Routes.sales.vouchers.root);
   };
 
@@ -79,7 +79,7 @@ export default function EditVoucherPage() {
       <div className="flex-1 overflow-auto relative z-10">
         <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
           <div className="flex items-center justify-center h-64">
-            <div className="text-gray-500">Loading voucher...</div>
+            <div className="text-gray-500">Đang tải mã giảm giá...</div>
           </div>
         </main>
       </div>
@@ -94,12 +94,12 @@ export default function EditVoucherPage() {
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
         <div className="flex items-center gap-3 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Edit Voucher</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Chỉnh sửa mã giảm giá</h1>
         </div>
 
         <VoucherForm
           initial={initial}
-          submitLabel="Update"
+          submitLabel="Cập nhật"
           onSubmit={onSubmit}
           onCancel={() => router.back()}
         />

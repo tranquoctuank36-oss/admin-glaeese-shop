@@ -22,7 +22,7 @@ export default function AddProductPage() {
     slug: "",
     status: "published",
     description: "",
-    productType: "Eyeglasses",
+    productType: "Frame",
     gender: "Male",
     lensWidth: "",
     bridgeWidth: "",

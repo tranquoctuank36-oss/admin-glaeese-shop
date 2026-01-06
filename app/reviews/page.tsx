@@ -410,7 +410,7 @@ function ReviewsPage() {
                           Ngày
                         </th>
                         <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                          Hành động
+                          Thao tác
                         </th>
                       </tr>
                     </thead>

@@ -168,11 +168,11 @@ function DiscountTargetsPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Discount Product Variants
+                  Sản phẩm áp dụng giảm giá
                 </h1>
                 {discount && (
                   <p className="text-gray-600 mt-1">
-                    Manage product variants for: <strong>{discount.name}</strong>
+                    Quản lý sản phẩm cho: <strong>{discount.name}</strong>
                   </p>
                 )}
               </div>
@@ -196,7 +196,7 @@ function DiscountTargetsPage() {
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-                  placeholder="Search by product variant name or SKU..."
+                  placeholder="Tìm kiếm theo tên sản phẩm hoặc SKU..."
                   value={search}
                   onChange={(e) => {
                     setSearch(e.target.value);
@@ -217,7 +217,7 @@ function DiscountTargetsPage() {
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
-                <p className="text-gray-600 text-lg">Loading product variants...</p>
+                <p className="text-gray-600 text-lg">Đang tải sản phẩm...</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -225,11 +225,11 @@ function DiscountTargetsPage() {
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Image
+                        Hình ảnh
                       </th>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         <div className="flex items-center gap-2">
-                          <span>PRODUCT VARIANT NAME</span>
+                          <span>TÊN SẢN PHẨM</span>
                           <button
                             type="button"
                             onClick={() => toggleSort("name")}
@@ -256,13 +256,13 @@ function DiscountTargetsPage() {
                         SKU
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Stock
+                        Tồn kho
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Original Price
+                        Giá gốc
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Final Price
+                        Giá cuối
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center justify-center gap-2">
@@ -290,7 +290,7 @@ function DiscountTargetsPage() {
                         </div>
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Actions
+                        Thao tác
                       </th>
                     </tr>
                   </thead>
@@ -424,7 +424,7 @@ function DiscountTargetsPage() {
               <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 {/* Rows per page (left) */}
                 <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Rows per page:</span>
+                  <span>Số hàng mỗi trang:</span>
                   <select
                     className="h-9 rounded-md border border-gray-300 px-2 bg-white"
                     value={limit}

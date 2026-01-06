@@ -106,3 +106,33 @@ export async function bulkConfirmOrders(
   const response = await api.patch("/admin/orders/bulk-confirm", params);
   return response.data;
 }
+
+export interface OrderStatistics {
+  total: number;
+  awaitingPayment: number;
+  pending: number;
+  processing: number;
+  shipping: number;
+  delivered: number;
+  completed: number;
+  cancelledOrReturned: number;
+}
+
+export interface GetOrderStatisticsParams {
+  preset?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface GetOrderStatisticsResponse {
+  success: boolean;
+  message: string;
+  data: OrderStatistics;
+}
+
+export async function getOrderStatistics(
+  params?: GetOrderStatisticsParams
+): Promise<GetOrderStatisticsResponse> {
+  const response = await api.get("/admin/orders/statistics", { params });
+  return response.data;
+}

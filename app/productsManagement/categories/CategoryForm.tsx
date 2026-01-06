@@ -353,7 +353,7 @@ export default function CategoryForm({
       {/* Relative URL */}
       <FloatingInput
         id="relativeUrl"
-        label="URL tương đối (ví dụ: products?productType=Eyeglasses&gender=Male)"
+        label="URL tương đối (ví dụ: products?productType=frame&gender=Male)"
         required
         value={relativeUrl}
         onChange={(v) => setRelativeUrl(v)}

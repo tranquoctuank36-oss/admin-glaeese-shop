@@ -102,7 +102,7 @@ function formatStatusLabel(status?: string | null) {
 
 function formatProductType(type?: string | null) {
   const typeMap: Record<string, string> = {
-    eyeglasses: "Gọng kính",
+    frame: "Gọng kính",
     sunglasses: "Kính mát",
   };
   if (!type) return "-";

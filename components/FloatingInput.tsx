@@ -17,6 +17,7 @@ export type FloatingInputProps = {
   rows?: number;
   maxLength?: number;
   forceValidate?: boolean;
+  autoComplete?: string;
 
   min?: number;
   max?: number;
@@ -37,6 +38,7 @@ export default function FloatingInput({
   options = [],
   rows = 4,
   maxLength,
+  autoComplete,
   min,
   max,
   step,
@@ -100,6 +102,7 @@ export default function FloatingInput({
             onBlur={() => setTouched(true)}
             placeholder={placeholder}
             disabled={disabled}
+            autoComplete={autoComplete}
             className={inputSelectClass}
             // chỉ áp dụng cho number
             {...(type === "number"

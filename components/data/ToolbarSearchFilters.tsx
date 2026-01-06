@@ -19,7 +19,7 @@ export type ProductStatusOption =
   | "unlisted"
   | "archived";
 type ImageStatusOption = "all" | "draft" | "used";
-type OwnerTypeOption = "all" | "product_variant" | "brand" | "discount";
+type OwnerTypeOption = "all" | "product_variant" | "brand" | "discount" | "review" | "order_return" | "banner";
 type StockStatusOption = "all" | "in_stock" | "low_stock" | "out_of_stock" | "unknown";
 type UserRoleOption = "admin" | "customer";
 type UserStatusOption = "active" | "inactive" | "suspended";
@@ -242,6 +242,9 @@ export default function ToolbarSearchFilters({
                     <option value="product_variant">Biến thể sản phẩm</option>
                     <option value="brand">Thương hiệu</option>
                     <option value="discount">Giảm giá</option>
+                    <option value="review">Đánh giá</option>
+                    <option value="order_return">Trả hàng</option>
+                    <option value="banner">Banner</option>
                   </select>
                 </div>
               )}

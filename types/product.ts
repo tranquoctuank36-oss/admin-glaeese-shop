@@ -2,7 +2,7 @@
 export type UUID = string;
 
 export type Gender = "Male" | "Female" | "Unisex" | "Kid";
-export type ProductType = "Eyeglasses" | "Sunglasses";
+export type ProductType = "Frame" | "Sunglasses";
 
 export interface IdNameSlug {
   id: UUID;

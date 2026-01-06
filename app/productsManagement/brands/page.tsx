@@ -332,7 +332,7 @@ export default function BrandsPage() {
                       </th>
 
                       <th className="px-4 py-4 w-1/6 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Hành động
+                        Thao tác
                       </th>
                     </tr>
                   </thead>

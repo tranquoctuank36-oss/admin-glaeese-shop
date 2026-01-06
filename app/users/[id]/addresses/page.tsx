@@ -71,7 +71,7 @@ function UserAddressesPage() {
               <Button
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() => router.push(Routes.users.details.replace('[id]', userId))}
+                onClick={() => router.back()}
                 title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
@@ -100,7 +100,7 @@ function UserAddressesPage() {
             <Button
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
-              onClick={() => router.push(Routes.users.details.replace('[id]', userId))}
+              onClick={() => router.back()}
               title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />

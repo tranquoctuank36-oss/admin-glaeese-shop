@@ -55,7 +55,7 @@ function formatStatusLabel(status?: string | null) {
 function formatProductType(type?: string | null) {
   if (!type) return "—";
   const typeMap: Record<string, string> = {
-    "eyeglasses": "Gọng kính",
+    "frame": "Gọng kính",
     "sunglasses": "Kính mát"
   };
   return typeMap[type] || type;
@@ -411,7 +411,7 @@ function ProductsPage() {
                     </div>
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    Hành động
+                    Thao tác
                   </th>
                 </tr>
               </thead>
@@ -497,7 +497,7 @@ function ProductsPage() {
                           <div className="text-sm font-semibold text-gray-800 flex items-center gap-2">
                             <span>🛒 {product.totalSold ?? 0}</span>
                             <span>•</span>
-                            <span>👁️ {product.reviewCount ?? 0}</span>
+                            <span>👁️ {product.viewCount ?? 0}</span>
                           </div>
                           <div className="text-xs text-gray-600 flex items-center gap-1">
                             <span className="text-yellow-500">⭐</span>

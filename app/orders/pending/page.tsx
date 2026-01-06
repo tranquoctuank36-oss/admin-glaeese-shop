@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search, Shield, X, Send, Pencil, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,6 +56,24 @@ export default function PendingOrdersPage() {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [orderToCancel, setOrderToCancel] = useState<Order | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const filtersRef = useRef<HTMLDivElement>(null);
+
+  // Close filters dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+
+    if (showFilters) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showFilters]);
 
   // Fetch orders from API
   useEffect(() => {
@@ -232,8 +250,28 @@ export default function PendingOrdersPage() {
 
   return (
     <>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-6"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Đơn hàng chờ xác nhận ({meta?.totalItems})
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Xác nhận và xử lý đơn hàng mới
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Search Bar and Filters */}
       <motion.div
+        ref={filtersRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -258,7 +296,9 @@ export default function PendingOrdersPage() {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors cursor-pointer"
+            className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border rounded-lg transition-colors cursor-pointer ${
+              showFilters ? 'border-blue-500' : 'border-gray-300 hover:border-gray-500'
+            }`}
           >
             <Filter size={20} />
             Bộ lọc

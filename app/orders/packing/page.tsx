@@ -312,8 +312,28 @@ export default function PackingOrdersPage() {
   };
   return (
     <>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="mb-6"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">
+              Đơn hàng chờ đóng gói ({meta?.totalItems})
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Quản lý đóng gói và tạo vận đơn
+            </p>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Toolbar */}
       <motion.div
+        ref={filtersRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -336,7 +356,9 @@ export default function PackingOrdersPage() {
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors cursor-pointer"
+            className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border rounded-lg transition-colors cursor-pointer ${
+              showFilters ? 'border-blue-500' : 'border-gray-300 hover:border-gray-500'
+            }`}
           >
             <Filter size={20} />
             Bộ lọc

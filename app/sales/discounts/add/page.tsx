@@ -37,14 +37,14 @@ export default function AddDiscountPage() {
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
         <div className="flex items-center gap-3 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Add Discount</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Thêm giảm giá</h1>
         </div>
 
         <DiscountForm
           initial={initialData}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
-          submitLabel="Create"
+          submitLabel="Tạo"
         />
       </main>
     </div>

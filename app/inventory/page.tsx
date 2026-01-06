@@ -326,7 +326,7 @@ function StocksPage() {
                 <table className="w-full">
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span>Biến thể sản phẩm</span>
                           <button
@@ -351,13 +351,13 @@ function StocksPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Tồn kho
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Đã đặt
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center justify-center gap-2">
                           <span>Có sẵn</span>
                           <button
@@ -382,15 +382,15 @@ function StocksPage() {
                           </button>
                         </div>
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Tồn kho an toàn
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Trạng thái
                       </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                      <th className="px-4 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center justify-center gap-2">
-                          <span>Cập nhật lúc</span>
+                          <span>Cập nhật</span>
                           <button
                             type="button"
                             onClick={toggleUpdatedAtSort}
@@ -414,8 +414,8 @@ function StocksPage() {
                         </div>
                       </th>
                       
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Hành động
+                      <th className="px-4 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Thao tác
                       </th>
                     </tr>
                   </thead>

@@ -49,10 +49,16 @@ export default function OrderDetailPage() {
         return "bg-purple-100 text-purple-700";
       case "delivered":
         return "bg-green-100 text-green-700";
-      case "cancelled":
-        return "bg-red-100 text-red-700";
       case "completed":
         return "bg-emerald-100 text-emerald-700";
+      case "cancelled":
+        return "bg-red-100 text-red-700";
+      case "returned":
+        return "bg-orange-100 text-orange-700";
+      case "expired":
+        return "bg-gray-100 text-gray-700";
+      case "on_hold":
+        return "bg-indigo-100 text-indigo-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
@@ -170,9 +176,6 @@ export default function OrderDetailPage() {
                 <h1 className="text-3xl font-bold text-gray-800">
                   Đơn hàng {order.orderCode}
                 </h1>
-                <p className="text-gray-600 mt-1">
-                  Ngày tạo: {new Date(order.createdAt).toLocaleString("vi-VN")}
-                </p>
               </div>
               <span className={`px-4 py-2 rounded-lg text-sm font-medium ${getStatusColor(order.status)}`}>
                 {getStatusText(order.status)}
@@ -250,9 +253,20 @@ export default function OrderDetailPage() {
                 <div className="p-6">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Mã vận đơn:</span>
-                    <span className="font-mono font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded">
-                      {getTrackingCodeValue(order.trackingCode) || "-"}
-                    </span>
+                    {getTrackingCodeValue(order.trackingCode) ? (
+                      <a
+                        href={`https://tracking.ghn.dev/?order_code=${getTrackingCodeValue(order.trackingCode)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono font-semibold text-purple-600 bg-purple-50 px-3 py-1 rounded hover:bg-purple-100 transition-colors cursor-pointer"
+                      >
+                        {getTrackingCodeValue(order.trackingCode)}
+                      </a>
+                    ) : (
+                      <span className="font-mono font-semibold text-gray-400 bg-gray-50 px-3 py-1 rounded">
+                        -
+                      </span>
+                    )}
                   </div>
                   {order.isPrinted && (
                     <div className="mt-3 flex items-center gap-2 text-sm text-green-600">

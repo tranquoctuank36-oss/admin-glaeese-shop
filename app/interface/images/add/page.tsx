@@ -14,7 +14,7 @@ export default function AddImagePage() {
   };
 
   const onSubmit = async (values: ImageFormValues) => {
-    router.push(Routes.productsManagement.images.root);
+    router.push(Routes.interface.images.root);
     toast.success("Hình ảnh được tải lên thành công!");
   };
 

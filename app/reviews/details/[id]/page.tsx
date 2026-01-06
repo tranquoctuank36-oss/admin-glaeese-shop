@@ -175,7 +175,7 @@ function ReviewDetailsPage() {
             <div className="flex items-center gap-4">
               <Button
               size="icon-lg"
-                onClick={() => router.push(Routes.reviews.root)}
+                onClick={() => router.back()}
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
                 title="Quay lại"
               >

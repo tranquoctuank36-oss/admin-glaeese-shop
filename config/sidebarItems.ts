@@ -22,7 +22,12 @@ import {
   Glasses,
   Image,
   Warehouse,
-  Star
+  Star,
+  Percent,
+  TicketPercent,
+  PackageX,
+  Megaphone,
+  Layout
 } from "lucide-react";
 import { Routes } from "@/lib/routes";
 
@@ -51,6 +56,11 @@ export const ICONS = {
   Image,
   Warehouse,
   Star,
+  Percent,
+  TicketPercent,
+  PackageX,
+  Megaphone,
+  Layout,
 };
 
 export type SubMenuItem = {
@@ -105,20 +115,70 @@ export const sidebarItems: SidebarItem[] = [
         href: Routes.productsManagement.tags.root,
         icon: "Tag",
       },
-      {
-        name: "Hình ảnh",
-        href: Routes.productsManagement.images.root,
-        icon: "Image",
-      },
     ],
   },
   { name: "Kho hàng", href: Routes.stocks.root, icon: "Warehouse" },
-  { name: "Người dùng", href: Routes.users.root, icon: "Users" },
-  { name: "Sales", href: Routes.sales.root, icon: "DollarSign" },
   { 
     name: "Đơn hàng", 
     href: Routes.orders.root, 
     icon: "ShoppingCart",
+    subItems: [
+      {
+        name: "Tất cả đơn hàng",
+        href: Routes.orders.all,
+        icon: "ShoppingCart",
+      },
+      {
+        name: "Chờ xác nhận",
+        href: Routes.orders.pending,
+        icon: "Package",
+      },
+      {
+        name: "Chờ đóng gói",
+        href: Routes.orders.packing,
+        icon: "Warehouse",
+      },
+      {
+        name: "Trả hàng",
+        href: Routes.orders.returns,
+        icon: "PackageX",
+      },
+    ],
+  },
+  { name: "Người dùng", href: Routes.users.root, icon: "Users" },
+  { 
+    name: "Khuyến mãi", 
+    href: Routes.sales.root, 
+    icon: "DollarSign",
+    subItems: [
+      {
+        name: "Giảm giá",
+        href: Routes.sales.discounts.root,
+        icon: "Percent",
+      },
+      {
+        name: "Mã giảm giá",
+        href: Routes.sales.vouchers.root,
+        icon: "TicketPercent",
+      },
+    ],
+  },
+  {
+    name: "Giao diện",
+    href: Routes.interface.root,
+    icon: "Layout",
+    subItems: [
+      {
+        name: "Banners",
+        href: Routes.interface.banners.root,
+        icon: "Megaphone",
+      },
+      {
+        name: "Hình ảnh",
+        href: Routes.interface.images.root,
+        icon: "Image",
+      },
+    ],
   },
   { name: "Đánh giá", href: Routes.reviews.root, icon: "Star" },
   { name: "Cài đặt", href: Routes.settings, icon: "Settings" },

@@ -40,17 +40,17 @@ export default function EditDiscountPage() {
     try {
       const result = await updateDiscount(id, data);
       console.log('Update successful:', result);
-      toast.success('Discount updated successfully!');
+      toast.success('Cập nhật mã giảm giá thành công!');
       router.push(Routes.sales.discounts.root);
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || 'Failed to update discount');
+      toast.error(error?.response?.data?.detail || 'Cập nhật mã giảm giá thất bại');
     }
   };
 
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center">
-        <p className="text-gray-500">Loading...</p>
+        <p className="text-gray-500">Đang tải...</p>
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function EditDiscountPage() {
   if (!initialData) {
     return (
       <div className="p-6 flex items-center justify-center">
-        <p className="text-red-500">Discount not found</p>
+        <p className="text-red-500">Không tìm thấy mã giảm giá</p>
       </div>
     );
   }
@@ -67,13 +67,13 @@ export default function EditDiscountPage() {
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
         <div className="flex items-center gap-3 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Edit Discount</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Chỉnh sửa mã giảm giá</h1>
         </div>
 
         <DiscountForm
           initial={initialData}
           onSubmit={handleSubmit}
-          submitLabel="Update"
+          submitLabel="Cập nhật"
           onCancel={() => router.push(Routes.sales.discounts.root)}
         />
       </main>

@@ -397,7 +397,7 @@ function UsersPage() {
                       </th>
 
                       <th className="px-8 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Hành động
+                        Thao tác
                       </th>
                     </tr>
                   </thead>

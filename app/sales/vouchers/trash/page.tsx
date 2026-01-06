@@ -60,25 +60,25 @@ function getStatusBadge(status: string) {
     case "happening":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-          Happening
+          Đang diễn ra
         </span>
       );
     case "upcoming":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
-          Upcoming
+          Sắp diễn ra
         </span>
       );
     case "expired":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-          Expired
+          Hết hạn
         </span>
       );
     case "canceled":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-          Canceled
+          Đã hủy
         </span>
       );
     default:
@@ -271,19 +271,19 @@ function VouchersTrashPage() {
       case "percentage":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-purple-100 text-purple-700">
-            Percentage
+            Phần trăm
           </span>
         );
       case "fixed":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-700">
-            Fixed Amount
+            Số tiền cố định
           </span>
         );
       case "free_shipping":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-green-100 text-green-700">
-            Free Shipping
+            Miễn phí vận chuyển
           </span>
         );
       default:
@@ -312,10 +312,10 @@ function VouchersTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Trash Bin - Vouchers
+                  Thùng rác - Phiếu giảm giá
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Restore or permanently delete vouchers
+                  Khôi phục hoặc xóa vĩnh viễn phiếu giảm giá
                 </p>
               </div>
             </div>
@@ -335,7 +335,7 @@ function VouchersTrashPage() {
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-                  placeholder="Search by code or description..."
+                  placeholder="Tìm kiếm theo mã hoặc mô tả..."
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -348,7 +348,7 @@ function VouchersTrashPage() {
                 className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
               >
                 <Filter size={20} />
-                Filters
+                Bộ lọc
               </Button>
             </div>
 
@@ -361,11 +361,11 @@ function VouchersTrashPage() {
                 transition={{ duration: 0.2 }}
                 className="mt-4 border-t border-gray-200 pt-4"
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                   {/* Status Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Status
+                      Trạng thái
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -375,18 +375,18 @@ function VouchersTrashPage() {
                         setCurrentPage(1);
                       }}
                     >
-                      <option value="">All</option>
-                      <option value="upcoming">Upcoming</option>
-                      <option value="happening">Happening</option>
-                      <option value="canceled">Canceled</option>
-                      <option value="expired">Expired</option>
+                      <option value="">Tất cả</option>
+                      <option value="upcoming">Sắp diễn ra</option>
+                      <option value="happening">Đang diễn ra</option>
+                      <option value="canceled">Đã hủy</option>
+                      <option value="expired">Hết hạn</option>
                     </select>
                   </div>
 
                   {/* Type Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Type
+                      Loại
                     </label>
                     <select
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
@@ -396,17 +396,41 @@ function VouchersTrashPage() {
                         setCurrentPage(1);
                       }}
                     >
-                      <option value="">All</option>
-                      <option value="fixed">Fixed</option>
-                      <option value="percentage">Percentage</option>
-                      <option value="free_shipping">Free Shipping</option>
+                      <option value="">Tất cả</option>
+                      <option value="fixed">Số tiền cố định</option>
+                      <option value="percentage">Phần trăm</option>
+                      <option value="free_shipping">Miễn phí vận chuyển</option>
+                    </select>
+                  </div>
+
+                  {/* Sort Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sắp xếp
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                      value={`${sortField}-${sortOrder}`}
+                      onChange={(e) => {
+                        const [field, order] = e.target.value.split('-') as [typeof sortField, typeof sortOrder];
+                        setSortField(field);
+                        setSortOrder(order);
+                        setCurrentPage(1);
+                      }}
+                    >
+                      <option value="deletedAt-DESC">Ngày xóa giảm dần</option>
+                      <option value="deletedAt-ASC">Ngày xóa tăng dần</option>
+                      <option value="validFrom-DESC">Ngày bắt đầu giảm dần</option>
+                      <option value="validFrom-ASC">Ngày bắt đầu tăng dần</option>
+                      <option value="validTo-DESC">Ngày kết thúc giảm dần</option>
+                      <option value="validTo-ASC">Ngày kết thúc tăng dần</option>
                     </select>
                   </div>
 
                   {/* Valid From Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Valid From
+                      Ngày bắt đầu
                     </label>
                     <input
                       type="datetime-local"
@@ -427,7 +451,7 @@ function VouchersTrashPage() {
                   {/* Valid To Filter */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Valid To
+                      Ngày kết thúc
                     </label>
                     <input
                       type="datetime-local"
@@ -451,7 +475,7 @@ function VouchersTrashPage() {
                     onClick={handleReset}
                     className="px-4 py-2 hover:bg-gray-100 text-gray-600 rounded-lg transition-colors"
                   >
-                    Reset
+                    Đặt lại
                   </Button>
                 </div>
               </motion.div>
@@ -467,7 +491,7 @@ function VouchersTrashPage() {
           >
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <p className="text-gray-600 text-lg">Loading...</p>
+                <p className="text-gray-600 text-lg">Đang tải...</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -475,91 +499,25 @@ function VouchersTrashPage() {
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Code
+                        Mã giảm giá
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Description
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Giá trị
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Đơn tối thiểu
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Trạng thái
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Sử dụng
+                      </th>
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
+                        Thời gian áp dụng
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Type
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Value
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Min Order
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Max Discount
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Valid From</span>
-                          <button
-                            type="button"
-                            onClick={toggleValidFromSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          >
-                            {sortField === "validFrom" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Valid To</span>
-                          <button
-                            type="button"
-                            onClick={toggleValidToSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          >
-                            {sortField === "validTo" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        Usage
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>Deleted At</span>
-                          <button
-                            type="button"
-                            onClick={toggleDeletedAtSort}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                          >
-                            {sortField === "deletedAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
-                        Actions
+                        Thao tác
                       </th>
                     </tr>
                   </thead>
@@ -572,36 +530,42 @@ function VouchersTrashPage() {
                         transition={{ delay: idx * 0.03 }}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <code className="text-gray-600 text-lg">
-                            {voucher.code}
-                          </code>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-gray-800">
-                            {voucher.description || "-"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          {getTypeBadge(voucher.type)}
+                        <td className="px-6 py-4 min-w-[140px] max-w-[180px]">
+                          <div className="flex flex-col gap-1">
+                            <code className="text-gray-600 text-lg font-semibold">
+                              {voucher.code}
+                            </code>
+                            <span className="text-left whitespace-nowrap">
+                              {getTypeBadge(voucher.type)}
+                            </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-base font-bold text-green-600">
-                            {voucher.type === "percentage"
-                              ? `${
-                                  Number(voucher.value) > 100
-                                    ? Number(voucher.value) / 100
-                                    : voucher.value
-                                }%`
-                              : voucher.type === "free_shipping"
-                              ? "Free"
-                              : `${Number(voucher.value).toLocaleString(
-                                  "en-US"
-                                )}đ`}
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-base font-bold text-green-600 whitespace-nowrap">
+                              {voucher.type === "percentage"
+                                ? `${
+                                    Number(voucher.value) > 100
+                                      ? Number(voucher.value) / 100
+                                      : voucher.value
+                                  }%`
+                                : voucher.type === "free_shipping"
+                                ? "Miễn phí"
+                                : `${Number(voucher.value).toLocaleString(
+                                    "en-US"
+                                  )}đ`}
+                            </span>
+                            {voucher.maxDiscountValue ? (
+                              <span className="text-xs text-gray-500">
+                                Tối đa: {Number(voucher.maxDiscountValue).toLocaleString("en-US")}đ
+                              </span>
+                            ) : (
+                              <span className="text-xs text-gray-400">-</span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-sm text-gray-600">
+                          <span className="text-base text-gray-600">
                             {voucher.minOrderAmount
                               ? `${Number(
                                   voucher.minOrderAmount
@@ -610,26 +574,7 @@ function VouchersTrashPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-sm text-gray-600">
-                            {voucher.maxDiscountValue
-                              ? `${Number(
-                                  voucher.maxDiscountValue
-                                ).toLocaleString("en-US")}đ`
-                              : "-"}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           {getStatusBadge(voucher.status)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(voucher.validFrom)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDateTime(voucher.validTo)}
-                          </span>
                         </td>
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           <div className="text-sm">
@@ -642,13 +587,20 @@ function VouchersTrashPage() {
                             </span>
                           </div>
                         </td>
+
                         <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {formatDate((voucher as any).deletedAt)}
-                          </span>
+                          <div className="flex flex-col gap-1 min-w-[150px]">
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(voucher.validFrom)}
+                            </span>
+                            <span className="text-xs text-gray-400">đến</span>
+                            <span className="text-base text-gray-600">
+                              {formatDateTime(voucher.validTo)}
+                            </span>
+                          </div>
                         </td>
-                        <td className="px-6 py-4 text-end whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-2">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
+                          <div className="flex items-center justify-center gap-2">
                             <ConfirmPopover
                               open={isOpen(voucher.id, "restore")}
                               onOpenChange={(o) =>
@@ -656,14 +608,14 @@ function VouchersTrashPage() {
                                   o ? keyOf(voucher.id, "restore") : null
                                 )
                               }
-                              title="Restore this voucher"
+                              title="Khôi phục phiếu giảm giá"
                               message={
                                 <div>
-                                  Are you sure you want to restore{" "}
+                                  Bạn có chắc chắn muốn khôi phục{" "}
                                   <strong>{voucher.code}</strong>?
                                 </div>
                               }
-                              confirmText="Restore"
+                              confirmText="Khôi phục"
                               onConfirm={() => handleRestore(voucher.id)}
                               confirmDisabled={busyId === voucher.id}
                               confirmLoading={busyId === voucher.id}
@@ -672,7 +624,7 @@ function VouchersTrashPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                                title="Restore"
+                                title="Khôi phục"
                                 disabled={busyId === voucher.id}
                               >
                                 <RotateCcw className="text-green-600 size-5" />
@@ -690,14 +642,14 @@ function VouchersTrashPage() {
                                   o ? keyOf(voucher.id, "delete") : null
                                 )
                               }
-                              title="Permanently delete"
+                              title="Xóa vĩnh viễn"
                               message={
                                 <div>
-                                  Are you sure you want to permanently delete{" "}
+                                  Bạn có chắc chắn muốn xóa vĩnh viễn{" "}
                                   <strong>{voucher.code}</strong>?
                                 </div>
                               }
-                              confirmText="Delete"
+                              confirmText="Xóa"
                               onConfirm={() => handleForceDelete(voucher.id)}
                               confirmDisabled={busyId === voucher.id}
                               confirmLoading={busyId === voucher.id}
@@ -706,7 +658,7 @@ function VouchersTrashPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Delete Permanently"
+                                title="Xóa vĩnh viễn"
                                 disabled={busyId === voucher.id}
                               >
                                 <Trash2 className="text-red-600 size-5" />
@@ -720,7 +672,7 @@ function VouchersTrashPage() {
                     {vouchers.length === 0 && (
                       <tr>
                         <td
-                          colSpan={7}
+                          colSpan={8}
                           className="px-6 py-8 text-center text-gray-500"
                         >
                           Thùng rác đang trống.
@@ -735,7 +687,7 @@ function VouchersTrashPage() {
             {!loading && vouchers.length > 0 && (
               <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Rows per page:</span>
+                  <span>Số hàng mỗi trang:</span>
                   <select
                     className="h-9 rounded-md border border-gray-300 px-2 bg-white"
                     value={itemsPerPage}

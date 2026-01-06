@@ -184,9 +184,7 @@ export default function CategoriesReviewPage() {
             <Button
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
-              onClick={() =>
-                router.push(Routes.productsManagement.categories.root)
-              }
+              onClick={() => router.back()}
               title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />

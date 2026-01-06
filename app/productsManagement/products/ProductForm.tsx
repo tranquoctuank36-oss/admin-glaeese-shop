@@ -94,7 +94,7 @@ export default function ProductForm({
     draft?.description ?? initial?.description ?? ""
   );
   const [productType, setProductType] = useState<ProductType>(
-    draft?.productType ?? initial?.productType ?? "Eyeglasses"
+    draft?.productType ?? initial?.productType ?? "Frame"
   );
   const [gender, setGender] = useState<Gender>(
     draft?.gender ?? initial?.gender ?? "Male"
@@ -573,7 +573,7 @@ export default function ProductForm({
             disabled={loading}
             onChange={(v) => setProductType(v as ProductType)}
             options={[
-              { value: "Eyeglasses", label: "Gọng kính" },
+              { value: "Frame", label: "Gọng kính" },
               { value: "Sunglasses", label: "Kính mát" },
             ]}
           />
