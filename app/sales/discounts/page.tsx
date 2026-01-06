@@ -10,10 +10,6 @@ import {
   ArrowLeft,
   Filter,
   XCircle,
-  ArrowUpAZ,
-  ArrowDownAZ,
-  ArrowUpDown,
-  X,
   Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,15 +31,6 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-function formatDate(iso?: string) {
-  if (!iso) return "-";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "-";
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
 
 const formatDateTime = (dateString?: string) => {
   if (!dateString) return "-";
@@ -78,10 +65,6 @@ function DiscountsPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [lightboxImage, setLightboxImage] = useState<{
-    url: string;
-    alt: string;
-  } | null>(null);
 
   // Get current Vietnam time for min validation
   const currentVietnamTime = dayjs()

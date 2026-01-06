@@ -54,13 +54,19 @@ export default function PaymentMethodsBar({
           />
           <Tooltip
             formatter={(value: number, name: string) => {
-              if (name === "revenue") return formatCurrency(value);
+              if (name === "Doanh thu") return formatCurrency(value);
+              if (name === "Số đơn") return `${value} đơn`;
               return value;
             }}
             contentStyle={{
               backgroundColor: "white",
               border: "1px solid #e5e7eb",
               borderRadius: "8px",
+              padding: "12px",
+            }}
+            labelStyle={{
+              fontWeight: "600",
+              marginBottom: "8px",
             }}
           />
           <Legend />

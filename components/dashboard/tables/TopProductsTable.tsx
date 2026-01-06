@@ -49,10 +49,10 @@ export default function TopProductsTable({
               <th className="text-left py-3 px-2 text-sm font-medium text-gray-600">
                 Sản phẩm
               </th>
-              <th className="text-right py-3 px-2 text-sm font-medium text-gray-600">
+              <th className="text-center py-3 px-2 text-sm font-medium text-gray-600">
                 Đã bán
               </th>
-              <th className="text-right py-3 px-2 text-sm font-medium text-gray-600">
+              <th className="text-center py-3 px-2 text-sm font-medium text-gray-600">
                 Doanh thu
               </th>
             </tr>
@@ -88,12 +88,12 @@ export default function TopProductsTable({
                   <td className="py-3 px-2">
                     <div className="flex items-center gap-3">
                       {product.thumbnailUrl && (
-                        <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                        <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                           <Image
                             src={product.thumbnailUrl}
                             alt={product.productName}
                             fill
-                            className="object-cover"
+                            className="object-contain"
                           />
                         </div>
                       )}
@@ -105,10 +105,10 @@ export default function TopProductsTable({
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-2 text-right font-medium text-gray-900">
+                  <td className="py-3 px-2 text-center font-medium text-gray-900">
                     {formatCompactNumber(product.totalSold)}
                   </td>
-                  <td className="py-3 px-2 text-right font-semibold text-blue-600">
+                  <td className="py-3 px-2 text-center font-semibold text-blue-600">
                     {formatCurrency(product.revenue)}
                   </td>
                 </tr>
