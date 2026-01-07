@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -23,6 +23,7 @@ import {
   Search,
   Filter,
   XCircle,
+  ChevronDown,
 } from "lucide-react";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import { Button } from "@/components/ui/button";
@@ -33,10 +34,87 @@ import {
   cancelVoucher,
 } from "@/services/voucherService";
 import type { Voucher } from "@/types/voucher";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { toast } from "react-hot-toast";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import { Routes } from "@/lib/routes";
+
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -281,18 +359,18 @@ function VouchersPage() {
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
                 onClick={() => router.push(Routes.sales.root)}
-                title="Go Back"
+                title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách phiếu giảm giá{" "}
+                  Danh sách mã giảm giá{" "}
                   {totalPages > 0 &&
                     `(${(currentPage - 1) * itemsPerPage + vouchers.length})`}
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
-                  Tạo và quản lý mã phiếu và chiến dịch khuyến mại
+                  Tạo và quản lý mã giảm giá và chiến dịch khuyến mại
                 </p>
               </div>
             </div>
@@ -316,7 +394,7 @@ function VouchersPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Thêm phiếu
+                Thêm mã giảm giá
               </Button>
             </div>
           </div>
@@ -338,7 +416,7 @@ function VouchersPage() {
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-                  placeholder="Tìm kiếm theo mã phiếu hoặc mô tả..."
+                  placeholder="Tìm kiếm theo mã giảm giá hoặc mô tả..."
                   value={searchTerm}
                   onChange={(e) => {
                     setSearchTerm(e.target.value);
@@ -370,20 +448,20 @@ function VouchersPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Trạng thái
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={statusFilter}
-                      onChange={(e) => {
-                        setStatusFilter(e.target.value);
+                      onChange={(v) => {
+                        setStatusFilter(v);
                         setCurrentPage(1);
                       }}
-                    >
-                      <option value="all">Tất cả</option>
-                      <option value="upcoming">Sắp diễn ra</option>
-                      <option value="happening">Đang diễn ra</option>
-                      <option value="canceled">Đã hủy</option>
-                      <option value="expired">Hết hạn</option>
-                    </select>
+                      options={[
+                        { value: "all", label: "Tất cả" },
+                        { value: "upcoming", label: "Sắp diễn ra" },
+                        { value: "happening", label: "Đang diễn ra" },
+                        { value: "canceled", label: "Đã hủy" },
+                        { value: "expired", label: "Hết hạn" },
+                      ]}
+                    />
                   </div>
 
                   {/* Type Filter */}
@@ -391,19 +469,19 @@ function VouchersPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Loại
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={typeFilter}
-                      onChange={(e) => {
-                        setTypeFilter(e.target.value);
+                      onChange={(v) => {
+                        setTypeFilter(v);
                         setCurrentPage(1);
                       }}
-                    >
-                      <option value="all">Tất cả</option>
-                      <option value="fixed">Số tiền cố định</option>
-                      <option value="percentage">Phần trăm</option>
-                      <option value="free_shipping">Miễn phí vận chuyển</option>
-                    </select>
+                      options={[
+                        { value: "all", label: "Tất cả" },
+                        { value: "fixed", label: "Số tiền cố định" },
+                        { value: "percentage", label: "Phần trăm" },
+                        { value: "free_shipping", label: "Miễn phí vận chuyển" },
+                      ]}
+                    />
                   </div>
 
                   {/* Sort Filter */}
@@ -411,23 +489,23 @@ function VouchersPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Sắp xếp
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={`${sortField}-${sortOrder}`}
-                      onChange={(e) => {
-                        const [field, order] = e.target.value.split('-') as [typeof sortField, typeof sortOrder];
+                      onChange={(v) => {
+                        const [field, order] = v.split('-') as [typeof sortField, typeof sortOrder];
                         setSortField(field);
                         setSortOrder(order);
                         setCurrentPage(1);
                       }}
-                    >
-                      <option value="createdAt-DESC">Ngày tạo giảm dần</option>
-                      <option value="createdAt-ASC">Ngày tạo tăng dần</option>
-                      <option value="validFrom-DESC">Ngày bắt đầu giảm dần</option>
-                      <option value="validFrom-ASC">Ngày bắt đầu tăng dần</option>
-                      <option value="validTo-DESC">Ngày kết thúc giảm dần</option>
-                      <option value="validTo-ASC">Ngày kết thúc tăng dần</option>
-                    </select>
+                      options={[
+                        { value: "createdAt-DESC", label: "Ngày tạo giảm dần" },
+                        { value: "createdAt-ASC", label: "Ngày tạo tăng dần" },
+                        { value: "validFrom-DESC", label: "Ngày bắt đầu giảm dần" },
+                        { value: "validFrom-ASC", label: "Ngày bắt đầu tăng dần" },
+                        { value: "validTo-DESC", label: "Ngày kết thúc giảm dần" },
+                        { value: "validTo-ASC", label: "Ngày kết thúc tăng dần" },
+                      ]}
+                    />
                   </div>
 
                   {/* Valid From Filter */}
@@ -689,7 +767,7 @@ function VouchersPage() {
                               </>
                             )}
                             <ConfirmPopover
-                              title="Cancel Voucher"
+                              title="Hủy mã giảm giá"
                               message={
                                 <div>
                                   Are you sure you want to cancel{" "}
@@ -705,7 +783,7 @@ function VouchersPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-orange-100 rounded-lg transition-colors"
-                                title="Cancel"
+                                title="Hủy"
                               >
                                 <XCircle className="text-orange-600 size-5" />
                               </Button>
@@ -714,7 +792,7 @@ function VouchersPage() {
                               |
                             </span>
                             <ConfirmPopover
-                              title="Remove Voucher"
+                              title="Xóa mã giảm giá"
                               message={
                                 <div>
                                   Are you sure you want to delete{" "}
@@ -730,7 +808,7 @@ function VouchersPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Remove"
+                                title="Xóa"
                               >
                                 <Trash2 className="text-red-600 size-5" />
                               </Button>
@@ -746,7 +824,7 @@ function VouchersPage() {
                           colSpan={11}
                           className="px-6 py-8 text-center text-gray-500"
                         >
-                          No discounts found
+                          Không tìm thấy mã giảm giá
                         </td>
                       </tr>
                     )}
@@ -756,37 +834,16 @@ function VouchersPage() {
             )}
 
             {!loading && filteredVouchers.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                {/* Rows per page (left) */}
-                <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Rows per page:</span>
-                  <select
-                    className="h-9 rounded-md border border-gray-300 px-2 bg-white"
-                    value={itemsPerPage}
-                    onChange={(e) => {
-                      setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                  >
-                    {[10, 20, 30, 50].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Controls (right) */}
-                <div className="flex items-center gap-4">
-                  <Pagination
-                    page={currentPage}
-                    totalPages={totalPages}
-                    hasPrev={currentPage > 1}
-                    hasNext={currentPage < totalPages}
-                    onChange={setCurrentPage}
-                  />
-                </div>
-              </div>
+              <TablePagination
+                page={currentPage}
+                limit={itemsPerPage}
+                totalPages={totalPages}
+                totalItems={undefined}
+                hasPrev={currentPage > 1}
+                hasNext={currentPage < totalPages}
+                onPageChange={setCurrentPage}
+                onLimitChange={(l) => { setItemsPerPage(l); setCurrentPage(1); }}
+              />
             )}
           </motion.div>
         </motion.div>

@@ -20,10 +20,15 @@ export interface Return {
   bankAccountNumber: string | Record<string, any> | null;
   bankName: string | Record<string, any> | null;
   bankBranch: string | Record<string, any> | null;
-  status: 'requested' | 'approved' | 'waiting_item' | 'received_at_warehouse' | 'refund_initiated' | 'refund_completed' | 'rejected' | 'canceled';
+  status: 'requested' | 'approved' | 'waiting_item' | 'received_at_warehouse' | 'qc_pass' | 'qc_fail' | 'completed' | 'rejected' | 'canceled';
   rejectedReason: string | Record<string, any> | null;
   refundCompletedAt: string | Record<string, any> | null;
   receivedAt: string | Record<string, any> | null;
+  qcResult: string | Record<string, any> | null;
+  qcNote: string | Record<string, any> | null;
+  qcAt: string | Record<string, any> | null;
+  shouldRefund: boolean;
+  completedAt: string | Record<string, any> | null;
   images: ReturnImage[];
   adminNote: string | Record<string, any> | null;
   order?: {

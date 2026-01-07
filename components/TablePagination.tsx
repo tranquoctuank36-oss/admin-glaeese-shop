@@ -1,124 +1,117 @@
 // components/TablePagination.tsx
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { memo, useMemo } from "react";
+import Pagination from "@/components/data/Pagination";
+import { ChevronDown } from "lucide-react";
+import { memo, useEffect, useRef, useState } from "react";
 
 export type TablePaginationProps = {
   page: number; // 1-based
-  pageSize: number; // 10/20/50/…
-  total: number; // tổng bản ghi
+  limit: number; // 10/20/50/…
+  totalPages?: number;
+  totalItems?: number;
+  hasPrev?: boolean;
+  hasNext?: boolean;
   onPageChange: (page: number) => void;
-  onPageSizeChange?: (size: number) => void;
-  pageSizeOptions?: number[];
+  onLimitChange: (limit: number) => void;
+  limitOptions?: number[];
   className?: string;
 };
 
-function createRange(start: number, end: number) {
-  return Array.from(
-    { length: Math.max(0, end - start + 1) },
-    (_, i) => start + i
-  );
-}
-
-function Ellipsis() {
-  return <span className="px-2 text-gray-500">…</span>;
-}
-
 export default memo(function TablePagination({
   page,
-  pageSize,
-  total,
+  limit,
+  totalPages,
+  totalItems,
+  hasPrev,
+  hasNext,
   onPageChange,
-  onPageSizeChange,
-  pageSizeOptions = [10, 20, 50, 100],
+  onLimitChange,
+  limitOptions = [10, 20, 30, 50],
   className = "",
 }: TablePaginationProps) {
-  const totalPages = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const pages = useMemo(() => {
-    // thuật toán compact: 1 2 ... [p-1 p p+1] ... n-1 n
-    if (totalPages <= 7) return createRange(1, totalPages);
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
 
-    const window: number[] = [];
-    window.push(1);
-    if (page > 4) window.push(-1); // -1 = ellipsis
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
 
-    const from = Math.max(2, page - 1);
-    const to = Math.min(totalPages - 1, page + 1);
-    window.push(...createRange(from, to));
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
 
-    if (page < totalPages - 3) window.push(-2); // -2 = ellipsis
-    window.push(totalPages);
-    return window;
-  }, [page, totalPages]);
-
-  const fromIdx = total === 0 ? 0 : (page - 1) * pageSize + 1;
-  const toIdx = Math.min(page * pageSize, total);
+  const handleSelectOption = (value: number) => {
+    onLimitChange(value);
+    setOpen(false);
+  };
 
   return (
     <div
-      className={`flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${className}`}
+      className={`flex items-center justify-between p-4 border-t border-gray-200 ${className}`}
     >
-      <div className="text-sm text-gray-600">
-        {total === 0 ? "Không có bản ghi" : `Hiển thị ${fromIdx}-${toIdx} trong tổng số ${total}`}
-      </div>
-
-      <div className="flex items-center gap-2">
-        {onPageSizeChange && (
-          <select
-            value={pageSize}
-            onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
-            className="h-9 rounded-md border border-gray-300 bg-white px-2 text-sm outline-none focus:ring-1 focus:ring-blue-500"
+      <div className="flex items-center gap-3 text-sm">
+        <span className="text-gray-600">Hàng trên trang:</span>
+        
+        <div className="relative w-[70px]" ref={containerRef}>
+          <div
+            onClick={() => setOpen(!open)}
+            className={`
+              w-full h-9 px-3 rounded-md border bg-white text-sm cursor-pointer
+              flex items-center justify-between transition
+              hover:border-gray-400
+              ${open ? "border-2 border-blue-400" : "border-gray-300"}
+            `}
           >
-            {pageSizeOptions.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt} / trang
-              </option>
-            ))}
-          </select>
-        )}
-
-        <div className="flex items-center">
-          <button
-            className="h-9 w-9 inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-            onClick={() => onPageChange(Math.max(1, page - 1))}
-            disabled={page <= 1}
-            aria-label="Previous"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-
-          <div className="mx-1 flex items-center">
-            {pages.map((p, i) =>
-              p > 0 ? (
-                <button
-                  key={`${p}-${i}`}
-                  onClick={() => onPageChange(p)}
-                  className={`mx-0.5 h-9 min-w-9 px-3 rounded-md text-sm border ${
-                    p === page
-                      ? "border-blue-600 bg-blue-50 text-blue-700"
-                      : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  {p}
-                </button>
-              ) : (
-                <Ellipsis key={`e-${i}`} />
-              )
-            )}
+            <span className="text-gray-800 font-medium">{limit}</span>
+            <ChevronDown 
+              className={`size-4 text-gray-400 transition-transform flex-shrink-0 ${open ? "rotate-180" : ""}`} 
+            />
           </div>
 
-          <button
-            className="h-9 w-9 inline-flex items-center justify-center rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-40"
-            onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-            disabled={page >= totalPages}
-            aria-label="Next"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
+          {/* Dropdown */}
+          {open && (
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden">
+              <div className="max-h-60 overflow-y-auto">
+                {limitOptions.map((n) => (
+                  <div
+                    key={n}
+                    onClick={() => handleSelectOption(n)}
+                    className={`
+                      px-3 py-2 cursor-pointer transition-colors text-sm
+                      ${n === limit 
+                        ? "bg-blue-50 text-blue-600 font-medium" 
+                        : "hover:bg-gray-100 text-gray-800"
+                      }
+                    `}
+                  >
+                    {n}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      <Pagination
+        page={page}
+        totalPages={totalPages}
+        hasPrev={hasPrev}
+        hasNext={hasNext}
+        onChange={(p) => {
+          const capped = totalPages ? Math.min(p, totalPages) : p;
+          onPageChange(Math.max(1, capped));
+        }}
+      />
     </div>
   );
 });

@@ -37,7 +37,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/productsManagement/categories/review",
+    "app/interface/categories/review",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [

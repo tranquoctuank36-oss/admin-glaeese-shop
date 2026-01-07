@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -12,12 +12,13 @@ import {
   X,
   Search,
   Filter,
+  ChevronDown,
 } from "lucide-react";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import {
   getDiscounts,
@@ -32,6 +33,83 @@ import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function formatDateTime(iso?: string) {
   if (!iso) return "-";
@@ -301,7 +379,7 @@ function DiscountsTrashPage() {
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
                 onClick={() => router.push(Routes.sales.discounts.root)}
-                title="Go Back"
+                title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
               </Button>
@@ -365,21 +443,21 @@ function DiscountsTrashPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Trạng thái
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={status}
-                      onChange={(e) => {
-                        setStatus(e.target.value);
+                      onChange={(v) => {
+                        setStatus(v);
                         setCurrentPage(1);
                       }}
-                    >
-                      <option value="">Tất cả</option>
-                      <option value="draft">Nháp</option>
-                      <option value="scheduled">Đã lên lịch</option>
-                      <option value="happening">Đang diễn ra</option>
-                      <option value="canceled">Đã hủy</option>
-                      <option value="expired">Hết hạn</option>
-                    </select>
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "draft", label: "Nháp" },
+                        { value: "scheduled", label: "Đã lên lịch" },
+                        { value: "happening", label: "Đang diễn ra" },
+                        { value: "canceled", label: "Đã hủy" },
+                        { value: "expired", label: "Hết hạn" },
+                      ]}
+                    />
                   </div>
 
                   {/* Type Filter */}
@@ -387,18 +465,18 @@ function DiscountsTrashPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Loại
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={type}
-                      onChange={(e) => {
-                        setType(e.target.value);
+                      onChange={(v) => {
+                        setType(v);
                         setCurrentPage(1);
                       }}
-                    >
-                      <option value="">Tất cả</option>
-                      <option value="fixed">Số tiền cố định</option>
-                      <option value="percentage">Phần trăm</option>
-                    </select>
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "fixed", label: "Số tiền cố định" },
+                        { value: "percentage", label: "Phần trăm" },
+                      ]}
+                    />
                   </div>
 
                   {/* Sort Filter */}
@@ -406,23 +484,23 @@ function DiscountsTrashPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Sắp xếp
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={`${sortField}-${sortOrder}`}
-                      onChange={(e) => {
-                        const [field, order] = e.target.value.split('-') as [typeof sortField, typeof sortOrder];
+                      onChange={(v) => {
+                        const [field, order] = v.split('-') as [typeof sortField, typeof sortOrder];
                         setSortField(field);
                         setSortOrder(order);
                         setCurrentPage(1);
                       }}
-                    >
-                      <option value="deletedAt-DESC">Ngày xóa giảm dần</option>
-                      <option value="deletedAt-ASC">Ngày xóa tăng dần</option>
-                      <option value="startAt-DESC">Ngày bắt đầu giảm dần</option>
-                      <option value="startAt-ASC">Ngày bắt đầu tăng dần</option>
-                      <option value="endAt-DESC">Ngày kết thúc giảm dần</option>
-                      <option value="endAt-ASC">Ngày kết thúc tăng dần</option>
-                    </select>
+                      options={[
+                        { value: "deletedAt-DESC", label: "Ngày xóa giảm dần" },
+                        { value: "deletedAt-ASC", label: "Ngày xóa tăng dần" },
+                        { value: "startAt-DESC", label: "Ngày bắt đầu giảm dần" },
+                        { value: "startAt-ASC", label: "Ngày bắt đầu tăng dần" },
+                        { value: "endAt-DESC", label: "Ngày kết thúc giảm dần" },
+                        { value: "endAt-ASC", label: "Ngày kết thúc tăng dần" },
+                      ]}
+                    />
                   </div>
 
                   {/* Start Date Filter */}
@@ -593,7 +671,7 @@ function DiscountsTrashPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                                title="Restore"
+                                title="Khôi phục"
                                 disabled={busyId === discount.id}
                               >
                                 <RotateCcw className="text-green-600 size-5" />
@@ -627,7 +705,7 @@ function DiscountsTrashPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Delete Permanently"
+                                title="Xóa vĩnh viễn"
                                 disabled={busyId === discount.id}
                               >
                                 <Trash2 className="text-red-600 size-5" />
@@ -654,35 +732,16 @@ function DiscountsTrashPage() {
             )}
 
             {!loading && discounts.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Số hàng mỗi trang:</span>
-                  <select
-                    className="h-9 rounded-md border border-gray-300 px-2 bg-white"
-                    value={itemsPerPage}
-                    onChange={(e) => {
-                      setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                  >
-                    {[10, 20, 30, 50].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <Pagination
-                    page={currentPage}
-                    totalPages={totalPages}
-                    hasPrev={hasPrev}
-                    hasNext={hasNext}
-                    onChange={setCurrentPage}
-                  />
-                </div>
-              </div>
+              <TablePagination
+                page={currentPage}
+                limit={itemsPerPage}
+                totalPages={totalPages}
+                totalItems={undefined}
+                hasPrev={hasPrev}
+                hasNext={hasNext}
+                onPageChange={setCurrentPage}
+                onLimitChange={(l) => { setItemsPerPage(l); setCurrentPage(1); }}
+              />
             )}
           </motion.div>
 
@@ -695,7 +754,7 @@ function DiscountsTrashPage() {
               <Button
                 className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
                 onClick={() => setLightboxImage(null)}
-                title="Close"
+                title="Đóng"
               >
                 <X className="w-6 h-6 text-gray-800" />
               </Button>

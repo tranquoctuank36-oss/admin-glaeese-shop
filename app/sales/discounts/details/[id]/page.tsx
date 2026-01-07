@@ -292,7 +292,7 @@ function DiscountDetailsPage() {
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
                 onClick={() => router.push(Routes.sales.discounts.root)}
-                title="Go Back"
+                title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
               </Button>
@@ -333,14 +333,14 @@ function DiscountDetailsPage() {
 
               {discount.status === "scheduled" && (
                 <ConfirmPopover
-                  title="Unschedule Discount"
+                  title="Hủy lịch giảm giá"
                   message={
                     <div>
-                      Are you sure you want to unschedule{" "}
+                      Bạn có chắc muốn hủy lịch{" "}
                       <strong>{discount.name}</strong>?
                     </div>
                   }
-                  confirmText="Unschedule"
+                  confirmText="Hủy lịch"
                   onConfirm={handleUnschedule}
                 >
                   <Button
@@ -354,14 +354,14 @@ function DiscountDetailsPage() {
               )}
 
               <ConfirmPopover
-                title="Cancel Discount"
+                title="Hủy giảm giá"
                 message={
                   <div>
-                    Are you sure you want to cancel{" "}
+                    Bạn có chắc muốn hủy{" "}
                     <strong>{discount.name}</strong>?
                   </div>
                 }
-                confirmText="Cancel Discount"
+                confirmText="Hủy giảm giá"
                 onConfirm={handleCancel}
               >
                 <Button
@@ -369,19 +369,19 @@ function DiscountDetailsPage() {
                   disabled={busyAction}
                 >
                   <XCircle size={18} />
-                  Cancel
+                  Hủy
                 </Button>
               </ConfirmPopover>
 
               <ConfirmPopover
-                title="Delete Discount"
+                title="Xóa giảm giá"
                 message={
                   <div>
-                    Are you sure you want to delete{" "}
+                    Bạn có chắc muốn xóa{" "}
                     <strong>{discount.name}</strong>?
                   </div>
                 }
-                confirmText="Delete"
+                confirmText="Xóa"
                 onConfirm={handleDelete}
               >
                 <Button
@@ -389,7 +389,7 @@ function DiscountDetailsPage() {
                   disabled={busyAction}
                 >
                   <Trash2 size={18} />
-                  Delete
+                  Xóa
                 </Button>
               </ConfirmPopover>
             </div>
@@ -600,7 +600,7 @@ function DiscountDetailsPage() {
             <Button
               className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
               onClick={() => setLightboxImage(null)}
-              title="Close"
+              title="Đóng"
             >
               <ArrowLeft className="w-6 h-6 text-gray-800" />
             </Button>

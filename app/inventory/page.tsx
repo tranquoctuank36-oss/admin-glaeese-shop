@@ -17,11 +17,11 @@ import {
   X,
   Loader2,
 } from "lucide-react";
-import { getStocks, getStockMovements, updateStockConfiguration, createStockMovement } from "@/services/stockService";
+import { getStocks, getStockMovements, updateStockConfiguration, createStockMovement, getStockStatistics } from "@/services/stockService";
 import type { Stock, StockMovement } from "@/types/stock";
 import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { toast } from "react-hot-toast";
 import FloatingInput from "@/components/FloatingInput";
 import {
@@ -59,13 +59,9 @@ function StocksPage() {
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">("DESC");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [grandTotal, setGrandTotal] = useState(0);
-  const [stats, setStats] = useState({
-    inStock: 0,
-    lowStock: 0,
-    outOfStock: 0,
-  });
+  const [stats, setStats] = useState<any>(null);
   
   // Action dialogs state
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
@@ -94,6 +90,7 @@ function StocksPage() {
       });
       setStocks(response.data);
       setTotalPages(response.meta.totalPages);
+      setTotalItems(response.meta.totalItems);
     } catch (error: any) {
       toast.error(error?.response?.data?.detail || "Không thể tải tồn kho");
     } finally {
@@ -103,20 +100,8 @@ function StocksPage() {
 
   const fetchStats = async () => {
     try {
-      // Fetch counts for each status
-      const [inStockRes, lowStockRes, outOfStockRes, totalRes] =
-        await Promise.all([
-          getStocks({ status: "in_stock", limit: 1 }),
-          getStocks({ status: "low_stock", limit: 1 }),
-          getStocks({ status: "out_of_stock", limit: 1 }),
-          getStocks({ limit: 1 }), // Get total without filter
-        ]);
-      setStats({
-        inStock: inStockRes.meta.totalItems,
-        lowStock: lowStockRes.meta.totalItems,
-        outOfStock: outOfStockRes.meta.totalItems,
-      });
-      setGrandTotal(totalRes.meta.totalItems);
+      const statsData = await getStockStatistics();
+      setStats(statsData.data ?? statsData);
     } catch (error) {
       console.error("Failed to fetch stats:", error);
     }
@@ -275,7 +260,7 @@ function StocksPage() {
             <div className="flex items-center gap-3 mb-2">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách tồn kho {grandTotal > 0 && `(${grandTotal})`}
+                  Hàng trong kho
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
                   Quản lý mức tồn kho và tình trạng sản phẩm
@@ -283,6 +268,144 @@ function StocksPage() {
               </div>
             </div>
           </div>
+
+          {/* Statistics Cards */}
+          {stats && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+            >
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tổng tồn kho</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                      {stats.total ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Còn hàng</p>
+                    <p className="text-2xl font-bold text-green-600 mt-1">
+                      {stats.inStock ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Sắp hết hàng</p>
+                    <p className="text-2xl font-bold text-yellow-600 mt-1">
+                      {stats.lowStock ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Hết hàng</p>
+                    <p className="text-2xl font-bold text-red-600 mt-1">
+                      {stats.outOfStock ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tổng số lượng</p>
+                    <p className="text-2xl font-bold text-indigo-600 mt-1">
+                      {stats.totalQuantityOnHand ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-indigo-100 rounded-lg">
+                    <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Số lượng đặt trước</p>
+                    <p className="text-2xl font-bold text-purple-600 mt-1">
+                      {stats.totalQuantityReserved ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Có thể bán</p>
+                    <p className="text-2xl font-bold text-teal-600 mt-1">
+                      {stats.totalQuantityAvailable ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-teal-100 rounded-lg">
+                    <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-600">Giá trị ước tính</p>
+                    <p className="text-lg font-bold text-orange-600 mt-1 break-words">
+                      {stats.estimatedStockValue ? `${Number(stats.estimatedStockValue).toLocaleString('en-US')}đ` : '0đ'}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-orange-100 rounded-lg flex-shrink-0 ml-2">
+                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* Search and Filter Bar */}
           <motion.div
@@ -580,37 +703,16 @@ function StocksPage() {
             )}
 
             {!loading && stocks.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                {/* Rows per page (left) */}
-                <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Số hàng mỗi trang:</span>
-                  <select
-                    className="h-9 rounded-md border border-gray-300 px-2 bg-white"
-                    value={itemsPerPage}
-                    onChange={(e) => {
-                      setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                  >
-                    {[10, 20, 30, 50].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Controls (right) */}
-                <div className="flex items-center gap-4">
-                  <Pagination
-                    page={currentPage}
-                    totalPages={totalPages}
-                    hasPrev={currentPage > 1}
-                    hasNext={currentPage < totalPages}
-                    onChange={setCurrentPage}
-                  />
-                </div>
-              </div>
+              <TablePagination
+                page={currentPage}
+                limit={itemsPerPage}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                hasPrev={currentPage > 1}
+                hasNext={currentPage < totalPages}
+                onPageChange={setCurrentPage}
+                onLimitChange={(l) => { setItemsPerPage(l); setCurrentPage(1); }}
+              />
             )}
           </motion.div>
         </motion.div>

@@ -9,8 +9,85 @@ import { getPackingOrders } from "@/services/orderService";
 import { Order } from "@/types/order";
 import { calculateShippingFee, createShipment, printLabel } from "@/services/shippingService";
 import { useListQuery } from "@/components/data/useListQuery";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import toast from "react-hot-toast";
+
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function PackingOrdersPage() {
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery(
@@ -380,15 +457,15 @@ export default function PackingOrdersPage() {
                 <label className="block text-xs text-gray-600 mb-1">
                   Mã vận đơn
                 </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none bg-white"
+                <CustomSelect
                   value={hasTrackingCodeFilter}
-                  onChange={(e) => setHasTrackingCodeFilter(e.target.value)}
-                >
-                  <option value="all">Tất cả</option>
-                  <option value="true">Có mã</option>
-                  <option value="false">Chưa có mã</option>
-                </select>
+                  onChange={(v) => setHasTrackingCodeFilter(v)}
+                  options={[
+                    { value: "all", label: "Tất cả" },
+                    { value: "true", label: "Có mã" },
+                    { value: "false", label: "Chưa có mã" },
+                  ]}
+                />
               </div>
 
               {/* Print Status Filter */}
@@ -396,15 +473,15 @@ export default function PackingOrdersPage() {
                 <label className="block text-xs text-gray-600 mb-1">
                   Trạng thái in tem
                 </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none bg-white"
+                <CustomSelect
                   value={isPrintedFilter}
-                  onChange={(e) => setIsPrintedFilter(e.target.value)}
-                >
-                  <option value="all">Tất cả</option>
-                  <option value="true">Đã in</option>
-                  <option value="false">Chưa in</option>
-                </select>
+                  onChange={(v) => setIsPrintedFilter(v)}
+                  options={[
+                    { value: "all", label: "Tất cả" },
+                    { value: "true", label: "Đã in" },
+                    { value: "false", label: "Chưa in" },
+                  ]}
+                />
               </div>
 
               {/* Sort Options */}
@@ -412,18 +489,18 @@ export default function PackingOrdersPage() {
                 <label className="block text-xs text-gray-600 mb-1">
                   Sắp xếp
                 </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none bg-white"
+                <CustomSelect
                   value={`${q.sortField}-${q.sortOrder}`}
-                  onChange={(e) => {
-                    const [field, order] = e.target.value.split('-');
+                  onChange={(v) => {
+                    const [field, order] = v.split('-');
                     setQ((prev) => ({ ...prev, sortField: field, sortOrder: order as "ASC" | "DESC", page: 1 }));
                   }}
-                >
-                  <option value="createdAt-DESC">Ngày tạo giảm dần</option>
-                  <option value="createdAt-ASC">Ngày tạo tăng dần</option>
-                  <option value="updatedAt-DESC">Trạng thái mới cập nhật</option>
-                </select>
+                  options={[
+                    { value: "createdAt-DESC", label: "Ngày tạo giảm dần" },
+                    { value: "createdAt-ASC", label: "Ngày tạo tăng dần" },
+                    { value: "updatedAt-DESC", label: "Trạng thái mới cập nhật" },
+                  ]}
+                />
               </div>
             </div>
 
@@ -687,39 +764,18 @@ export default function PackingOrdersPage() {
 
             {/* Pagination */}
             {!loading && orders.length > 0 && (
-              <div className="flex items-center justify-between p-4 bg-white rounded-b-lg border-x border-b border-gray-200">
-                <div className="flex items-center gap-2 text-sm">
-                  <span>Rows per page:</span>
-                  <select
-                    className="border rounded-md px-2 py-1"
-                    value={q.limit}
-                    onChange={(e) =>
-                      setAndResetPage({
-                        limit: Number(e.target.value),
-                        page: 1,
-                      })
-                    }
-                  >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </select>
-                </div>
-
-                <Pagination
-                  page={q.page}
-                  totalPages={meta?.totalPages}
-                  hasPrev={hasPrev}
-                  hasNext={hasNext}
-                  onChange={(p) => {
-                    const capped = meta?.totalPages
-                      ? Math.min(p, meta.totalPages)
-                      : p;
-                    setQ((prev) => ({ ...prev, page: Math.max(1, capped) }));
-                  }}
-                />
-              </div>
+              <TablePagination
+                page={q.page}
+                limit={q.limit}
+                totalPages={meta?.totalPages}
+                totalItems={meta?.totalItems}
+                hasPrev={hasPrev}
+                hasNext={hasNext}
+                onPageChange={(p) => setQ((prev) => ({ ...prev, page: p }))}
+                onLimitChange={(l) => setAndResetPage({ limit: l, page: 1 })}
+                limitOptions={[10, 20, 50, 100]}
+                className="rounded-b-lg border-x border-b border-gray-200"
+              />
             )}
       </motion.div>
 
@@ -850,15 +906,15 @@ export default function PackingOrdersPage() {
                     <label className="block text-xs text-gray-600 mb-1">
                       Lưu ý GHN:
                     </label>
-                    <select 
+                    <CustomSelect
                       value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none bg-white"
-                    >
-                      <option value="CHOXEMHANGKHONGTHU">Cho xem hàng không thử</option>
-                      <option value="CHOTHUHANG">Cho thử hàng</option>
-                      <option value="KHONGCHOXEMHANG">Không cho xem hàng</option>
-                    </select>
+                      onChange={(v) => setNote(v)}
+                      options={[
+                        { value: "CHOXEMHANGKHONGTHU", label: "Cho xem hàng không thử" },
+                        { value: "CHOTHUHANG", label: "Cho thử hàng" },
+                        { value: "KHONGCHOXEMHANG", label: "Không cho xem hàng" },
+                      ]}
+                    />
                   </div>
                 </div>
               </div>

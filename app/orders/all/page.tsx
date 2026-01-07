@@ -3,11 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Search, Shield, X, Pencil, Filter, Eye, Edit } from "lucide-react";
+import { Search, Shield, X, Pencil, Filter, Eye, Edit, ChevronDown } from "lucide-react";
 import { getOrders, updateOrder } from "@/services/orderService";
 import { Order } from "@/types/order";
 import { useListQuery } from "@/components/data/useListQuery";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { Button } from "@/components/ui/button";
 import { Routes } from "@/lib/routes";
 import toast from "react-hot-toast";
@@ -17,6 +17,83 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`h-[42px] w-full px-3 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AllOrdersPage() {
   const router = useRouter();
@@ -165,11 +242,10 @@ export default function AllOrdersPage() {
               }
             />
           </div>
-          <select
-            className="h-[42px] px-3 border border-gray-300 rounded-lg focus:border-blue-500 outline-none bg-white cursor-pointer"
+          <CustomSelect
             value={`${q.sortField}-${q.sortOrder}`}
-            onChange={(e) => {
-              const [field, order] = e.target.value.split("-");
+            onChange={(v) => {
+              const [field, order] = v.split("-");
               setQ((prev) => ({
                 ...prev,
                 sortField: field,
@@ -177,15 +253,14 @@ export default function AllOrdersPage() {
                 page: 1,
               }));
             }}
-          >
-            <option value="createdAt-DESC">Ngày tạo giảm dần</option>
-            <option value="createdAt-ASC">Ngày tạo tăng dần</option>
-            <option value="updatedAt-DESC">
-              Trạng thái mới cập nhật
-            </option>
-            <option value="grandTotal-DESC">Tổng tiền giảm dần</option>
-            <option value="grandTotal-ASC">Tổng tiền tăng dần</option>
-          </select>
+            options={[
+              { value: "createdAt-DESC", label: "Ngày tạo giảm dần" },
+              { value: "createdAt-ASC", label: "Ngày tạo tăng dần" },
+              { value: "updatedAt-DESC", label: "Trạng thái mới cập nhật" },
+              { value: "grandTotal-DESC", label: "Tổng tiền giảm dần" },
+              { value: "grandTotal-ASC", label: "Tổng tiền tăng dần" },
+            ]}
+          />
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border rounded-lg transition-colors cursor-pointer ${
@@ -212,28 +287,28 @@ export default function AllOrdersPage() {
                 <label className="block text-xs text-gray-600 mb-1">
                   Trạng thái đơn hàng
                 </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none bg-white"
+                <CustomSelect
                   value={q.status || ""}
-                  onChange={(e) => {
+                  onChange={(v) => {
                     setQ((prev) => ({
                       ...prev,
-                      status: e.target.value || undefined,
+                      status: v || undefined,
                       page: 1,
                     }));
                   }}
-                >
-                  <option value="">Tất cả</option>
-                  <option value="pending">Chờ xác nhận</option>
-                  <option value="processing">Đang xử lý</option>
-                  <option value="shipping">Đang giao</option>
-                  <option value="delivered">Đã giao</option>
-                  <option value="completed">Hoàn thành</option>
-                  <option value="cancelled">Đã hủy</option>
-                  <option value="expired">Hết hạn</option>
-                  <option value="returned">Đã trả</option>
-                  <option value="on_hold">Tạm giữ</option>
-                </select>
+                  options={[
+                    { value: "", label: "Tất cả" },
+                    { value: "pending", label: "Chờ xác nhận" },
+                    { value: "processing", label: "Đang xử lý" },
+                    { value: "shipping", label: "Đang giao" },
+                    { value: "delivered", label: "Đã giao" },
+                    { value: "completed", label: "Hoàn thành" },
+                    { value: "cancelled", label: "Đã hủy" },
+                    { value: "expired", label: "Hết hạn" },
+                    { value: "returned", label: "Đã trả" },
+                    { value: "on_hold", label: "Tạm giữ" },
+                  ]}
+                />
               </div>
 
               {/* Payment Status Filter */}
@@ -241,23 +316,23 @@ export default function AllOrdersPage() {
                 <label className="block text-xs text-gray-600 mb-1">
                   Trạng thái thanh toán
                 </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none bg-white"
+                <CustomSelect
                   value={q.paymentStatus || ""}
-                  onChange={(e) => {
+                  onChange={(v) => {
                     setQ((prev) => ({
                       ...prev,
-                      paymentStatus: e.target.value || undefined,
+                      paymentStatus: v || undefined,
                       page: 1,
                     }));
                   }}
-                >
-                  <option value="">Tất cả</option>
-                  <option value="pending">Chờ thanh toán</option>
-                  <option value="paid">Đã thanh toán</option>
-                  <option value="cod_collected">Đã thu COD</option>
-                  <option value="failed">Thất bại</option>
-                </select>
+                  options={[
+                    { value: "", label: "Tất cả" },
+                    { value: "pending", label: "Chờ thanh toán" },
+                    { value: "paid", label: "Đã thanh toán" },
+                    { value: "cod_collected", label: "Đã thu COD" },
+                    { value: "failed", label: "Thất bại" },
+                  ]}
+                />
               </div>
 
               {/* Payment Method Filter */}
@@ -265,45 +340,45 @@ export default function AllOrdersPage() {
                 <label className="block text-xs text-gray-600 mb-1">
                   Phương thức thanh toán
                 </label>
-                <select
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none bg-white"
+                <CustomSelect
                   value={q.paymentMethod || ""}
-                  onChange={(e) => {
+                  onChange={(v) => {
                     setQ((prev) => ({
                       ...prev,
-                      paymentMethod: e.target.value || undefined,
+                      paymentMethod: v || undefined,
                       page: 1,
                     }));
                   }}
-                >
-                  <option value="">Tất cả</option>
-                  <option value="COD">COD</option>
-                  <option value="VNPAY">VNPAY</option>
-                </select>
+                  options={[
+                    { value: "", label: "Tất cả" },
+                    { value: "COD", label: "COD" },
+                    { value: "VNPAY", label: "VNPAY" },
+                  ]}
+                />
               </div>
 
               {/* Preset Filter */}
               <div className="mt-5">
-                <select
-                  className="w-full cursor-pointer border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none bg-white"
+                <CustomSelect
                   value={q.preset || "this_month"}
-                  onChange={(e) => {
+                  onChange={(v) => {
                     setQ((prev) => ({
                       ...prev,
-                      preset: e.target.value || undefined,
+                      preset: v || undefined,
                       page: 1,
                     }));
                   }}
-                >
-                  <option value="today">Hôm nay</option>
-                  <option value="yesterday">Hôm qua</option>
-                  <option value="this_week">Tuần này</option>
-                  <option value="last_week">Tuần trước</option>
-                  <option value="this_month">Tháng này</option>
-                  <option value="last_month">Tháng trước</option>
-                  <option value="this_year">Năm này</option>
-                  <option value="custom">Tùy chỉnh</option>
-                </select>
+                  options={[
+                    { value: "today", label: "Hôm nay" },
+                    { value: "yesterday", label: "Hôm qua" },
+                    { value: "this_week", label: "Tuần này" },
+                    { value: "last_week", label: "Tuần trước" },
+                    { value: "this_month", label: "Tháng này" },
+                    { value: "last_month", label: "Tháng trước" },
+                    { value: "this_year", label: "Năm này" },
+                    { value: "custom", label: "Tùy chỉnh" },
+                  ]}
+                />
               </div>
             </div>
 
@@ -585,39 +660,17 @@ export default function AllOrdersPage() {
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-between p-4 border-t border-gray-200">
-            <div className="flex items-center gap-2 text-sm">
-              <span>Số hàng mỗi trang:</span>
-              <select
-                className="border rounded-md px-2 py-1"
-                value={q.limit}
-                onChange={(e) =>
-                  setAndResetPage({
-                    limit: Number(e.target.value),
-                    page: 1,
-                  })
-                }
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
-
-            <Pagination
-              page={q.page}
-              totalPages={meta?.totalPages}
-              hasPrev={hasPrev}
-              hasNext={hasNext}
-              onChange={(p) => {
-                const capped = meta?.totalPages
-                  ? Math.min(p, meta.totalPages)
-                  : p;
-                setQ((prev) => ({ ...prev, page: Math.max(1, capped) }));
-              }}
-            />
-          </div>
+          <TablePagination
+            page={q.page}
+            limit={q.limit}
+            totalPages={meta?.totalPages}
+            totalItems={meta?.totalItems}
+            hasPrev={hasPrev}
+            hasNext={hasNext}
+            onPageChange={(p) => setQ((prev) => ({ ...prev, page: p }))}
+            onLimitChange={(l) => setAndResetPage({ limit: l, page: 1 })}
+            limitOptions={[10, 20, 50, 100]}
+          />
         </motion.div>
       )}
 

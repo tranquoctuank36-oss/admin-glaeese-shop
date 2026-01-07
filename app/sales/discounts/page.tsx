@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -11,9 +11,10 @@ import {
   Filter,
   XCircle,
   Eye,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import {
   getDiscounts,
@@ -31,6 +32,82 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const formatDateTime = (dateString?: string) => {
   if (!dateString) return "-";
@@ -279,7 +356,7 @@ function DiscountsPage() {
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
                 onClick={() => router.push(Routes.sales.root)}
-                title="Go Back"
+                title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
               </Button>
@@ -366,21 +443,21 @@ function DiscountsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Trạng thái
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={status}
-                      onChange={(e) => {
-                        setStatus(e.target.value);
+                      onChange={(v) => {
+                        setStatus(v);
                         setPage(1);
                       }}
-                    >
-                      <option value="">Tất cả</option>
-                      <option value="draft">Nháp</option>
-                      <option value="scheduled">Đã lên lịch</option>
-                      <option value="happening">Đang diễn ra</option>
-                      <option value="canceled">Đã hủy</option>
-                      <option value="expired">Hết hạn</option>
-                    </select>
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "draft", label: "Nháp" },
+                        { value: "scheduled", label: "Đã lên lịch" },
+                        { value: "happening", label: "Đang diễn ra" },
+                        { value: "canceled", label: "Đã hủy" },
+                        { value: "expired", label: "Hết hạn" },
+                      ]}
+                    />
                   </div>
 
                   {/* Type Filter */}
@@ -388,18 +465,18 @@ function DiscountsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Loại
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={type}
-                      onChange={(e) => {
-                        setType(e.target.value);
+                      onChange={(v) => {
+                        setType(v);
                         setPage(1);
                       }}
-                    >
-                      <option value="">Tất cả</option>
-                      <option value="fixed">Số tiền cố định</option>
-                      <option value="percentage">Phần trăm</option>
-                    </select>
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "fixed", label: "Số tiền cố định" },
+                        { value: "percentage", label: "Phần trăm" },
+                      ]}
+                    />
                   </div>
 
                   {/* Sort Filter */}
@@ -407,23 +484,23 @@ function DiscountsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Sắp xếp
                     </label>
-                    <select
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none"
+                    <CustomSelect
                       value={`${sortField}-${sortOrder}`}
-                      onChange={(e) => {
-                        const [field, order] = e.target.value.split('-') as [typeof sortField, typeof sortOrder];
+                      onChange={(v) => {
+                        const [field, order] = v.split('-') as [typeof sortField, typeof sortOrder];
                         setSortField(field);
                         setSortOrder(order);
                         setPage(1);
                       }}
-                    >
-                      <option value="createdAt-DESC">Ngày tạo giảm dần</option>
-                      <option value="createdAt-ASC">Ngày tạo tăng dần</option>
-                      <option value="startAt-DESC">Ngày bắt đầu giảm dần</option>
-                      <option value="startAt-ASC">Ngày bắt đầu tăng dần</option>
-                      <option value="endAt-DESC">Ngày kết thúc giảm dần</option>
-                      <option value="endAt-ASC">Ngày kết thúc tăng dần</option>
-                    </select>
+                      options={[
+                        { value: "createdAt-DESC", label: "Ngày tạo giảm dần" },
+                        { value: "createdAt-ASC", label: "Ngày tạo tăng dần" },
+                        { value: "startAt-DESC", label: "Ngày bắt đầu giảm dần" },
+                        { value: "startAt-ASC", label: "Ngày bắt đầu tăng dần" },
+                        { value: "endAt-DESC", label: "Ngày kết thúc giảm dần" },
+                        { value: "endAt-ASC", label: "Ngày kết thúc tăng dần" },
+                      ]}
+                    />
                   </div>
 
                   {/* Valid From Filter */}
@@ -590,7 +667,7 @@ function DiscountsPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                              title="View Details"
+                              title="Xem chi tiết"
                               onClick={() =>
                                 router.push(
                                   Routes.sales.discounts.details(discount.id)
@@ -622,7 +699,7 @@ function DiscountsPage() {
                               </>
                             )}
                             <ConfirmPopover
-                              title="Cancel Discount"
+                              title="Hủy giảm giá"
                               message={
                                 <div>
                                   Are you sure you want to cancel{" "}
@@ -638,7 +715,7 @@ function DiscountsPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-orange-100 rounded-lg transition-colors"
-                                title="Cancel"
+                                title="Hủy"
                               >
                                 <XCircle className="text-orange-600 size-5" />
                               </Button>
@@ -647,7 +724,7 @@ function DiscountsPage() {
                               |
                             </span>
                             <ConfirmPopover
-                              title="Remove Discount"
+                              title="Xóa giảm giá"
                               message={
                                 <div>
                                   Are you sure you want to delete{" "}
@@ -663,7 +740,7 @@ function DiscountsPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Delete"
+                                  title="Xóa"
                               >
                                 <Trash2 className="text-red-600 size-5" />
                               </Button>
@@ -678,37 +755,16 @@ function DiscountsPage() {
             </div>
 
             {!loading && discounts.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                {/* Rows per page (left) */}
-                <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Số hàng mỗi trang:</span>
-                  <select
-                    className="h-9 rounded-md border border-gray-300 px-2 bg-white"
-                    value={limit}
-                    onChange={(e) => {
-                      setLimit(Number(e.target.value));
-                      setPage(1);
-                    }}
-                  >
-                    {[10, 20, 30, 50].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Controls (right) */}
-                <div className="flex items-center gap-4">
-                  <Pagination
-                    page={page}
-                    totalPages={totalPages}
-                    hasPrev={page > 1}
-                    hasNext={page < totalPages}
-                    onChange={setPage}
-                  />
-                </div>
-              </div>
+              <TablePagination
+                page={page}
+                limit={limit}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                hasPrev={page > 1}
+                hasNext={page < totalPages}
+                onPageChange={setPage}
+                onLimitChange={(l) => { setLimit(l); setPage(1); }}
+              />
             )}
           </motion.div>
         </motion.div>

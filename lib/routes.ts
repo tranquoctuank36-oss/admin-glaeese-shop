@@ -6,64 +6,58 @@ export const Routes = {
     details: (id: string) => `/reviews/details/${id}`,
   },
 
-  productsManagement: {
-    root: "/productsManagement",
-    products: {
-      root: "/productsManagement/products",
-      add: "/productsManagement/products/add",
-      edit: (id: string) => `/productsManagement/products/edit/${id}`,
-      details: (id: string) => `/productsManagement/products/details/${id}`,
-      trash: "/productsManagement/products/trash",
-    },
-    categories: {
-      root: "/productsManagement/categories",
-      add: "/productsManagement/categories/add",
-      review: "/productsManagement/categories/review",
-      viewDetails: "/productsManagement/categories/details/[id]",
-      edit: "/productsManagement/categories/edit/[id] ",
-    },
+  products: {
+    root: "/products",
+    add: "/products/add",
+    edit: (id: string) => `/products/edit/${id}`,
+    details: (id: string) => `/products/details/${id}`,
+    trash: "/products/trash",
+  },
+
+  attributes: {
+    root: "/attributes",
     brands: {
-      root: "/productsManagement/brands",
-      details: "/productsManagement/brands/details/[id]",
-      add: "/productsManagement/brands/add",
-      edit: "/productsManagement/brands/edit/[id]",
-      trash: "/productsManagement/brands/trash",
+      root: "/attributes/brands",
+      details: "/attributes/brands/details/[id]",
+      add: "/attributes/brands/add",
+      edit: "/attributes/brands/edit/[id]",
+      trash: "/attributes/brands/trash",
     },
     frames: {
-      root: "/productsManagement/frames",
+      root: "/attributes/frames",
       frameShapes: {
-        root: "/productsManagement/frames/frameShapes",
-        add: "/productsManagement/frames/frameShapes/add",
-        edit: "/productsManagement/frames/frameShapes/edit/[id]",
-        trash: "/productsManagement/frames/frameShapes/trash",
+        root: "/attributes/frames/frameShapes",
+        add: "/attributes/frames/frameShapes/add",
+        edit: "/attributes/frames/frameShapes/edit/[id]",
+        trash: "/attributes/frames/frameShapes/trash",
       },
       frameTypes: {
-        root: "/productsManagement/frames/frameTypes",
-        add: "/productsManagement/frames/frameTypes/add",
-        edit: "/productsManagement/frames/frameTypes/edit/[id]",
-        trash: "/productsManagement/frames/frameTypes/trash",
+        root: "/attributes/frames/frameTypes",
+        add: "/attributes/frames/frameTypes/add",
+        edit: "/attributes/frames/frameTypes/edit/[id]",
+        trash: "/attributes/frames/frameTypes/trash",
       },
       frameMaterials: {
-        root: "/productsManagement/frames/frameMaterials",
-        add: "/productsManagement/frames/frameMaterials/add",
-        edit: "/productsManagement/frames/frameMaterials/edit/[id]",
-        trash: "/productsManagement/frames/frameMaterials/trash",
+        root: "/attributes/frames/frameMaterials",
+        add: "/attributes/frames/frameMaterials/add",
+        edit: "/attributes/frames/frameMaterials/edit/[id]",
+        trash: "/attributes/frames/frameMaterials/trash",
       },
     },
     stocks: {
-      root: "/productsManagement/stocks",
+      root: "/attributes/stocks",
     },
     colors: {
-      root: "/productsManagement/colors",
-      add: "/productsManagement/colors/add",
-      edit: "/productsManagement/colors/edit/[id]",
-      trash: "/productsManagement/colors/trash",
+      root: "/attributes/colors",
+      add: "/attributes/colors/add",
+      edit: "/attributes/colors/edit/[id]",
+      trash: "/attributes/colors/trash",
     },
     tags: {
-      root: "/productsManagement/tags",
-      add: "/productsManagement/tags/add",
-      edit: "/productsManagement/tags/edit/[id]",
-      trash: "/productsManagement/tags/trash",
+      root: "/attributes/tags",
+      add: "/attributes/tags/add",
+      edit: "/attributes/tags/edit/[id]",
+      trash: "/attributes/tags/trash",
     },
   },
 
@@ -100,6 +94,13 @@ export const Routes = {
 
   interface: {
     root: "/interface",
+    categories: {
+      root: "/interface/categories",
+      add: "/interface/categories/add",
+      review: "/interface/categories/review",
+      viewDetails: "/interface/categories/details/[id]",
+      edit: "/interface/categories/edit/[id] ",
+    },
     banners: {
       root: "/interface/banners",
       add: "/interface/banners/add",
@@ -128,4 +129,4 @@ export const Routes = {
 
 export type RouteValue =
   | (typeof Routes)[keyof typeof Routes]
-  | (typeof Routes)["productsManagement"][keyof (typeof Routes)["productsManagement"]];
+  | (typeof Routes)["attributes"][keyof (typeof Routes)["attributes"]];

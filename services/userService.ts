@@ -239,3 +239,13 @@ export async function updateUser(userId: string, payload: UpdateUserPayload): Pr
   }
 }
 
+export async function getUserStatistics() {
+  try {
+    const res = await api.get("/admin/users/statistics");
+    return res.data ?? {};
+  } catch (err) {
+    console.error("Failed to fetch user statistics:", err);
+    return {};
+  }
+}
+

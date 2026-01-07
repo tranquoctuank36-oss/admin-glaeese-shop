@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { getOrderStatistics, OrderStatistics } from "@/services/orderService";
 import {
@@ -10,7 +10,87 @@ import {
   Truck,
   CheckCircle,
   XCircle,
+  ChevronDown,
 } from "lucide-react";
+
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+  placeholder?: string;
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-4 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-gray-900">
+          {selectedOption ? selectedOption.label : placeholder || "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-4 py-2 cursor-pointer transition-colors ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function OrdersOverviewPage() {
   const [stats, setStats] = useState<OrderStatistics | null>(null);
@@ -133,22 +213,19 @@ export default function OrdersOverviewPage() {
       >
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            {/* <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sắp xếp theo
-            </label> */}
-            <select
-              className="px-4 py-2 cursor-pointer border border-gray-300 rounded-lg focus:border-blue-500 outline-none bg-white"
+            <CustomSelect
               value={preset}
-              onChange={(e) => setPreset(e.target.value)}
-            >
-              <option value="today">Hôm nay</option>
-              <option value="yesterday">Hôm qua</option>
-              <option value="this_week">Tuần này</option>
-              <option value="last_week">Tuần trước</option>
-              <option value="this_month">Tháng này</option>
-              <option value="last_month">Tháng trước</option>
-              <option value="this_year">Năm này</option>
-            </select>
+              onChange={(v) => setPreset(v)}
+              options={[
+                { value: "today", label: "Hôm nay" },
+                { value: "yesterday", label: "Hôm qua" },
+                { value: "this_week", label: "Tuần này" },
+                { value: "last_week", label: "Tuần trước" },
+                { value: "this_month", label: "Tháng này" },
+                { value: "last_month", label: "Tháng trước" },
+                { value: "this_year", label: "Năm này" },
+              ]}
+            />
 
             <input
               type="date"

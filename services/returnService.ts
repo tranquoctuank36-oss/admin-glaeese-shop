@@ -6,6 +6,12 @@ export interface GetReturnsParams {
   page?: number;
   limit?: number;
   status?: string;
+  statuses?: string[];
+  preset?: string;
+  startDate?: string;
+  endDate?: string;
+  sortField?: string;
+  sortOrder?: string;
 }
 
 export interface GetReturnsResponse {
@@ -53,7 +59,29 @@ export async function updateReturnStatus(
   return response.data.data;
 }
 
-export async function completeRefundForCOD(id: string): Promise<Return> {
-  const response = await api.patch(`/admin/returns/${id}/complete-refund`);
+export async function completeRefund(id: string): Promise<Return> {
+  const response = await api.patch(`/admin/returns/${id}/complete`);
   return response.data.data;
+}
+
+export async function performQualityCheck(
+  id: string,
+  result: 'pass' | 'fail',
+  note?: string
+): Promise<Return> {
+  const response = await api.post(`/admin/returns/${id}/qc`, { 
+    result, 
+    note 
+  });
+  return response.data.data;
+}
+
+export async function getReturnStatistics() {
+  try {
+    const res = await api.get("/admin/returns/statistics");
+    return res.data ?? {};
+  } catch (err) {
+    console.error("Failed to fetch return statistics:", err);
+    return {};
+  }
 }

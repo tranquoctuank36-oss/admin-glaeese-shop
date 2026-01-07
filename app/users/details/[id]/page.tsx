@@ -139,7 +139,7 @@ function UserDetailsPage() {
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
               onClick={() => router.push(Routes.users.root)}
-              title="Back"
+              title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />
             </Button>
@@ -173,7 +173,7 @@ function UserDetailsPage() {
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
               onClick={() => router.push(Routes.users.root)}
-              title="Back"
+              title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />
             </Button>

@@ -95,3 +95,13 @@ export async function bulkUpdateReviews(
   }
 }
 
+export async function getReviewStatistics() {
+  try {
+    const res = await api.get("/admin/reviews/statistics");
+    return res.data ?? {};
+  } catch (err) {
+    console.error("Failed to fetch review statistics:", err);
+    return {};
+  }
+}
+

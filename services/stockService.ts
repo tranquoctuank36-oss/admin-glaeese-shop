@@ -99,3 +99,13 @@ export async function createStockMovement(
   );
   return response.data.data;
 }
+
+export async function getStockStatistics() {
+  try {
+    const res = await api.get("/admin/stocks/statistics");
+    return res.data ?? {};
+  } catch (err) {
+    console.error("Failed to fetch stock statistics:", err);
+    return {};
+  }
+}

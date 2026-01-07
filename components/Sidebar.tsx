@@ -55,7 +55,9 @@ export default function Sidebar() {
             const isActive = pathname === item.href;
             const hasSub = !!item.subItems?.length;
             const hasActiveChild = !!item.subItems?.some((s) => pathname === s.href);
-            const isParentActive = isActive || hasActiveChild || pathname.startsWith(item.href);
+            // Fix: Chỉ dùng startsWith cho non-root paths, tránh "/" match tất cả
+            const isParentActive = isActive || hasActiveChild || 
+              (item.href !== "/" && pathname.startsWith(item.href));
             const isOpen = openSubmenu === item.name;
 
             return (

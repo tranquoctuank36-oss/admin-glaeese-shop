@@ -80,39 +80,30 @@ export type SidebarItem = {
 
 export const sidebarItems: SidebarItem[] = [
   { name: "Tổng quan", href: Routes.root, icon: "House" },
+  { name: "Sản phẩm", href: Routes.products.root, icon: "Package" },
   {
-    name: "Quản lý sản phẩm",
-    href: Routes.productsManagement.root,
+    name: "Thuộc tính",
+    href: Routes.attributes.root,
     icon: "ShoppingBag",
     subItems: [
       {
-        name: "Sản phẩm",
-        href: Routes.productsManagement.products.root,
-        icon: "Package",
-      },
-      {
-        name: "Danh mục",
-        href: Routes.productsManagement.categories.root,
-        icon: "FolderTree",
-      },
-      {
         name: "Thương hiệu",
-        href: Routes.productsManagement.brands.root,
+        href: Routes.attributes.brands.root,
         icon: "BadgeCheck",
       },
       {
         name: "Gọng kính",
-        href: Routes.productsManagement.frames.root,
+        href: Routes.attributes.frames.root,
         icon: "Glasses",
       },
       {
         name: "Màu sắc",
-        href: Routes.productsManagement.colors.root,
+        href: Routes.attributes.colors.root,
         icon: "Palette",
       },
       {
         name: "Nhãn",
-        href: Routes.productsManagement.tags.root,
+        href: Routes.attributes.tags.root,
         icon: "Tag",
       },
     ],
@@ -169,6 +160,11 @@ export const sidebarItems: SidebarItem[] = [
     icon: "Layout",
     subItems: [
       {
+        name: "Danh mục",
+        href: Routes.interface.categories.root,
+        icon: "FolderTree",
+      },
+      {
         name: "Banners",
         href: Routes.interface.banners.root,
         icon: "Megaphone",
@@ -181,8 +177,8 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
   { name: "Đánh giá", href: Routes.reviews.root, icon: "Star" },
-  { name: "Cài đặt", href: Routes.settings, icon: "Settings" },
-  { name: "Tin nhắn", href: Routes.messages, icon: "Mail" },
-  { name: "Thông báo", href: Routes.notifications, icon: "Bell" },
-  { name: "Trợ giúp", href: Routes.help, icon: "Info" },
+  // { name: "Cài đặt", href: Routes.settings, icon: "Settings" },
+  // { name: "Tin nhắn", href: Routes.messages, icon: "Mail" },
+  // { name: "Thông báo", href: Routes.notifications, icon: "Bell" },
+  // { name: "Trợ giúp", href: Routes.help, icon: "Info" },
 ];

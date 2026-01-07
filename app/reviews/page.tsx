@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -17,14 +17,14 @@ import {
   Edit,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getReviews, bulkUpdateReviews } from "@/services/reviewService";
+import { getReviews, bulkUpdateReviews, getReviewStatistics } from "@/services/reviewService";
 import type { Review, ReviewStatus } from "@/types/review";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { Routes } from "@/lib/routes";
 
 dayjs.extend(utc);
@@ -41,6 +41,83 @@ const formatDateTime = (dateString?: string) => {
     return "-";
   }
 };
+
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function getStatusBadge(status: ReviewStatus) {
   switch (status) {
@@ -93,6 +170,7 @@ function ReviewsPage() {
   const [isBulkUpdating, setIsBulkUpdating] = useState(false);
   const [editMode, setEditMode] = useState<"single" | "bulk">("bulk");
   const [singleReviewId, setSingleReviewId] = useState<string | null>(null);
+  const [stats, setStats] = useState<any>(null);
 
   const fetchReviews = async () => {
     try {
@@ -117,6 +195,13 @@ function ReviewsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    (async () => {
+      const statsData = await getReviewStatistics();
+      setStats(statsData.data ?? statsData);
+    })();
+  }, []);
 
   useEffect(() => {
     fetchReviews();
@@ -229,13 +314,151 @@ function ReviewsPage() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Quản lý đánh giá ({totalItems})
+                  Quản lý đánh giá
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Quản lý và kiểm duyệt đánh giá sản phẩm
                 </p>
               </div>
             </div>
+
+            {/* Statistics Cards */}
+            {stats && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+              >
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Tổng đánh giá</p>
+                      <p className="text-2xl font-bold text-gray-900 mt-1">
+                        {stats.total ?? 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-blue-100 rounded-lg">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đang chờ</p>
+                      <p className="text-2xl font-bold text-yellow-600 mt-1">
+                        {stats.pending ?? 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-yellow-100 rounded-lg">
+                      <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã duyệt</p>
+                      <p className="text-2xl font-bold text-green-600 mt-1">
+                        {stats.approved ?? 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-green-100 rounded-lg">
+                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã từ chối</p>
+                      <p className="text-2xl font-bold text-red-600 mt-1">
+                        {stats.rejected ?? 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-red-100 rounded-lg">
+                      <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đã ẩn</p>
+                      <p className="text-2xl font-bold text-gray-600 mt-1">
+                        {stats.hidden ?? 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-gray-100 rounded-lg">
+                      <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Đánh giá mới</p>
+                      <p className="text-2xl font-bold text-teal-600 mt-1">
+                        {stats.newReviews ?? 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-teal-100 rounded-lg">
+                      <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Xếp hạng TB</p>
+                      <p className="text-2xl font-bold text-purple-600 mt-1">
+                        {stats.averageRating ? Number(stats.averageRating).toFixed(1) : '0.0'}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-purple-100 rounded-lg">
+                      <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Có hình ảnh</p>
+                      <p className="text-2xl font-bold text-indigo-600 mt-1">
+                        {stats.withImages ?? 0}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-indigo-100 rounded-lg">
+                      <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* Search and Filters */}
             <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
@@ -273,60 +496,60 @@ function ReviewsPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Trạng thái
                     </label>
-                    <select
+                    <CustomSelect
                       value={statusFilter}
-                      onChange={(e) => {
-                        setStatusFilter(e.target.value as ReviewStatus | "");
+                      onChange={(v) => {
+                        setStatusFilter(v as ReviewStatus | "");
                         setPage(1);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Tất cả trạng thái</option>
-                      <option value="pending">Đang chờ</option>
-                      <option value="approved">Đã duyệt</option>
-                      <option value="rejected">Đã từ chối</option>
-                      <option value="hidden">Đã ẩn</option>
-                    </select>
+                      options={[
+                        { value: "", label: "Tất cả trạng thái" },
+                        { value: "pending", label: "Đang chờ" },
+                        { value: "approved", label: "Đã duyệt" },
+                        { value: "rejected", label: "Đã từ chối" },
+                        { value: "hidden", label: "Đã ẩn" },
+                      ]}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Đánh giá
                     </label>
-                    <select
-                      value={ratingFilter}
-                      onChange={(e) => {
+                    <CustomSelect
+                      value={String(ratingFilter)}
+                      onChange={(v) => {
                         setRatingFilter(
-                          e.target.value ? Number(e.target.value) : ""
+                          v ? Number(v) : ""
                         );
                         setPage(1);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Tất cả đánh giá</option>
-                      <option value="5">5 Sao</option>
-                      <option value="4">4 Sao</option>
-                      <option value="3">3 Sao</option>
-                      <option value="2">2 Sao</option>
-                      <option value="1">1 Sao</option>
-                    </select>
+                      options={[
+                        { value: "", label: "Tất cả đánh giá" },
+                        { value: "5", label: "5 Sao" },
+                        { value: "4", label: "4 Sao" },
+                        { value: "3", label: "3 Sao" },
+                        { value: "2", label: "2 Sao" },
+                        { value: "1", label: "1 Sao" },
+                      ]}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Sắp xếp
                     </label>
-                    <select
+                    <CustomSelect
                       value={sortOrder}
-                      onChange={(e) => {
-                        setSortOrder(e.target.value as "ASC" | "DESC");
+                      onChange={(v) => {
+                        setSortOrder(v as "ASC" | "DESC");
                         setPage(1);
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="DESC">Ngày tạo giảm dần</option>
-                      <option value="ASC">Ngày tạo tăng dần</option>
-                    </select>
+                      options={[
+                        { value: "DESC", label: "Ngày tạo giảm dần" },
+                        { value: "ASC", label: "Ngày tạo tăng dần" },
+                      ]}
+                    />
                   </div>
                 </motion.div>
               )}
@@ -549,37 +772,17 @@ function ReviewsPage() {
                 </div>
 
                 {/* Pagination */}
-                <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200">
-                  <div className="flex items-center gap-2 text-sm">
-                    <span>Số hàng mỗi trang:</span>
-                    <select
-                      className="border rounded-md px-2 py-1"
-                      value={limit}
-                      onChange={(e) => {
-                        setLimit(Number(e.target.value));
-                        setPage(1);
-                      }}
-                    >
-                      <option value={10}>10</option>
-                      <option value={20}>20</option>
-                      <option value={50}>50</option>
-                      <option value={100}>100</option>
-                    </select>
-                  </div>
-
-                  <Pagination
-                    page={page}
-                    totalPages={totalPages}
-                    hasPrev={page > 1}
-                    hasNext={page < totalPages}
-                    onChange={(p) => {
-                      const capped = totalPages
-                        ? Math.min(p, totalPages)
-                        : p;
-                      setPage(Math.max(1, capped));
-                    }}
-                  />
-                </div>
+                <TablePagination
+                  page={page}
+                  limit={limit}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  hasPrev={page > 1}
+                  hasNext={page < totalPages}
+                  onPageChange={setPage}
+                  onLimitChange={(l) => { setLimit(l); setPage(1); }}
+                  limitOptions={[10, 20, 50, 100]}
+                />
               </>
             )}
           </div>
@@ -608,17 +811,16 @@ function ReviewsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Chọn trạng thái mới
                 </label>
-                <select
+                <CustomSelect
                   value={selectedStatus}
-                  onChange={(e) => setSelectedStatus(e.target.value as ReviewStatus)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={isBulkUpdating}
-                >
-                  <option value="approved">Đã duyệt</option>
-                  <option value="pending">Đang chờ</option>
-                  <option value="rejected">Đã từ chối</option>
-                  <option value="hidden">Ẩn</option>
-                </select>
+                  onChange={(v) => setSelectedStatus(v as ReviewStatus)}
+                  options={[
+                    { value: "approved", label: "Đã duyệt" },
+                    { value: "pending", label: "Đang chờ" },
+                    { value: "rejected", label: "Đã từ chối" },
+                    { value: "hidden", label: "Ẩn" },
+                  ]}
+                />
               </div>
 
               <div className="flex justify-end gap-3">

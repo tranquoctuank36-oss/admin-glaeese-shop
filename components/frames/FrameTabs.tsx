@@ -42,22 +42,22 @@ export default function FrameTabs() {
       label: "Hình dạng gọng",
       count: tabCounts.frameShapes,
       trashCount: trashCounts.frameShapes,
-      path: Routes.productsManagement.frames.frameShapes.root,
-      trashPath: Routes.productsManagement.frames.frameShapes.trash,
+      path: Routes.attributes.frames.frameShapes.root,
+      trashPath: Routes.attributes.frames.frameShapes.trash,
     },
     {
       label: "Loại gọng",
       count: tabCounts.frameTypes,
       trashCount: trashCounts.frameTypes,
-      path: Routes.productsManagement.frames.frameTypes.root,
-      trashPath: Routes.productsManagement.frames.frameTypes.trash,
+      path: Routes.attributes.frames.frameTypes.root,
+      trashPath: Routes.attributes.frames.frameTypes.trash,
     },
     {
       label: "Chất liệu gọng",
       count: tabCounts.frameMaterials,
       trashCount: trashCounts.frameMaterials,
-      path: Routes.productsManagement.frames.frameMaterials.root,
-      trashPath: Routes.productsManagement.frames.frameMaterials.trash,
+      path: Routes.attributes.frames.frameMaterials.root,
+      trashPath: Routes.attributes.frames.frameMaterials.trash,
     },
   ];
 

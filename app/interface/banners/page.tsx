@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { useListQuery } from "@/components/data/useListQuery";
 import SearchBar from "@/components/data/SearchBar";
 import ConfirmPopover from "@/components/ConfirmPopover";
@@ -133,7 +133,7 @@ export default function BannersPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Danh Sách Banner {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+                Danh sách banner {meta?.totalItems !== undefined && `(${meta.totalItems})`}
               </h1>
               <p className="text-gray-600 mt-1">Quản lý banner trang chủ</p>
             </div>
@@ -143,7 +143,7 @@ export default function BannersPage() {
               className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
             >
               <Plus size={20} />
-              Thêm Banner
+              Thêm banner
             </Button>
           </div>
 
@@ -363,36 +363,16 @@ export default function BannersPage() {
             </div>
 
             {!loading && rows.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                {/* Rows per page (left) */}
-                <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Số hàng mỗi trang:</span>
-                  <select
-                    className="h-9 rounded-md border border-gray-300 px-2 bg-white"
-                    value={q.limit}
-                    onChange={(e) => {
-                      setAndResetPage({ limit: Number(e.target.value), page: 1 });
-                    }}
-                  >
-                    {[10, 20, 30, 50].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Controls (right) */}
-                <div className="flex items-center gap-4">
-                  <Pagination
-                    page={q.page}
-                    totalPages={meta?.totalPages}
-                    hasPrev={q.page > 1}
-                    hasNext={q.page < (meta?.totalPages || 1)}
-                    onChange={(p: number) => setQ({ ...q, page: p })}
-                  />
-                </div>
-              </div>
+              <TablePagination
+                page={q.page}
+                limit={q.limit}
+                totalPages={meta?.totalPages}
+                totalItems={meta?.totalItems}
+                hasPrev={q.page > 1}
+                hasNext={q.page < (meta?.totalPages || 1)}
+                onPageChange={(p) => setQ({ ...q, page: p })}
+                onLimitChange={(l) => setAndResetPage({ limit: l, page: 1 })}
+              />
             )}
           </motion.div>
         )}

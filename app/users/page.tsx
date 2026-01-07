@@ -11,10 +11,10 @@ import {
   Eye,
   Edit,
 } from "lucide-react";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { useListQuery } from "@/components/data/useListQuery";
 import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
-import { getUsers } from "@/services/userService";
+import { getUsers, getUserStatistics } from "@/services/userService";
 import type { User, UserRole, UserStatus } from "@/types/user";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import { useRouter } from "next/navigation";
@@ -170,6 +170,14 @@ function UsersPage() {
   const [hasPrev, setHasPrev] = useState(false);
 
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    (async () => {
+      const statsData = await getUserStatistics();
+      setStats(statsData.data ?? statsData);
+    })();
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -237,8 +245,7 @@ function UsersPage() {
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách người dùng{" "}
-                  {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+                  Danh sách người dùng
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Quản lý tài khoản và quyền người dùng
@@ -246,6 +253,143 @@ function UsersPage() {
               </div>
             </div>
           </div>
+
+          {stats && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+            >
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tổng người dùng</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                      {stats.total ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đang hoạt động</p>
+                    <p className="text-2xl font-bold text-green-600 mt-1">
+                      {stats.active ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Không hoạt động</p>
+                    <p className="text-2xl font-bold text-yellow-600 mt-1">
+                      {stats.inactive ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-yellow-100 rounded-lg">
+                    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Bị khóa</p>
+                    <p className="text-2xl font-bold text-red-600 mt-1">
+                      {(stats.suspended ?? 0) + (stats.locked ?? 0)}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Người dùng mới</p>
+                    <p className="text-2xl font-bold text-teal-600 mt-1">
+                      {stats.newUsers ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-teal-100 rounded-lg">
+                    <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đã xác thực</p>
+                    <p className="text-2xl font-bold text-indigo-600 mt-1">
+                      {stats.verified ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-indigo-100 rounded-lg">
+                    <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Admin</p>
+                    <p className="text-2xl font-bold text-purple-600 mt-1">
+                      {stats.adminCount ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Khách hàng</p>
+                    <p className="text-2xl font-bold text-cyan-600 mt-1">
+                      {stats.customerCount ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-cyan-100 rounded-lg">
+                    <svg className="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           <ToolbarSearchFilters
             value={q.search}
@@ -523,37 +667,16 @@ function UsersPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-2 text-sm">
-                <span>Số hàng mỗi trang:</span>
-                <select
-                  className="border rounded-md px-2 py-1"
-                  value={q.limit}
-                  onChange={(e) =>
-                    setAndResetPage({ limit: Number(e.target.value), page: 1 })
-                  }
-                >
-                  {[10, 20, 30, 50].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <Pagination
-                page={q.page}
-                totalPages={meta?.totalPages}
-                hasPrev={hasPrev}
-                hasNext={hasNext}
-                onChange={(p) => {
-                  const capped = meta?.totalPages
-                    ? Math.min(p, meta.totalPages)
-                    : p;
-                  setQ((prev) => ({ ...prev, page: Math.max(1, capped) }));
-                }}
-              />
-            </div>
+            <TablePagination
+              page={q.page}
+              limit={q.limit}
+              totalPages={meta?.totalPages}
+              totalItems={meta?.totalItems}
+              hasPrev={hasPrev}
+              hasNext={hasNext}
+              onPageChange={(p) => setQ((prev) => ({ ...prev, page: p }))}
+              onLimitChange={(l) => setAndResetPage({ limit: l, page: 1 })}
+            />
           </motion.div>
         )}
       </main>

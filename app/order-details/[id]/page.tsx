@@ -142,7 +142,7 @@ export default function OrderDetailPage() {
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
               onClick={() => router.back()}
-              title="Back"
+              title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />
             </Button>
@@ -166,7 +166,7 @@ export default function OrderDetailPage() {
               size="icon-lg"
               className="hover:bg-gray-300 rounded-full bg-gray-200"
               onClick={() => router.back()}
-              title="Back"
+              title="Quay lại"
             >
               <ArrowLeft className="text-gray-700 size-7" />
             </Button>

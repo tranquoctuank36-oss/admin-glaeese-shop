@@ -12,7 +12,7 @@ export default function AddBannerPage() {
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm Banner</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Thêm banner</h1>
 
         <BannerForm
           initial={{ title: "", imageId: "", linkUrl: "", sortOrder: 0 }}

@@ -217,7 +217,7 @@ export const forceDeleteProduct = async (id: UUID) => {
 
 export const getProductCounts = async () => {
   try {
-    const res = await api.get(`/admin/products/counts`);
+    const res = await api.get(`/admin/products/statistics`);
     return res.data ?? {};
   } catch (err) {
     console.error("Failed to fetch product counts:", err);

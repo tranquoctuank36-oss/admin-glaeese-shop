@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -10,10 +10,11 @@ import {
   ArrowUpAZ,
   ArrowDownAZ,
   ArrowUpDown,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { useListQuery } from "@/components/data/useListQuery";
 import {
   getUserOrders,
@@ -21,6 +22,83 @@ import {
   type UserOrdersQuery,
 } from "@/services/userService";
 import { Routes } from "@/lib/routes";
+
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function formatDateTime(iso?: string) {
   if (!iso) return "-";
@@ -217,23 +295,25 @@ function UserOrdersPage() {
               <h1 className="text-3xl font-bold text-gray-800">Đơn hàng của người dùng ({meta?.totalItems || 0})</h1>
             </div>
 
-            <select
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:border-blue-500 cursor-pointer"
-              value={(apiParams as any).status || ""}
-              onChange={(e) => setAndResetPage({ status: e.target.value || undefined, page: 1 } as any)}
-            >
-              <option value="">Tất cả trạng thái</option>
-              <option value="awaiting_payment">Chờ thanh toán</option>
-              <option value="pending">Chờ xử lý</option>
-              <option value="processing">Đang xử lý</option>
-              <option value="shipping">Đang giao hàng</option>
-              <option value="delivered">Đã giao hàng</option>
-              <option value="completed">Hoàn tất</option>
-              <option value="cancelled">Đã hủy</option>
-              <option value="expired">Đã hết hạn</option>
-              <option value="returned">Đã trả hàng</option>
-              <option value="on_hold">Tạm dừng</option>
-            </select>
+            <div className="min-w-[200px]">
+              <CustomSelect
+                value={(apiParams as any).status || ""}
+                onChange={(v) => setAndResetPage({ status: v || undefined, page: 1 } as any)}
+                options={[
+                  { value: "", label: "Tất cả trạng thái" },
+                  { value: "awaiting_payment", label: "Chờ thanh toán" },
+                  { value: "pending", label: "Chờ xử lý" },
+                  { value: "processing", label: "Đang xử lý" },
+                  { value: "shipping", label: "Đang giao hàng" },
+                  { value: "delivered", label: "Đã giao hàng" },
+                  { value: "completed", label: "Hoàn tất" },
+                  { value: "cancelled", label: "Đã hủy" },
+                  { value: "expired", label: "Đã hết hạn" },
+                  { value: "returned", label: "Đã trả hàng" },
+                  { value: "on_hold", label: "Tạm dừng" },
+                ]}
+              />
+            </div>
           </div>
         </motion.div>
 
@@ -350,37 +430,16 @@ function UserOrdersPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-2 text-sm">
-                <span>Số hàng mỗi trang:</span>
-                <select
-                  className="border rounded-md px-2 py-1"
-                  value={q.limit}
-                  onChange={(e) =>
-                    setAndResetPage({ limit: Number(e.target.value), page: 1 })
-                  }
-                >
-                  {[10, 20, 30, 50].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <Pagination
-                page={q.page}
-                totalPages={meta?.totalPages}
-                hasPrev={q.page > 1}
-                hasNext={meta?.totalPages ? q.page < meta.totalPages : false}
-                onChange={(p) => {
-                  const capped = meta?.totalPages
-                    ? Math.min(p, meta.totalPages)
-                    : p;
-                  setQ((prev) => ({ ...prev, page: Math.max(1, capped) }));
-                }}
-              />
-            </div>
+            <TablePagination
+              page={q.page}
+              limit={q.limit}
+              totalPages={meta?.totalPages}
+              totalItems={meta?.totalItems}
+              hasPrev={q.page > 1}
+              hasNext={meta?.totalPages ? q.page < meta.totalPages : false}
+              onPageChange={(p) => setQ((prev) => ({ ...prev, page: p }))}
+              onLimitChange={(l) => setAndResetPage({ limit: l, page: 1 })}
+            />
           </motion.div>
         )}
       </main>

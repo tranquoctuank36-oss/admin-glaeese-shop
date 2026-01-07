@@ -13,7 +13,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import { useListQuery } from "@/components/data/useListQuery";
 import { Routes } from "@/lib/routes";
 import { getImages, bulkDeleteImages } from "@/services/imagesService";
@@ -151,7 +151,7 @@ export default function ImagesPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-3">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Danh Sách Hình Ảnh {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Danh sách hình ảnh {meta?.totalItems !== undefined && `(${meta.totalItems})`}</h1>
                 <p className="text-gray-600 mt-1">
                   Quản lý tất cả hình ảnh tải lên cho sản phẩm, thương hiệu và khuyến mãi
                 </p>
@@ -162,7 +162,7 @@ export default function ImagesPage() {
               className="flex items-center gap-2 h-12 bg-blue-600 hover:bg-blue-700 text-white text-base transition-all"
             >
               <Plus size={20} />
-              Thêm Hình Ảnh
+              Thêm hình ảnh
             </Button>
           </div>
 
@@ -428,37 +428,16 @@ export default function ImagesPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between p-4">
-              <div className="flex items-center gap-2 text-sm">
-                <span>Hàng trên trang:</span>
-                <select
-                  className="border rounded-md px-2 py-1"
-                  value={q.limit}
-                  onChange={(e) =>
-                    setAndResetPage({ limit: Number(e.target.value), page: 1 })
-                  }
-                >
-                  {[10, 20, 30, 50].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <Pagination
-                page={q.page}
-                totalPages={meta?.totalPages}
-                hasPrev={hasPrev}
-                hasNext={hasNext}
-                onChange={(p) => {
-                  const capped = meta?.totalPages
-                    ? Math.min(p, meta.totalPages)
-                    : p;
-                  setQ((prev) => ({ ...prev, page: Math.max(1, capped) }));
-                }}
-              />
-            </div>
+            <TablePagination
+              page={q.page}
+              limit={q.limit}
+              totalPages={meta?.totalPages}
+              totalItems={meta?.totalItems}
+              hasPrev={hasPrev}
+              hasNext={hasNext}
+              onPageChange={(p) => setQ((prev) => ({ ...prev, page: p }))}
+              onLimitChange={(l) => setAndResetPage({ limit: l, page: 1 })}
+            />
           </motion.div>
         )}
       </main>

@@ -1,13 +1,13 @@
 "use client";
 
-import { Filter, Search } from "lucide-react";
+import { ChevronDown, Filter, Search } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type DepthFilter = `${number}`;
 type BrandStatusOption = "all" | "active" | "hidden" | "archived";
@@ -62,6 +62,91 @@ type Props = {
 
   depth?: DepthFilter;
 };
+
+// Custom Select Component
+type CustomSelectProps<T extends string> = {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+  placeholder?: string;
+};
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+  placeholder = "Chọn...",
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div className="relative" ref={containerRef}>
+      <div
+        onClick={() => setOpen(!open)}
+        className={`
+          w-full h-10 px-3 rounded-md border bg-white text-sm cursor-pointer
+          flex items-center justify-between transition
+          hover:border-gray-400
+          ${open ? "border-2 border-blue-400" : "border-gray-300"}
+        `}
+      >
+        <span className="text-gray-800 truncate">
+          {selectedOption?.label || placeholder}
+        </span>
+        <ChevronDown
+          className={`size-4 text-gray-400 transition-transform flex-shrink-0 ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </div>
+
+      {open && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-hidden">
+          <div className="max-h-60 overflow-y-auto">
+            {options.map((opt) => (
+              <div
+                key={opt.value}
+                onClick={() => {
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+                className={`
+                  px-3 py-2 cursor-pointer transition-colors text-sm
+                  ${
+                    opt.value === value
+                      ? "bg-blue-50 text-blue-600 font-medium"
+                      : "hover:bg-gray-100 text-gray-800"
+                  }
+                `}
+              >
+                {opt.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ToolbarSearchFilters({
   value,
@@ -132,141 +217,115 @@ export default function ToolbarSearchFilters({
               {typeof isActive !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Hoạt động</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={isActive}
-                    onChange={(e) =>
-                      onFiltersChange({ isActive: e.target.value as any })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="true">Có</option>
-                    <option value="false">Không</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ isActive: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "true", label: "Có" },
+                      { value: "false", label: "Không" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof brandStatus !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={brandStatus}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        brandStatus: e.target.value as BrandStatusOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="active">Hoạt động</option>
-                    <option value="hidden">Ẩn</option>
-                    <option value="archived">Lưu trữ</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ brandStatus: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "active", label: "Hoạt động" },
+                      { value: "hidden", label: "Ẩn" },
+                      { value: "archived", label: "Lưu trữ" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof categoryStatus !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={categoryStatus}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        categoryStatus: e.target.value as CategoryStatusOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="draft">Bản nháp</option>
-                    <option value="published">Đã xuất bản</option>
-                    <option value="unpublished">Chưa xuất bản</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ categoryStatus: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "draft", label: "Bản nháp" },
+                      { value: "published", label: "Đã xuất bản" },
+                      { value: "unpublished", label: "Chưa xuất bản" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof productStatus !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={productStatus}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        productStatus: e.target.value as ProductStatusOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="draft">Bản nháp</option>
-                    <option value="published">Đã xuất bản</option>
-                    <option value="unlisted">Không liệt kê</option>
-                    <option value="archived">Lưu trữ</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ productStatus: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "draft", label: "Bản nháp" },
+                      { value: "published", label: "Đã xuất bản" },
+                      { value: "unlisted", label: "Không liệt kê" },
+                      { value: "archived", label: "Lưu trữ" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof imageStatus !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={imageStatus}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        imageStatus: e.target.value as ImageStatusOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="draft">Bản nháp</option>
-                    <option value="used">Đã sử dụng</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ imageStatus: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "draft", label: "Bản nháp" },
+                      { value: "used", label: "Đã sử dụng" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof ownerType !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Loại hình ảnh</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={ownerType}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        ownerType: e.target.value as OwnerTypeOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="product_variant">Biến thể sản phẩm</option>
-                    <option value="brand">Thương hiệu</option>
-                    <option value="discount">Giảm giá</option>
-                    <option value="review">Đánh giá</option>
-                    <option value="order_return">Trả hàng</option>
-                    <option value="banner">Banner</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ ownerType: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "product_variant", label: "Biến thể sản phẩm" },
+                      { value: "brand", label: "Thương hiệu" },
+                      { value: "discount", label: "Giảm giá" },
+                      { value: "review", label: "Đánh giá" },
+                      { value: "order_return", label: "Trả hàng" },
+                      { value: "banner", label: "Banner" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof stockStatus !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={stockStatus}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        stockStatus: e.target.value as StockStatusOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả trạng thái</option>
-                    <option value="in_stock">Còn hàng</option>
-                    <option value="low_stock">Sắp hết hàng</option>
-                    <option value="out_of_stock">Hết hàng</option>
-                    <option value="unknown">Không xác định</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ stockStatus: v })}
+                    options={[
+                      { value: "all", label: "Tất cả trạng thái" },
+                      { value: "in_stock", label: "Còn hàng" },
+                      { value: "low_stock", label: "Sắp hết hàng" },
+                      { value: "out_of_stock", label: "Hết hàng" },
+                      { value: "unknown", label: "Không xác định" },
+                    ]}
+                  />
                 </div>
               )}
 
@@ -354,60 +413,47 @@ export default function ToolbarSearchFilters({
               {typeof voucherStatus !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Trạng thái</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={voucherStatus}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        voucherStatus: e.target.value as VoucherStatusOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="draft">Bản nháp</option>
-                    <option value="scheduled">Đã lên lịch</option>
-                    <option value="happening">Đang diễn ra</option>
-                    <option value="canceled">Đã hủy</option>
-                    <option value="expired">Đã hết hạn</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ voucherStatus: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "draft", label: "Bản nháp" },
+                      { value: "scheduled", label: "Đã lên lịch" },
+                      { value: "happening", label: "Đang diễn ra" },
+                      { value: "canceled", label: "Đã hủy" },
+                      { value: "expired", label: "Đã hết hạn" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof voucherType !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Loại</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={voucherType}
-                    onChange={(e) =>
-                      onFiltersChange({
-                        voucherType: e.target.value as VoucherTypeOption,
-                      })
-                    }
-                  >
-                    <option value="all">Tất cả</option>
-                    <option value="fixed">Cố định</option>
-                    <option value="percentage">Phần trăm</option>
-                  </select>
+                    onChange={(v) => onFiltersChange({ voucherType: v })}
+                    options={[
+                      { value: "all", label: "Tất cả" },
+                      { value: "fixed", label: "Cố định" },
+                      { value: "percentage", label: "Phần trăm" },
+                    ]}
+                  />
                 </div>
               )}
 
               {typeof depth !== "undefined" && (
                 <div>
                   <div className="mb-1 font-medium text-gray-700">Độ sâu</div>
-                  <select
-                    className="w-full border rounded-md px-2 py-2 cursor-pointer"
+                  <CustomSelect
                     value={depthValue}
-                    onChange={(e) =>
-                      onFiltersChange({ depth: e.target.value as DepthFilter })
-                    }
-                  >
-                    {depthOptions.map((opt) => (
-                      <option key={opt} value={opt}>
-                        {opt}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(v) => onFiltersChange({ depth: v })}
+                    options={depthOptions.map((opt) => ({
+                      value: opt,
+                      label: opt,
+                    }))}
+                  />
                 </div>
               )}
 

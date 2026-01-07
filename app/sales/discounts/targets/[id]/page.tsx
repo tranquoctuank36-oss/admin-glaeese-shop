@@ -13,7 +13,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Pagination from "@/components/data/Pagination";
+import TablePagination from "@/components/TablePagination";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import {
   getDiscountById,
@@ -162,7 +162,7 @@ function DiscountTargetsPage() {
                 size="icon-lg"
                 className="hover:bg-gray-300 rounded-full bg-gray-200"
                 onClick={() => router.push(Routes.sales.discounts.details(discountId))}
-                title="Go Back"
+                title="Quay lại"
               >
                 <ArrowLeft className="text-gray-700 size-7" />
               </Button>
@@ -391,13 +391,13 @@ function DiscountTargetsPage() {
                         {/* Actions */}
                         <td className="px-6 py-4 text-center whitespace-nowrap">
                           <ConfirmPopover
-                            title="Remove Product Variant"
+                              title="Xóa phân loại sản phẩm"
                             message={
                               <div>
-                                Remove <strong>{variant.name}</strong> from this discount?
+                                Xóa <strong>{variant.name}</strong> khỏi giảm giá này?
                               </div>
                             }
-                            confirmText="Remove"
+                            confirmText="Xóa"
                             onConfirm={() =>
                               handleRemoveTarget(variant.id, variant.name)
                             }
@@ -406,7 +406,7 @@ function DiscountTargetsPage() {
                               size="icon-sm"
                               className="bg-red-50 hover:bg-red-100 text-red-600"
                               disabled={busyId === variant.id}
-                              title="Remove"
+                              title="Xóa"
                             >
                               <Trash2 size={16} />
                             </Button>
@@ -421,37 +421,16 @@ function DiscountTargetsPage() {
             )}
 
             {!loading && variants.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                {/* Rows per page (left) */}
-                <div className="flex items-center gap-3 text-sm text-gray-700">
-                  <span>Số hàng mỗi trang:</span>
-                  <select
-                    className="h-9 rounded-md border border-gray-300 px-2 bg-white"
-                    value={limit}
-                    onChange={(e) => {
-                      setLimit(Number(e.target.value));
-                      setPage(1);
-                    }}
-                  >
-                    {[10, 20, 30, 50].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Controls (right) */}
-                <div className="flex items-center gap-4">
-                  <Pagination
-                    page={page}
-                    totalPages={totalPages}
-                    hasPrev={page > 1}
-                    hasNext={page < totalPages}
-                    onChange={setPage}
-                  />
-                </div>
-              </div>
+              <TablePagination
+                page={page}
+                limit={limit}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                hasPrev={page > 1}
+                hasNext={page < totalPages}
+                onPageChange={setPage}
+                onLimitChange={(l) => { setLimit(l); setPage(1); }}
+              />
             )}
           </motion.div>
         </motion.div>
@@ -465,7 +444,7 @@ function DiscountTargetsPage() {
             <Button
               className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
               onClick={() => setLightboxImage(null)}
-              title="Close"
+              title="Đóng"
             >
               <X className="w-6 h-6 text-gray-800" />
             </Button>
