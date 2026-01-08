@@ -94,10 +94,10 @@ export default function ProductForm({
     draft?.description ?? initial?.description ?? ""
   );
   const [productType, setProductType] = useState<ProductType>(
-    draft?.productType ?? initial?.productType ?? "Frame"
+    draft?.productType ?? initial?.productType ?? "frame"
   );
   const [gender, setGender] = useState<Gender>(
-    draft?.gender ?? initial?.gender ?? "Male"
+    draft?.gender ?? initial?.gender ?? "male"
   );
 
   const [lensWidth, setLensWidth] = useState(
