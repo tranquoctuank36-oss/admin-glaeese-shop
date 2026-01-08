@@ -10,19 +10,19 @@ import type { Product, ProductType, Gender } from "@/types/product";
 
 // Helper functions to normalize API values
 function normalizeProductType(value?: string | null): ProductType {
-  if (!value) return "Frame";
+  if (!value) return "frame";
   const lower = value.toLowerCase();
-  if (lower === "sunglasses") return "Sunglasses";
-  return "Frame";
+  if (lower === "sunglasses") return "sunglasses";
+  return "frame";
 }
 
 function normalizeGender(value?: string | null): Gender {
-  if (!value) return "Male";
+  if (!value) return "male";
   const lower = value.toLowerCase();
-  if (lower === "female") return "Female";
-  if (lower === "unisex") return "Unisex";
-  if (lower === "kids") return "Kid";
-  return "Male";
+  if (lower === "female") return "female";
+  if (lower === "unisex") return "unisex";
+  if (lower === "kid" || lower === "kids") return "kid";
+  return "male";
 }
 
 export default function EditProductPage() {

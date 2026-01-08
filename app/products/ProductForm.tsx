@@ -573,8 +573,8 @@ export default function ProductForm({
             disabled={loading}
             onChange={(v) => setProductType(v as ProductType)}
             options={[
-              { value: "Frame", label: "Gọng kính" },
-              { value: "Sunglasses", label: "Kính mát" },
+              { value: "frame", label: "Gọng kính" },
+              { value: "sunglasses", label: "Kính mát" },
             ]}
           />
 
@@ -587,10 +587,10 @@ export default function ProductForm({
             onChange={(v) => setGender(v as Gender)}
             disabled={loading}
             options={[
-              { value: "Male", label: "Nam" },
-              { value: "Female", label: "Nữ" },
-              { value: "Unisex", label: "Unisex" },
-              { value: "Kid", label: "Trẻ em" },
+              { value: "male", label: "Nam" },
+              { value: "female", label: "Nữ" },
+              { value: "unisex", label: "Unisex" },
+              { value: "kid", label: "Trẻ em" },
             ]}
           />
         </div>
