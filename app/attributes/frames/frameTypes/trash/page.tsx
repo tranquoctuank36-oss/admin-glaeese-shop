@@ -26,6 +26,7 @@ import {
 
 import ConfirmPopover from "@/components/ConfirmPopover";
 import toast from "react-hot-toast";
+import { useFrameCounts } from "@/context/FrameCountsContext";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -39,6 +40,7 @@ function formatDate(iso?: string) {
 
 export default function FrameTypesTrashPage() {
   const router = useRouter();
+  const { refreshCounts } = useFrameCounts();
 
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
@@ -150,9 +152,11 @@ export default function FrameTypesTrashPage() {
       await restoreFrameType(id);
       if (rows.length <= 1 && hasPrev) backIfEmpty();
       else setRows((prev) => prev.filter((x) => x.id !== id));
+      toast.success("Đã khôi phục loại gọng thành công");
+      refreshCounts(true); // Force refresh counts
     } catch (e: any) {
       console.error("Restore type failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to restore type";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể khôi phục loại gọng";
       toast.error(detail);
     } finally {
       setBusyId(null);
@@ -166,9 +170,11 @@ export default function FrameTypesTrashPage() {
       await forceDeleteFrameType(id);
       if (rows.length <= 1 && hasPrev) backIfEmpty();
       else setRows((prev) => prev.filter((x) => x.id !== id));
+      toast.success("Đã xóa vĩnh viễn loại gọng thành công");
+      refreshCounts(true); // Force refresh counts
     } catch (e: any) {
       console.error("Permanent delete type failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to delete permanently";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể xóa vĩnh viễn loại gọng";
       toast.error(detail);
     } finally {
       setBusyId(null);

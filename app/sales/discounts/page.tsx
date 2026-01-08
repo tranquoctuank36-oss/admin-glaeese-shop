@@ -12,6 +12,11 @@ import {
   XCircle,
   Eye,
   ChevronDown,
+  Ticket,
+  CircleCheck,
+  TrendingUp,
+  DollarSign,
+  Percent,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TablePagination from "@/components/TablePagination";
@@ -20,8 +25,9 @@ import {
   getDiscounts,
   deleteDiscount,
   cancelDiscount,
+  getDiscountStatistics,
 } from "@/services/discountService";
-import type { Discount } from "@/types/discount";
+import type { Discount, DiscountStatistics } from "@/types/discount";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
@@ -142,6 +148,9 @@ function DiscountsPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [statistics, setStatistics] = useState<DiscountStatistics | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const lastStatsFetchRef = useRef<number>(0);
 
   // Get current Vietnam time for min validation
   const currentVietnamTime = dayjs()
@@ -190,6 +199,29 @@ function DiscountsPage() {
     }
   };
 
+  const fetchStatistics = async (force: boolean = false) => {
+    // Throttle: only allow fetching once every 2 seconds
+    const now = Date.now();
+    if (!force && now - lastStatsFetchRef.current < 2000) {
+      return;
+    }
+    
+    try {
+      setStatsLoading(true);
+      lastStatsFetchRef.current = now;
+      const response = await getDiscountStatistics();
+      setStatistics(response.data);
+    } catch (error: any) {
+      console.error("Failed to fetch statistics:", error);
+      // Don't show error toast for rate limiting, just silently fail
+      if (error?.response?.status !== 429) {
+        toast.error("Không thể tải thống kê");
+      }
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchDiscounts();
   }, [
@@ -206,17 +238,19 @@ function DiscountsPage() {
 
   useEffect(() => {
     fetchTrashCount();
+    fetchStatistics();
   }, []);
 
   const handleDelete = async (id: string) => {
     setBusyId(id);
     try {
       await deleteDiscount(id);
-      toast.success("Discount moved to trash successfully!");
+      toast.success("Chương trình giảm giá đã được chuyển vào thùng rác thành công!");
       fetchDiscounts();
       fetchTrashCount();
+      fetchStatistics();
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to delete discount");
+      toast.error(error?.response?.data?.detail || "Không thể chuyển chương trình giảm giá vào thùng rác");
     } finally {
       setBusyId(null);
       setOpenKey(null);
@@ -227,10 +261,11 @@ function DiscountsPage() {
     setBusyId(id);
     try {
       await cancelDiscount(id);
-      toast.success("Discount canceled successfully!");
+      toast.success("Chương trình giảm giá đã được hủy thành công!");
       fetchDiscounts();
+      fetchStatistics(true); // Force refresh
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to cancel discount");
+      toast.error(error?.response?.data?.detail || "Không thể hủy chương trình giảm giá");
     } finally {
       setBusyId(null);
       setOpenKey(null);
@@ -352,20 +387,12 @@ function DiscountsPage() {
           {/* Header */}
           <div className="mb-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button
-                size="icon-lg"
-                className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() => router.push(Routes.sales.root)}
-                title="Quay lại"
-              >
-                <ArrowLeft className="text-gray-700 size-7" />
-              </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách giảm giá {totalItems > 0 && `(${totalItems})`}
+                  Danh sách các chương trình giảm giá
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  Tạo và quản lý giảm giá sản phẩm và giá khuyến mại
+                  Tạo và quản lý các chương trình giảm giá sản phẩm và giá khuyến mại
                 </p>
               </div>
             </div>
@@ -389,10 +416,180 @@ function DiscountsPage() {
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
-                Thêm giảm giá
+                Thêm chương trình giảm giá
               </Button>
             </div>
           </div>
+
+          {/* Statistics Cards */}
+          {!statsLoading && statistics && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6"
+            >
+              {/* Tổng voucher */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tổng voucher</p>
+                    <p className="text-2xl font-bold text-blue-600 mt-1">
+                      {statistics.totalDiscounts}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <Ticket className="w-6 h-6 text-blue-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Đang hoạt động */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đang hoạt động</p>
+                    <p className="text-2xl font-bold text-green-600 mt-1">
+                      {statistics.activeDiscounts}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <CircleCheck className="w-6 h-6 text-green-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Đã áp dụng */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đã áp dụng</p>
+                    <p className="text-2xl font-bold text-purple-600 mt-1">
+                      {statistics.totalVariantsWithDiscount}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Biến thể sản phẩm
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-purple-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Giảm cố định */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Giảm cố định</p>
+                    <p className="text-2xl font-bold text-cyan-600 mt-1">
+                      {statistics.byType.find(t => t.type === "fixed")?.count || 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-cyan-100 rounded-lg">
+                    <DollarSign className="w-6 h-6 text-cyan-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Giảm % */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Giảm %</p>
+                    <p className="text-2xl font-bold text-indigo-600 mt-1">
+                      {statistics.byType.find(t => t.type === "percentage")?.count || 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-indigo-100 rounded-lg">
+                    <Percent className="w-6 h-6 text-indigo-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Nháp */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Nháp</p>
+                    <p className="text-2xl font-bold text-gray-600 mt-1">
+                      {statistics.byStatus.find(s => s.status === "draft")?.count || 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-gray-100 rounded-lg">
+                    <Edit className="w-6 h-6 text-gray-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Đã lên lịch */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đã lên lịch</p>
+                    <p className="text-2xl font-bold text-sky-600 mt-1">
+                      {statistics.byStatus.find(s => s.status === "scheduled")?.count || 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-sky-100 rounded-lg">
+                    <svg className="w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Hết hạn */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Hết hạn</p>
+                    <p className="text-2xl font-bold text-orange-600 mt-1">
+                      {statistics.byStatus.find(s => s.status === "expired")?.count || 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-orange-100 rounded-lg">
+                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Đã hủy */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đã hủy</p>
+                    <p className="text-2xl font-bold text-amber-600 mt-1">
+                      {statistics.byStatus.find(s => s.status === "canceled")?.count || 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-amber-100 rounded-lg">
+                    <XCircle className="w-6 h-6 text-amber-600" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Đã xóa */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đã xóa</p>
+                    <p className="text-2xl font-bold text-red-600 mt-1">
+                      {statistics.deletedDiscounts}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Trong thùng rác
+                    </p>
+                  </div>
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <Trash2 className="w-6 h-6 text-red-600" />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* Search and Filter Bar */}
           <motion.div
@@ -607,7 +804,7 @@ function DiscountsPage() {
                         colSpan={13}
                         className="px-6 py-8 text-center text-gray-500"
                       >
-                        Không có giảm giá nào được tìm thấy.
+                        Không có chương trình giảm giá nào được tìm thấy.
                       </td>
                     </tr>
                   ) : (
@@ -699,17 +896,17 @@ function DiscountsPage() {
                               </>
                             )}
                             <ConfirmPopover
-                              title="Hủy giảm giá"
+                              title="Hủy chương trình giảm giá"
                               message={
                                 <div>
-                                  Are you sure you want to cancel{" "}
+                                  Bạn có chắc chắn muốn hủy{" "}
                                   <strong>
-                                    {discount.name || "this discount"}
+                                    {discount.name || "chương trình giảm giá này"}
                                   </strong>
                                   ?
                                 </div>
                               }
-                              confirmText="Cancel Discount"
+                              confirmText="Hủy chương trình giảm giá"
                               onConfirm={() => handleCancel(discount.id)}
                             >
                               <Button
@@ -727,14 +924,14 @@ function DiscountsPage() {
                               title="Xóa giảm giá"
                               message={
                                 <div>
-                                  Are you sure you want to delete{" "}
+                                  Bạn có chắc chắn muốn xóa{" "}
                                   <strong>
-                                    {discount.name || "this discount"}
+                                    {discount.name || "chương trình giảm giá này"}
                                   </strong>
                                   ?
                                 </div>
                               }
-                              confirmText="Delete"
+                              confirmText="Xóa chương trình giảm giá"
                               onConfirm={() => handleDelete(discount.id)}
                             >
                               <Button

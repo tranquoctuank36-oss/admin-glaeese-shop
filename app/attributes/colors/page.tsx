@@ -124,6 +124,7 @@ export default function ColorsPage() {
       await softDeleteColor(id);
       setRows((prev) => prev.filter((r) => r.id !== id));
       setTrashCount((prev) => prev + 1);
+      toast.success("Đã xóa màu sắc thành công");
     } catch (err: any) {
       console.error("Soft delete failed:", err);
       const detail =

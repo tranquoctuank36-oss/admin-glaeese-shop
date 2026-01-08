@@ -237,10 +237,10 @@ export default function AddVariantDialog({
             await removeImagesFromVariant(variantId, imagesToRemove);
           }
         }
-        toast.success("Images updated successfully!");
+        toast.success("Hình ảnh đã được cập nhật thành công!");
       } catch (error: any) {
         console.error("Error updating images:", error);
-        toast.error(error?.response?.data?.detail || "Failed to update images");
+        toast.error(error?.response?.data?.detail || "Không thể cập nhật hình ảnh");
         // Revert on error
         setProductImagesIds(previousIds);
         return;

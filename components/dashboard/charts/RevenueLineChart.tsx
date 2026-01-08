@@ -42,8 +42,8 @@ export default function RevenueLineChart({
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
         Doanh thu theo thời gian
       </h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData}>
+      <ResponsiveContainer width="100%" height={350}>
+        <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis
             dataKey="label"
@@ -63,7 +63,11 @@ export default function RevenueLineChart({
               borderRadius: "8px",
             }}
           />
-          <Legend />
+          <Legend 
+            verticalAlign="bottom" 
+            height={36}
+            wrapperStyle={{ paddingTop: "10px" }}
+          />
           <Line
             type="monotone"
             dataKey="revenue"

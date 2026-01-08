@@ -169,19 +169,19 @@ function getTypeBadge(type: string) {
     case "percentage":
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-purple-100 text-purple-700">
-          Percentage
+          Phần trăm
         </span>
       );
     case "fixed":
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-700">
-          Fixed Amount
+          Số tiền cố định
         </span>
       );
     case "free_shipping":
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold bg-green-100 text-green-700">
-          Free Shipping
+          Miễn phí vận chuyển
         </span>
       );
     default:
@@ -239,7 +239,7 @@ function VouchersTrashPage() {
       setHasPrev(currentPage > 1);
     } catch (error: any) {
       console.error("Failed to fetch deleted vouchers:", error);
-      toast.error(error?.response?.data?.detail || "Failed to load trash");
+      toast.error(error?.response?.data?.detail || "Không thể tải thùng rác");
       setVouchers([]);
     } finally {
       setLoading(false);
@@ -258,7 +258,7 @@ function VouchersTrashPage() {
     try {
       setBusyId(id);
       await restoreVoucher(id);
-      toast.success("Voucher restored successfully");
+      toast.success("Đã khôi phục mã giảm giá thành công");
       const next = vouchers.filter((v) => v.id !== id);
       setVouchers(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
@@ -267,7 +267,7 @@ function VouchersTrashPage() {
       const detail =
         error?.response?.data?.detail ||
         error?.detail ||
-        "Failed to restore voucher";
+        "Không thể khôi phục mã giảm giá";
       toast.error(detail);
     } finally {
       setBusyId(null);
@@ -279,16 +279,16 @@ function VouchersTrashPage() {
     try {
       setBusyId(id);
       await forceDeleteVoucher(id);
-      toast.success("Voucher permanently deleted");
       const next = vouchers.filter((v) => v.id !== id);
       setVouchers(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
+      toast.success("Đã xóa vĩnh viễn mã giảm giá thành công");
     } catch (error: any) {
       console.error("Permanent delete failed:", error);
       const detail =
         error?.response?.data?.detail ||
         error?.detail ||
-        "Failed to delete permanently";
+        "Không thể xóa vĩnh viễn";
       toast.error(detail);
     } finally {
       setBusyId(null);

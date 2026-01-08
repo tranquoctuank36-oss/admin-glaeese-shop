@@ -1,4 +1,4 @@
-import type { DiscountFilters, PaginatedDiscountsResponse, Discount } from "@/types/discount";
+import type { DiscountFilters, PaginatedDiscountsResponse, Discount, DiscountStatisticsResponse } from "@/types/discount";
 import { api } from "./api";
 
 export async function getDiscounts(
@@ -157,4 +157,11 @@ export async function removeDiscountTarget(
   await api.delete(`/admin/discounts/${discountId}/targets`, {
     data: { targetIds: [targetId] }
   });
+}
+
+export async function getDiscountStatistics(): Promise<DiscountStatisticsResponse> {
+  const response = await api.get<DiscountStatisticsResponse>(
+    "/admin/discounts/statistics"
+  );
+  return response.data;
 }

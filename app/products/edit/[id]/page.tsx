@@ -153,14 +153,7 @@ export default function EditProductPage() {
 
             // Note: Variants are not updated here - they have separate endpoints
 
-            console.log("=== UPDATE PRODUCT DEBUG ===");
-            console.log("Product ID:", id);
-            console.log("Payload being sent:", JSON.stringify(payload, null, 2));
-
             await updateProduct(id, payload);
-
-            console.log("Product updated successfully");
-
             router.push(Routes.products.root);
             toast.success("Sản phẩm được cập nhật thành công!");
           }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -12,6 +12,9 @@ import {
   ArrowDownAZ,
   ArrowUpDown,
   X,
+  ChevronDown,
+  Search,
+  Filter,
 } from "lucide-react";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import {
@@ -20,7 +23,11 @@ import {
   countTrashProductsClient,
   getProductCounts,
 } from "@/services/productService";
+import { getBrands } from "@/services/brandService";
+import { getTags } from "@/services/tagService";
 import type { Product } from "@/types/product";
+import type { Brand } from "@/types/brand";
+import type { Tag } from "@/types/tag";
 import TablePagination from "@/components/TablePagination";
 import { Button } from "@/components/ui/button";
 import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
@@ -82,8 +89,85 @@ function fmt(iso?: string) {
   ).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`h-[42px] w-full px-3 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProductsPage() {
-  // const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [lightboxImage, setLightboxImage] = useState<{ url: string; alt: string } | null>(null);
   const router = useRouter();
@@ -99,13 +183,25 @@ function ProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [trashCount, setTrashCount] = useState(0);
   const [counts, setCounts] = useState<any>(null);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const filtersRef = useRef<HTMLDivElement>(null);
 
-  const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
-    limit: 20,
-    sortField: "createdAt",
-    sortOrder: "DESC",
-    isDeleted: "false",
-  });
+  const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery(
+    {
+      limit: 20,
+      sortField: "createdAt",
+      sortOrder: "DESC",
+      isDeleted: "false",
+      productType: "",
+      gender: "",
+      brandId: "",
+      tagId: "",
+    } as any,
+    {
+      allowedsortField: ["name", "createdAt", "viewCount", "averageRating", "totalSold"] as const,
+    }
+  );
 
   const toggleNameSort = () => {
     if (q.sortField !== "name")
@@ -124,6 +220,37 @@ function ProductsPage() {
     } else {
       setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const });
     }
+  };
+
+  // Close filters dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+
+    if (showFilters) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showFilters]);
+
+  const handleResetFilters = () => {
+    setAndResetPage({
+      search: "",
+      status: "",
+      productType: "",
+      gender: "",
+      brandId: "",
+      tagId: "",
+      sortField: "createdAt",
+      sortOrder: "DESC" as const,
+      page: 1,
+    } as any);
   };
 
   useEffect(() => {
@@ -188,6 +315,40 @@ function ProductsPage() {
     };
   }, []);
 
+  // Load brands for filter
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await getBrands({ limit: 100, isDeleted: false });
+        if (!alive) return;
+        setBrands(res.data ?? []);
+      } catch (error) {
+        console.error("Failed to fetch brands:", error);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Load tags for filter
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await getTags({ limit: 100, isDeleted: false });
+        if (!alive) return;
+        setTags(res.data ?? []);
+      } catch (error) {
+        console.error("Failed to fetch tags:", error);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const allSelected =
     rows.length > 0 && selectedProducts.length === rows.length;
 
@@ -215,8 +376,7 @@ function ProductsPage() {
       // Refresh trash count
       const count = await countTrashProductsClient();
       setTrashCount(count);
-      // Show success message if you have a toast/notification system
-      console.log(`Product "${name}" deleted successfully`);
+      toast.success(`Đã xóa sản phẩm "${name}" thành công`);
     } catch (error: any) {
       console.error("Failed to delete product:", error);
       const detail = error?.response?.data?.detail || error?.detail;
@@ -240,7 +400,7 @@ function ProductsPage() {
       // Refresh trash count
       const count = await countTrashProductsClient();
       setTrashCount(count);
-      console.log(`${selectedProducts.length} products deleted successfully`);
+      toast.success(`Đã xóa ${selectedProducts.length} sản phẩm thành công`);
     } catch (error: any) {
       console.error("Failed to delete products:", error);
       const detail = error?.response?.data?.detail || error?.detail;
@@ -432,30 +592,168 @@ function ProductsPage() {
           )}
 
           {/* Search & Filter */}
-          <ToolbarSearchFilters
-            value={q.search}
-            onSearchChange={(v) => setAndResetPage({ search: v, page: 1 })}
-            productStatus={(q as any).productStatus ?? "all"}
-            onFiltersChange={(patch) => {
-              if (typeof patch.productStatus !== "undefined") {
-                setAndResetPage({
-                  productStatus: patch.productStatus,
-                  page: 1,
-                } as any);
-              }
-            }}
-            placeholder="Tìm kiếm theo tên, slug hoặc mô tả sản phẩm..."
-          />
-
-          {/* <ProductListToolbar
-            value={searchTerm}
-            onSearchChange={setSearchTerm}
-            onSearchSideEffect={() => setPage(1)}
-            showFilters={showFilters}
-            onToggleFilters={() => setShowFilters((s) => !s)}
+          <motion.div
+            ref={filtersRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-6 bg-white rounded-lg shadow border border-gray-200 p-3"
           >
-            <div className="text-sm text-gray-500">More filters…</div>
-          </ProductListToolbar> */}
+            {/* Search Bar */}
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
+                <input
+                  type="text"
+                  className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
+                  placeholder="Tìm kiếm theo tên, thương hiệu, nhãn và SKU..."
+                  value={q.search || ""}
+                  onChange={(e) => setAndResetPage({ search: e.target.value, page: 1 })}
+                />
+              </div>
+              <CustomSelect
+                value={`${q.sortField}-${q.sortOrder}`}
+                onChange={(v) => {
+                  const [field, order] = v.split("-");
+                  setAndResetPage({
+                    sortField: field,
+                    sortOrder: order as "ASC" | "DESC",
+                    page: 1,
+                  } as any);
+                }}
+                options={[
+                  { value: "createdAt-DESC", label: "Ngày tạo giảm dần" },
+                  { value: "createdAt-ASC", label: "Ngày tạo tăng dần" },
+                  { value: "name-ASC", label: "Tên A-Z" },
+                  { value: "name-DESC", label: "Tên Z-A" },
+                  { value: "viewCount-DESC", label: "Lượt xem nhiều nhất" },
+                  { value: "averageRating-DESC", label: "Đánh giá cao nhất" },
+                  { value: "totalSold-DESC", label: "Bán chạy nhất" },
+                ]}
+              />
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
+              >
+                <Filter size={20} />
+                Bộ lọc
+              </Button>
+            </div>
+
+            {/* Collapsible Filter Panel */}
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4 border-t border-gray-200 pt-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Status Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Trạng thái
+                    </label>
+                    <CustomSelect
+                      value={(q as any).status || ""}
+                      onChange={(v) => setAndResetPage({ status: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "draft", label: "Bản nháp" },
+                        { value: "published", label: "Đã xuất bản" },
+                        { value: "unlisted", label: "Chưa liệt kê" },
+                        { value: "archived", label: "Đã lưu trữ" },
+                      ]}
+                    />
+                  </div>
+
+                  {/* Product Type Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Loại sản phẩm
+                    </label>
+                    <CustomSelect
+                      value={(q as any).productType || ""}
+                      onChange={(v) => setAndResetPage({ productType: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "frame", label: "Gọng kính" },
+                        { value: "sunglasses", label: "Kính mát" },
+                      ]}
+                    />
+                  </div>
+
+                  {/* Gender Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Giới tính
+                    </label>
+                    <CustomSelect
+                      value={(q as any).gender || ""}
+                      onChange={(v) => setAndResetPage({ gender: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "male", label: "Nam" },
+                        { value: "female", label: "Nữ" },
+                        { value: "unisex", label: "Unisex" },
+                        { value: "kid", label: "Trẻ em" },
+                      ]}
+                    />
+                  </div>
+
+                  {/* Brand Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Thương hiệu
+                    </label>
+                    <CustomSelect
+                      value={(q as any).brandId || ""}
+                      onChange={(v) => setAndResetPage({ brandId: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        ...brands.map(brand => ({
+                          value: brand.id,
+                          label: brand.name
+                        }))
+                      ]}
+                    />
+                  </div>
+
+                  {/* Tag Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nhãn
+                    </label>
+                    <CustomSelect
+                      value={(q as any).tagId || ""}
+                      onChange={(v) => setAndResetPage({ tagId: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        ...tags.map(tag => ({
+                          value: tag.id,
+                          label: tag.name
+                        }))
+                      ]}
+                    />
+                  </div>
+                </div>
+
+                {/* Reset Button */}
+                <div className="flex justify-end mt-3">
+                  <button
+                    onClick={handleResetFilters}
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors cursor-pointer hover:bg-gray-100 px-3 py-1 rounded-lg"
+                  >
+                    Đặt lại
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
 
         </motion.div>
 

@@ -2,40 +2,18 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { Routes } from "@/lib/routes";
-import { useEffect, useState } from "react";
-import { getFrameCounts, getTrashFrameCounts } from "@/services/frameService/frameCommon";
+import { useEffect } from "react";
+import { useFrameCounts } from "@/context/FrameCountsContext";
 
 export default function FrameTabs() {
   const router = useRouter();
   const pathname = usePathname();
+  const { tabCounts, trashCounts, refreshCounts } = useFrameCounts();
 
-  const [tabCounts, setTabCounts] = useState({
-    frameShapes: 0,
-    frameTypes: 0,
-    frameMaterials: 0,
-  });
-  
-  const [trashCounts, setTrashCounts] = useState({
-    frameShapes: 0,
-    frameTypes: 0,
-    frameMaterials: 0,
-  });
-
-  // Fetch tab counts
+  // Fetch counts on mount
   useEffect(() => {
-    (async () => {
-      try {
-        const [activeCounts, trashCounts] = await Promise.all([
-          getFrameCounts(),
-          getTrashFrameCounts(),
-        ]);
-        setTabCounts(activeCounts);
-        setTrashCounts(trashCounts);
-      } catch (e) {
-        console.error("Failed to fetch frame counts:", e);
-      }
-    })();
-  }, [pathname]);
+    refreshCounts();
+  }, [refreshCounts]);
 
   const tabs = [
     {

@@ -113,7 +113,7 @@ export const Routes = {
   },
   
   orders: {
-    root: "/orders",
+    root: "", // No standalone orders page
     all: "/orders/all",
     pending: "/orders/pending",
     packing: "/orders/packing",

@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Search, Shield, X, Pencil, Filter, Eye, Edit, ChevronDown } from "lucide-react";
-import { getOrders, updateOrder } from "@/services/orderService";
+import { Search, Shield, X, Pencil, Filter, Eye, Edit, ChevronDown, ShoppingCart, Clock, Package, Truck, CheckCircle, XCircle } from "lucide-react";
+import { getOrders, updateOrder, getOrderStatistics, OrderStatistics } from "@/services/orderService";
 import { Order } from "@/types/order";
 import { useListQuery } from "@/components/data/useListQuery";
 import TablePagination from "@/components/TablePagination";
@@ -17,6 +17,33 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
+// Helper function to calculate relative time
+function getRelativeTime(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  const diffMonths = Math.floor(diffDays / 30);
+  const diffYears = Math.floor(diffDays / 365);
+
+  if (diffSeconds < 60) {
+    return `${diffSeconds} giây trước`;
+  } else if (diffMinutes < 60) {
+    return `${diffMinutes} phút trước`;
+  } else if (diffHours < 24) {
+    return `${diffHours} giờ trước`;
+  } else if (diffDays < 30) {
+    return `${diffDays} ngày trước`;
+  } else if (diffMonths < 12) {
+    return `${diffMonths} tháng trước`;
+  } else {
+    return `${diffYears} năm trước`;
+  }
+}
 
 // Custom Select Component
 interface CustomSelectProps<T extends string> {
@@ -118,6 +145,8 @@ export default function AllOrdersPage() {
   const [hasNext, setHasNext] = useState(false);
   const [hasPrev, setHasPrev] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<OrderStatistics | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
   const [hoveredOrderId, setHoveredOrderId] = useState<string | null>(null);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editForm, setEditForm] = useState({
@@ -133,6 +162,29 @@ export default function AllOrdersPage() {
   const [minGrandTotal, setMinGrandTotal] = useState<string>("");
   const [maxGrandTotal, setMaxGrandTotal] = useState<string>("");
   const filtersRef = useRef<HTMLDivElement>(null);
+
+  // Fetch statistics
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      setStatsLoading(true);
+      try {
+        const params: any = {};
+        if (q.startDate || q.endDate) {
+          if (q.startDate) params.startDate = q.startDate;
+          if (q.endDate) params.endDate = q.endDate;
+        } else if (q.preset) {
+          params.preset = q.preset;
+        }
+        const response = await getOrderStatistics(params);
+        setStats(response.data);
+      } catch (error) {
+        console.error("Failed to fetch order statistics:", error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+    fetchStatistics();
+  }, [q.preset, q.startDate, q.endDate]);
 
   // Close filters dropdown when clicking outside
   useEffect(() => {
@@ -208,7 +260,7 @@ export default function AllOrdersPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-800">
-              Tất cả đơn hàng ({meta?.totalItems})
+              Tất cả đơn hàng
             </h1>
             <p className="text-gray-600 mt-1">
               Quản lý và theo dõi tất cả đơn hàng
@@ -216,6 +268,95 @@ export default function AllOrdersPage() {
           </div>
         </div>
       </motion.div>
+
+      {/* Statistics Cards - Compact Design */}
+      {stats && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-6"
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+            {/* Total Orders */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <ShoppingCart className="w-4 h-4 text-blue-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-blue-600">{stats.total || 0}</p>
+              <p className="text-xs text-gray-600 mt-1">Tổng đơn</p>
+            </div>
+
+            {/* Pending */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-yellow-100 rounded-lg">
+                  <Clock className="w-4 h-4 text-yellow-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-yellow-600">{stats.pending || 0}</p>
+              <p className="text-xs text-gray-600 mt-1">Chờ xác nhận</p>
+            </div>
+
+            {/* Processing */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Package className="w-4 h-4 text-purple-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-purple-600">{stats.processing || 0}</p>
+              <p className="text-xs text-gray-600 mt-1">Đang xử lý</p>
+            </div>
+
+            {/* Shipping */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-indigo-100 rounded-lg">
+                  <Truck className="w-4 h-4 text-indigo-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-indigo-600">{stats.shipping || 0}</p>
+              <p className="text-xs text-gray-600 mt-1">Đang giao</p>
+            </div>
+
+            {/* Delivered */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-green-600">{stats.delivered || 0}</p>
+              <p className="text-xs text-gray-600 mt-1">Đã giao</p>
+            </div>
+
+            {/* Completed */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                  <CheckCircle className="w-4 h-4 text-emerald-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-emerald-600">{stats.completed || 0}</p>
+              <p className="text-xs text-gray-600 mt-1">Hoàn thành</p>
+            </div>
+
+            {/* Cancelled/Returned */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between mb-2">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <XCircle className="w-4 h-4 text-red-600" />
+                </div>
+              </div>
+              <p className="text-2xl font-bold text-red-600">{stats.cancelledOrReturned || 0}</p>
+              <p className="text-xs text-gray-600 mt-1">Đã hủy/Trả</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Search Bar and Filters */}
       <motion.div
@@ -486,8 +627,14 @@ export default function AllOrdersPage() {
                                 </div>
                               )}
                           </div>
-                          <div className="text-xs text-gray-500">
-                            {new Date(order.createdAt).toLocaleString("vi-VN")}
+                          <div 
+                            className="text-xs text-gray-500 cursor-help relative group"
+                            // title={`Cập nhật: ${new Date(order.updatedAt).toLocaleString("vi-VN")}`}
+                          >
+                            {getRelativeTime(order.createdAt)}
+                            <div className="absolute left-0 top-full mt-1 z-50 hidden group-hover:block min-w-[180px] p-2 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap">
+                              Cập nhật: {new Date(order.updatedAt).toLocaleString("vi-VN")}
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -15,7 +15,7 @@ export type ProductListQuery = {
   page?: number;
   limit?: number;
   search?: string;
-  sortField?: "name" | "createdAt";
+  sortField?: "name" | "createdAt" | "viewCount" | "averageRating" | "totalSold";
   sortOrder?: Order;
   isDeleted?: boolean;
 
@@ -24,9 +24,9 @@ export type ProductListQuery = {
   frameShapesIds?: UUID[];
   frameTypesIds?: UUID[];
   frameMaterialsIds?: UUID[];
-  brandsIds?: UUID[];
+  brandIds?: UUID[];  // Sửa từ brandsIds
   categoriesIds?: UUID[];
-  tagsIds?: UUID[];
+  tagIds?: UUID[];  // Sửa từ tagsIds
 
   minLenseWidth?: number;  maxLenseWidth?: number;
   minBridgeWidth?: number; maxBridgeWidth?: number;
@@ -36,7 +36,7 @@ export type ProductListQuery = {
   minPrice?: string;
   maxPrice?: string;
 
-  status?: Array<"draft" | "published" | "unlisted" | "archived">;
+  status?: "draft" | "published" | "unlisted" | "archived";  // String đơn, không phải array
 };
 
 export type PaginatedProducts = {
@@ -82,10 +82,40 @@ function buildListParams(q: ProductListQuery) {
 
   if (q.page) params.page = q.page;
   if (q.limit) params.limit = q.limit;
-  if (Array.isArray(q.status)) {
-    const arr = q.status.filter(Boolean);
-    if (arr.length > 0) params.status = arr;
+  
+  // Handle status - string đơn theo API spec
+  if (q.status) {
+    params.status = q.status;
   }
+  
+  // Handle productType (singular) -> productTypes (plural array)
+  if ((q as any).productType && (q as any).productType !== "") {
+    params.productTypes = [(q as any).productType];
+  } else if (q.productTypes && q.productTypes.length > 0) {
+    params.productTypes = q.productTypes;
+  }
+  
+  // Handle gender (singular) -> genders (plural array)
+  if ((q as any).gender && (q as any).gender !== "") {
+    params.genders = [(q as any).gender];
+  } else if (q.genders && q.genders.length > 0) {
+    params.genders = q.genders;
+  }
+  
+  // Handle brandId (singular) -> brandIds (plural array)
+  if ((q as any).brandId && (q as any).brandId !== "") {
+    params.brandIds = [(q as any).brandId];
+  } else if (q.brandIds && q.brandIds.length > 0) {
+    params.brandIds = q.brandIds;
+  }
+  
+  // Handle tagId (singular) -> tagIds (plural array)
+  if ((q as any).tagId && (q as any).tagId !== "") {
+    params.tagIds = [(q as any).tagId];
+  } else if (q.tagIds && q.tagIds.length > 0) {
+    params.tagIds = q.tagIds;
+  }
+  
   if (q.search && q.search.trim()) params.search = q.search.trim();
   if (typeof q.isDeleted === "boolean") params.isDeleted = q.isDeleted;
 
@@ -94,19 +124,25 @@ function buildListParams(q: ProductListQuery) {
   const sortFieldMap: Record<NonNullable<ProductListQuery["sortField"]>, string> = {
     name: "name",
     createdAt: "createdAt",
+    viewCount: "viewCount",
+    averageRating: "averageRating",
+    totalSold: "totalSold",
   };
   params.sortField = q.sortField ? sortFieldMap[q.sortField] : "createdAt";
 
+  // Không bao gồm productTypes, genders, brandIds, tagIds vì đã xử lý riêng ở trên
   const copy = [
-    "productTypes","genders","frameShapesIds","frameTypesIds","frameMaterialsIds",
-    "brandsIds","categoriesIds","tagsIds",
+    "frameShapesIds","frameTypesIds","frameMaterialsIds",
+    "categoriesIds",  // brandIds và tagIds đã xử lý riêng
     "minLenseWidth","maxLenseWidth","minBridgeWidth","maxBridgeWidth",
     "minTempleLength","maxTempleLength","minLensHeight","maxLensHeight",
     "minPrice","maxPrice",
   ] as const;
   for (const k of copy) {
     const v = (q as any)[k];
-    if (v !== undefined && v !== null && `${v}` !== "") params[k] = v;
+    if (v !== undefined && v !== null && (Array.isArray(v) ? v.length > 0 : `${v}` !== "")) {
+      params[k] = v;
+    }
   }
 
   return params;

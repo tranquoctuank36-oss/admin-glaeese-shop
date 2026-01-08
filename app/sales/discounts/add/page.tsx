@@ -22,7 +22,7 @@ export default function AddDiscountPage() {
   const handleSubmit = async (data: any) => {
     try {
       await createDiscount(data);
-      toast.success("Discount created successfully!");
+      toast.success("Chương trình giảm giá đã được tạo thành công!");
       router.push(Routes.sales.discounts.root);
     } catch (error) {
       throw error;
@@ -37,7 +37,7 @@ export default function AddDiscountPage() {
     <div className="flex-1 overflow-auto relative z-10">
       <main className="max-w-[980px] mx-auto py-6 px-4 lg:px-8">
         <div className="flex items-center gap-3 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Thêm giảm giá</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Thêm chương trình giảm giá</h1>
         </div>
 
         <DiscountForm

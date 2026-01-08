@@ -23,8 +23,8 @@ import {
   getFrameTypes,
   softDeleteFrameType,
 } from "@/services/frameService/frameTypeService";
-import { getTrashFrameCounts } from "@/services/frameService/frameCommon";
 import ConfirmPopover from "@/components/ConfirmPopover";
+import { useFrameCounts } from "@/context/FrameCountsContext";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -38,6 +38,7 @@ function formatDate(iso?: string) {
 
 export default function FrameTypesPage() {
   const router = useRouter();
+  const { refreshCounts } = useFrameCounts();
 
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
@@ -80,20 +81,6 @@ export default function FrameTypesPage() {
   const keyOf = (id: string, action: "delete") => `${id}|${action}`;
   const isOpen = (id: string) => openKey === keyOf(id, "delete");
 
-  const [trashCount, setTrashCount] = useState<number>(0);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getTrashFrameCounts();
-        setTrashCount(res.frameTypes ?? 0);
-        console.log("Trash count:", res.frameTypes ?? 0);
-      } catch (err) {
-        console.error("Failed to count trash frame types:", err);
-      }
-    })();
-  }, []);
-
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -128,12 +115,14 @@ export default function FrameTypesPage() {
       setDeletingId(id);
       await softDeleteFrameType(id);
       setRows((prev) => prev.filter((r) => r.id !== id));
-      setTrashCount((prev) => prev + 1);
+      toast.success("Đã xóa loại gọng thành công");
+      refreshCounts(true); // Force refresh counts
     } catch (e: any) {
       console.error("Soft delete failed:", e);
       const detail =
           e?.response?.data?.detail ||
-          e?.detail 
+          e?.detail ||
+          "Không thể xóa loại gọng"
         toast.error(detail);
     } finally {
       setDeletingId(null);
@@ -310,7 +299,7 @@ export default function FrameTypesPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Chỉnh sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.attributes.frames.frameTypes.edit.replace(
@@ -331,9 +320,9 @@ export default function FrameTypesPage() {
                               onOpenChange={(o) =>
                                 setOpenKey(o ? keyOf(type.id, "delete") : null)
                               }
-                              title="Remove this frame type?"
+                              title="Xóa loại gọng này?"
                               message={<b>{type.name}</b>}
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setDeletingId(type.id);
                                 try {
@@ -353,7 +342,7 @@ export default function FrameTypesPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Remove"
+                                title="Xóa"
                                 onClick={() =>
                                   setOpenKey(keyOf(type.id, "delete"))
                                 }
@@ -371,7 +360,7 @@ export default function FrameTypesPage() {
                       <tr>
                         <td colSpan={5} className="px-6 py-6">
                           <div className="text-center text-gray-600">
-                            Frame Types is empty.
+                            Không có loại gọng nào
                           </div>
                         </td>
                       </tr>

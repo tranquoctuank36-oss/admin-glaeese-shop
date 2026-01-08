@@ -152,7 +152,7 @@ export function DiscountForm({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FloatingInput
           id="name"
-          label="Tên giảm giá"
+          label="Tên chương trình giảm giá"
           required
           value={name}
           onChange={(v) => {

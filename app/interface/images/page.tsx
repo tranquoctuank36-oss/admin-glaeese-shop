@@ -394,7 +394,7 @@ export default function ImagesPage() {
                               : image.ownerType === "brand"
                               ? "Thương Hiệu"
                               : image.ownerType === "discount"
-                              ? "Giảm giá"
+                              ? "Chương trình giảm giá"
                               : image.ownerType === "review"
                               ? "Đánh Giá"
                               : image.ownerType === "order_return"

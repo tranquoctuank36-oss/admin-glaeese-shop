@@ -162,6 +162,27 @@ export function useListQuery<
       ...extraFilters,
     };
 
+    // Include any additional dynamic filters from q (like productType, gender, brandId, tagId)
+    Object.keys(q).forEach((key) => {
+      // Skip already processed keys
+      if ([
+        'search', 'page', 'limit', 'sortField', 'sortOrder', 
+        'isActive', 'isDeleted', 'brandStatus', 'categoryStatus', 
+        'productStatus', 'imageStatus', 'ownerType', 'depth', 
+        'roles', 'statuses', 'startDate', 'endDate', 
+        'minGrandTotal', 'maxGrandTotal', 'status', 
+        'paymentStatus', 'paymentMethod', 'preset'
+      ].includes(key)) {
+        return;
+      }
+      
+      const value = (q as any)[key];
+      // Only include if value is not empty/null/undefined
+      if (value !== undefined && value !== null && value !== '' && value !== 'all') {
+        (params as any)[key] = value;
+      }
+    });
+
     return params;
   }, [
     debouncedSearch,
@@ -190,6 +211,7 @@ export function useListQuery<
     allowedsortField,
     mapSearchToParam,
     extraFilters,
+    q, // Include entire q to catch dynamic filters
   ]);
 
   const apiKey = useMemo(() => JSON.stringify(apiParams), [apiParams]);

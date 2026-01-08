@@ -12,13 +12,13 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Routes } from "@/lib/routes";
 import TablePagination from "@/components/TablePagination";
 import { useListQuery } from "@/components/data/useListQuery";
 import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import { forceDeleteTag, getTags, restoreTag } from "@/services/tagService";
 import toast from "react-hot-toast";
+import { Tag } from "@/types/tag";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -116,9 +116,10 @@ export default function TagsTrashPage() {
       const next = rows.filter((r) => r.id !== id);
       setRows(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
+      toast.success("Đã khôi phục nhãn thành công");
     } catch (e: any) {
       console.error("Restore failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to restore tag";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể khôi phục nhãn";
       toast.error(detail);
     } finally {
       setBusyId(null);
@@ -133,9 +134,10 @@ export default function TagsTrashPage() {
       const next = rows.filter((r) => r.id !== id);
       setRows(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
+      toast.success("Đã xóa vĩnh viễn nhãn thành công");
     } catch (e: any) {
       console.error("Permanent delete failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to delete permanently";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể xóa vĩnh viễn nhãn";
       toast.error(detail);
     } finally {
       setBusyId(null);

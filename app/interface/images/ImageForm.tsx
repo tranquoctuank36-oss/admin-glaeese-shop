@@ -136,7 +136,7 @@ export default function ImageForm({
           options={[
             { value: "product_variant", label: "Biến thể sản phẩm" },
             { value: "brand", label: "Thương hiệu" },
-            { value: "discount", label: "Giảm giá" },
+            { value: "discount", label: "Chương trình giảm giá" },
             { value: "banner", label: "Banner" },
             { value: "review", label: "Đánh giá" },
             { value: "order_return", label: "Trả hàng" },

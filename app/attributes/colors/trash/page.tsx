@@ -126,9 +126,10 @@ export default function ColorsTrashPage() {
       const next = rows.filter((r) => r.id !== id);
       setRows(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
+      toast.success("Đã khôi phục màu sắc thành công");
     } catch (e: any) {
       console.error("Restore failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to restore color";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể khôi phục màu sắc";
       toast.error(detail);
     } finally {
       setBusyId(null);
@@ -143,9 +144,10 @@ export default function ColorsTrashPage() {
       const next = rows.filter((r) => r.id !== id);
       setRows(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
+      toast.success("Đã xóa vĩnh viễn màu sắc thành công");
     } catch (e: any) {
       console.error("Permanent delete failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to delete permanently";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể xóa vĩnh viễn màu sắc";
       toast.error(detail);
     } finally {
       setBusyId(null);

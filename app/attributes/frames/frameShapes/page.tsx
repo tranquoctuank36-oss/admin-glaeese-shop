@@ -22,9 +22,9 @@ import {
   getFrameShapes,
   softDeleteFrameShape,
 } from "@/services/frameService/frameShapeService";
-import { getTrashFrameCounts } from "@/services/frameService/frameCommon";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import toast from "react-hot-toast";
+import { useFrameCounts } from "@/context/FrameCountsContext";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -38,6 +38,7 @@ function formatDate(iso?: string) {
 
 export default function FrameShapesPage() {
   const router = useRouter();
+  const { refreshCounts } = useFrameCounts();
 
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
@@ -77,19 +78,6 @@ export default function FrameShapesPage() {
   const isOpen = (id: string) => openKey === keyOf(id, "delete");
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [trashCount, setTrashCount] = useState<number>(0);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getTrashFrameCounts();
-        setTrashCount(res.frameShapes ?? 0);
-        console.log("Trash count:", res.frameShapes ?? 0);
-      } catch (err) {
-        console.error("Failed to count trash frame shapes:", err);
-      }
-    })();
-  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -125,12 +113,13 @@ export default function FrameShapesPage() {
       setDeletingId(id);
       await softDeleteFrameShape(id);
       setRows((prev) => prev.filter((r) => r.id !== id));
-      setTrashCount((prev) => prev + 1);
+      toast.success("Đã xóa hình dạng gọng thành công");
+      refreshCounts(true); // Force refresh counts
     } catch (e: any) {
       console.error("Soft delete failed:", e);
       const detail =
           e?.response?.data?.detail ||
-          e?.detail || "Failed to remove frame shape";
+          e?.detail || "Không thể xóa hình dạng gọng";
         toast.error(detail);
     } finally {
       setDeletingId(null);

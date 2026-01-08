@@ -11,8 +11,8 @@ function SalesPage() {
 
   const salesModules = [
     {
-      title: "Quản lý giảm giá",
-      description: "Tạo và quản lý giảm giá sản phẩm, giá khuyến mại và ưu đãi đặc biệt",
+      title: "Quản lý chương trình giảm giá",
+      description: "Tạo và quản lý chương trình giảm giá sản phẩm, giá khuyến mại và ưu đãi đặc biệt",
       icon: Percent,
       color: "from-purple-50 to-white",
       borderColor: "border-purple-100",
@@ -42,7 +42,7 @@ function SalesPage() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800">Quản lý bán hàng</h1>
             <p className="text-sm text-gray-500 mt-1">
-              Quản lý giảm giá, mã giảm giá và chiến dịch khuyến mại
+              Quản lý chương trình giảm giá, mã giảm giá và chiến dịch khuyến mại
             </p>
           </div>
 

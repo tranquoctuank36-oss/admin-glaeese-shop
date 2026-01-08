@@ -26,6 +26,7 @@ import {
 
 import ConfirmPopover from "@/components/ConfirmPopover";
 import toast from "react-hot-toast";
+import { useFrameCounts } from "@/context/FrameCountsContext";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -39,6 +40,7 @@ function formatDate(iso?: string) {
 
 export default function FrameMaterialsTrashPage() {
   const router = useRouter();
+  const { refreshCounts } = useFrameCounts();
 
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
@@ -149,9 +151,11 @@ export default function FrameMaterialsTrashPage() {
       await restoreFrameMaterial(id);
       if (rows.length <= 1 && hasPrev) backIfEmpty();
       else setRows((prev) => prev.filter((x) => x.id !== id));
+      toast.success("Đã khôi phục chất liệu gọng thành công");
+      refreshCounts(true); // Force refresh counts
     } catch (e: any) {
       console.error("Restore failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to restore frame material";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể khôi phục chất liệu gọng";
       toast.error(detail);
     } finally {
       setBusyId(null);
@@ -165,9 +169,11 @@ export default function FrameMaterialsTrashPage() {
       await forceDeleteFrameMaterial(id);
       if (rows.length <= 1 && hasPrev) backIfEmpty();
       else setRows((prev) => prev.filter((x) => x.id !== id));
+      toast.success("Đã xóa vĩnh viễn chất liệu gọng thành công");
+      refreshCounts(true); // Force refresh counts
     } catch (e: any) {
       console.error("Permanent delete failed:", e);
-      const detail = e?.response?.data?.detail || e?.detail || "Failed to delete permanently";
+      const detail = e?.response?.data?.detail || e?.detail || "Không thể xóa vĩnh viễn chất liệu gọng";
       toast.error(detail);
     } finally {
       setBusyId(null);

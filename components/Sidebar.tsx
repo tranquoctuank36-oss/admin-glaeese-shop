@@ -3,15 +3,38 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Menu, ChevronDown, ChevronRight } from "lucide-react";
+import { Menu, ChevronDown, ChevronRight, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
+import { syncGHNOrderStatus } from "@/services/orderService";
+import toast from "react-hot-toast";
 import { ICONS, sidebarItems } from "@/config/sidebarItems";
 
 export default function Sidebar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const pathname = usePathname();
+
+  const handleSyncGHN = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    
+    setIsSyncing(true);
+    try {
+      const result = await syncGHNOrderStatus();
+      if (result.success) {
+        toast.success(result.message || "Đồng bộ thành công!");
+      } else {
+        toast.error(result.message || "Đồng bộ thất bại!");
+      }
+    } catch (error: any) {
+      console.error("Sync GHN failed:", error);
+      toast.error(error?.response?.data?.message || "Lỗi khi đồng bộ đơn hàng!");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -55,9 +78,9 @@ export default function Sidebar() {
             const isActive = pathname === item.href;
             const hasSub = !!item.subItems?.length;
             const hasActiveChild = !!item.subItems?.some((s) => pathname === s.href);
-            // Fix: Chỉ dùng startsWith cho non-root paths, tránh "/" match tất cả
+            // Parent active khi: đang ở trang parent HOẶC có submenu đang active
             const isParentActive = isActive || hasActiveChild || 
-              (item.href !== "/" && pathname.startsWith(item.href));
+              (item.href !== "/" && item.href !== "" && pathname.startsWith(item.href));
             const isOpen = openSubmenu === item.name;
 
             return (
@@ -78,7 +101,24 @@ export default function Sidebar() {
                           )}
                         </div>
                         {isSidebarOpen && (
-                          <div className="flex-shrink-0 ml-2">
+                          <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                            <button
+                              onClick={handleSyncGHN}
+                              disabled={isSyncing}
+                              className={`p-1.5 rounded-full transition-all ${
+                                isSyncing 
+                                  ? "bg-blue-200 cursor-not-allowed" 
+                                  : "hover:bg-blue-600 bg-blue-500 cursor-pointer"
+                              }`}
+                              title="Đồng bộ trạng thái đơn hàng GHN"
+                            >
+                              <RefreshCw 
+                                size={14} 
+                                className={`text-white ${
+                                  isSyncing ? "animate-spin" : ""
+                                }`}
+                              />
+                            </button>
                             {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                           </div>
                         )}

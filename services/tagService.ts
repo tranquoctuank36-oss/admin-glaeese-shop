@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import { api } from "./api";
+import { Tag } from "@/types/tag";
 
 const handleError = (err: unknown, msg: string) => {
   const e = err as AxiosError;

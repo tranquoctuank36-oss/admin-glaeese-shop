@@ -129,7 +129,7 @@ function DiscountDetailsPage() {
       setDiscount(data);
     } catch (error: any) {
       console.error("Failed to fetch discount:", error);
-      toast.error(error?.response?.data?.detail || "Failed to load discount");
+      toast.error(error?.response?.data?.detail || "Không thể tải thông tin giảm giá");
       router.push(Routes.sales.discounts.root);
     } finally {
       setLoading(false);
@@ -145,10 +145,10 @@ function DiscountDetailsPage() {
     try {
       setBusyAction(true);
       await cancelDiscount(discount.id);
-      toast.success("Discount canceled successfully");
+      toast.success("Đã hủy chương trình giảm giá thành công");
       fetchDiscount();
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to cancel discount");
+      toast.error(error?.response?.data?.detail || "Không thể hủy chương trình giảm giá");
     } finally {
       setBusyAction(false);
     }
@@ -159,10 +159,10 @@ function DiscountDetailsPage() {
     try {
       setBusyAction(true);
       await deleteDiscount(discount.id);
-      toast.success("Discount moved to trash");
+      toast.success("Đã chuyển chương trình giảm giá vào thùng rác");
       router.push(Routes.sales.discounts.root);
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to delete discount");
+      toast.error(error?.response?.data?.detail || "Không thể xóa chương trình giảm giá");
     } finally {
       setBusyAction(false);
     }
@@ -170,7 +170,7 @@ function DiscountDetailsPage() {
 
   const handleSchedule = async () => {
     if (!discount || !scheduleStartAt || !scheduleEndAt) {
-      toast.error("Please provide both start and end dates");
+      toast.error("Vui lòng cung cấp cả ngày bắt đầu và kết thúc");
       return;
     }
     try {
@@ -189,14 +189,14 @@ function DiscountDetailsPage() {
         startAt: startUTC,
         endAt: endUTC,
       });
-      toast.success("Discount scheduled successfully");
+      toast.success("Đã lên lịch chương trình giảm giá thành công");
       setShowScheduleDialog(false);
       fetchDiscount();
     } catch (error: any) {
       console.error("Schedule error:", error);
       console.error("Error response:", error?.response?.data);
       toast.error(
-        error?.response?.data?.detail || "Failed to schedule discount"
+        error?.response?.data?.detail || "Không thể lên lịch chương trình giảm giá"
       );
     } finally {
       setBusyAction(false);
@@ -208,11 +208,11 @@ function DiscountDetailsPage() {
     try {
       setBusyAction(true);
       await unscheduleDiscount(discount.id);
-      toast.success("Discount unscheduled successfully");
+      toast.success("Đã hủy lịch chương trình giảm giá thành công");
       fetchDiscount();
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.detail || "Failed to unschedule discount"
+        error?.response?.data?.detail || "Không thể hủy lịch chương trình giảm giá"
       );
     } finally {
       setBusyAction(false);
@@ -298,10 +298,10 @@ function DiscountDetailsPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Discount Details
+                  Chi tiết chương trình giảm giá
                 </h1>
                 <p className="text-gray-600 mt-1">
-                  View and manage discount information
+                  Xem và quản lý thông tin giảm giá
                 </p>
               </div>
             </div>
@@ -318,7 +318,7 @@ function DiscountDetailsPage() {
                   disabled={busyAction}
                 >
                   <Edit size={18} />
-                  Edit
+                  Chỉnh sửa
                 </Button>
               )}
 
@@ -333,7 +333,7 @@ function DiscountDetailsPage() {
 
               {discount.status === "scheduled" && (
                 <ConfirmPopover
-                  title="Hủy lịch giảm giá"
+                  title="Hủy lịch chương trình giảm giá"
                   message={
                     <div>
                       Bạn có chắc muốn hủy lịch{" "}
@@ -348,13 +348,13 @@ function DiscountDetailsPage() {
                     disabled={busyAction}
                   >
                     <CalendarX size={18} />
-                    Unschedule
+                    Hủy lịch
                   </Button>
                 </ConfirmPopover>
               )}
 
               <ConfirmPopover
-                title="Hủy giảm giá"
+                title="Hủy chương trình giảm giá"
                 message={
                   <div>
                     Bạn có chắc muốn hủy{" "}
@@ -407,12 +407,12 @@ function DiscountDetailsPage() {
                 className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200"
               >
                 <h2 className="text-xl font-bold text-gray-800 mb-4">
-                  Basic Information
+                  Thông tin cơ bản
                 </h2>
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      Name
+                      Tên chương trình
                     </label>
                     <p className="text-lg font-semibold text-gray-900 mt-1">
                       {discount.name}
@@ -432,7 +432,7 @@ function DiscountDetailsPage() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      Description
+                      Mô tả
                     </label>
                     <p className="text-gray-800 mt-1">
                       {discount.description || "-"}
@@ -442,14 +442,14 @@ function DiscountDetailsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        Type
+                        Loại giảm giá
                       </label>
                       <div className="mt-2">{getTypeBadge(discount.type)}</div>
                     </div>
 
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        Value
+                        Giá trị giảm
                       </label>
                       <p className="text-2xl font-bold text-green-600 mt-1">
                         {discount.type === "percentage"
@@ -464,7 +464,7 @@ function DiscountDetailsPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        Max Discount
+                        Giảm tối đa
                       </label>
 
                       {discount.maxDiscountValue ? (
@@ -481,7 +481,7 @@ function DiscountDetailsPage() {
 
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        Status
+                        Trạng thái
                       </label>
                       <div className="mt-2">
                         {getStatusBadge(discount.status)}
@@ -500,14 +500,14 @@ function DiscountDetailsPage() {
               >
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold text-gray-800">
-                    Applied Products
+                    Sản phẩm áp dụng
                   </h2>
                   <div className="flex items-center gap-2">
                     <DiscountProductsViewer discountId={discount.id} />
                     <DiscountTargetSelector
                       discountId={discount.id}
                       onTargetsAdded={() => {
-                        toast.success("Products added to discount");
+                        toast.success("Đã thêm sản phẩm vào chương trình giảm giá");
                       }}
                     />
                   </div>
@@ -526,7 +526,7 @@ function DiscountDetailsPage() {
                   className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200"
                 >
                   <h2 className="text-xl font-bold text-gray-800 mb-4">
-                    Banner Image
+                    Ảnh banner
                   </h2>
                   <img
                     src={discount.bannerImage.publicUrl}
@@ -547,12 +547,12 @@ function DiscountDetailsPage() {
                 className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200"
               >
                 <h2 className="text-xl font-bold text-gray-800 mb-4">
-                  Date Information
+                  Thông tin thời gian
                 </h2>
                 <div className="space-y-3">
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      Start Date
+                      Ngày bắt đầu
                     </label>
                     <p className="text-gray-800 mt-1">
                       {formatDateTime(discount.startAt)}
@@ -561,7 +561,7 @@ function DiscountDetailsPage() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      End Date
+                      Ngày kết thúc
                     </label>
                     <p className="text-gray-800 mt-1">
                       {formatDateTime(discount.endAt)}
@@ -570,7 +570,7 @@ function DiscountDetailsPage() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      Created At
+                      Ngày tạo
                     </label>
                     <p className="text-gray-800 mt-1">
                       {formatDateTime(discount.createdAt)}
@@ -579,7 +579,7 @@ function DiscountDetailsPage() {
 
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      Canceled At
+                      Ngày hủy
                     </label>
                     <p className="text-gray-800 mt-1">
                       {formatDateTime(discount.canceledAt)}
@@ -620,14 +620,14 @@ function DiscountDetailsPage() {
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-gray-800">
-                Lên lịch giảm giá
+                Lên lịch chương trình giảm giá
               </DialogTitle>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Start Date & Time
+                  Ngày & giờ bắt đầu
                 </label>
                 <input
                   type="datetime-local"
@@ -645,7 +645,7 @@ function DiscountDetailsPage() {
                     // Prevent selecting time earlier than current time
                     if (newStartAt < currentTime) {
                       toast.error(
-                        "Start date cannot be earlier than current time"
+                        "Ngày bắt đầu không thể sớm hơn thời gian hiện tại"
                       );
                       return;
                     }
@@ -659,7 +659,7 @@ function DiscountDetailsPage() {
                       newStartAt >= scheduleEndAt
                     ) {
                       setScheduleEndAt("");
-                      toast.error("End date must be after start date");
+                      toast.error("Ngày kết thúc phải sau ngày bắt đầu");
                     }
                   }}
                 />
@@ -667,7 +667,7 @@ function DiscountDetailsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  End Date & Time
+                  Ngày & giờ kết thúc
                 </label>
                 <input
                   type="datetime-local"
@@ -685,7 +685,7 @@ function DiscountDetailsPage() {
 
                     // Prevent selecting time earlier than start date
                     if (newEndAt <= minTime) {
-                      toast.error("End date must be after start date");
+                      toast.error("Ngày kết thúc phải sau ngày bắt đầu");
                       return;
                     }
 
@@ -708,7 +708,7 @@ function DiscountDetailsPage() {
                 disabled={busyAction || !scheduleStartAt || !scheduleEndAt}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg disabled:opacity-50"
               >
-                {busyAction ? "Scheduling..." : "Schedule"}
+                {busyAction ? "Đang lên lịch..." : "Lên lịch"}
               </Button>
             </DialogFooter>
           </DialogContent>

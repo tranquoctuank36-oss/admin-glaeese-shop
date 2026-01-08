@@ -245,7 +245,7 @@ function SortableVariantItem({
       await updateVariantImagesOrder(variant.id, imageIds);
       // toast.success("Image order updated successfully");
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to update image order");
+      toast.error(error?.response?.data?.detail || "Lỗi khi cập nhật thứ tự hình ảnh");
       setLocalImages(variant.productImages || []);
     } finally {
       setIsReorderingImages(false);
@@ -478,7 +478,7 @@ function ProductDetailPage() {
       data?.productVariants?.filter((v: any) => !v.isDeleted) || [];
 
     if (activeVariants.length <= 1) {
-      toast.error("A product needs to have at least one Product Variant.");
+      toast.error("Sản phẩm cần có ít nhất một biến thể.");
       return;
     }
 
@@ -487,7 +487,7 @@ function ProductDetailPage() {
       await softDeleteVariant(variantId);
       await refreshProduct();
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to delete variant");
+      toast.error(error?.response?.data?.detail || "Không thể xóa biến thể");
     } finally {
       setDeletingVariantId(null);
     }
@@ -496,10 +496,10 @@ function ProductDetailPage() {
   const handleRestoreVariant = async (variantId: string) => {
     try {
       await restoreVariant(variantId);
-      toast.success("Variant restored successfully");
+      toast.success("Biến thể đã được khôi phục thành công");
       await refreshProduct();
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to restore variant");
+      toast.error(error?.response?.data?.detail || "Không thể khôi phục biến thể");
     }
   };
 
@@ -508,10 +508,10 @@ function ProductDetailPage() {
     try {
       setBusyAction(true);
       await softDeleteProduct(data.id);
-      toast.success("Product moved to trash");
+      toast.success("Sản phẩm đã được chuyển vào thùng rác");
       router.push(Routes.products.root);
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to delete product");
+      toast.error(error?.response?.data?.detail || "Không thể xóa sản phẩm");
     } finally {
       setBusyAction(false);
     }
@@ -540,7 +540,7 @@ function ProductDetailPage() {
       await updateVariantsOrder(id, variantIds);
       // toast.success("Variant order updated successfully");
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to update variant order");
+      toast.error(error?.response?.data?.detail || "Không thể cập nhật thứ tự biến thể");
       await refreshProduct();
     } finally {
       setIsReordering(false);

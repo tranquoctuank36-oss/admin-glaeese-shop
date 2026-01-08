@@ -19,6 +19,7 @@ import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
 import ConfirmPopover from "@/components/ConfirmPopover";
 import { getTagCounts, getTags, softDeleteTag } from "@/services/tagService";
 import toast from "react-hot-toast";
+import { Tag } from "@/types/tag";
 
 function fmt(iso?: string) {
   if (!iso) return "-";
@@ -118,11 +119,12 @@ export default function TagsPage() {
       await softDeleteTag(id);
       setRows((prev) => prev.filter((r) => r.id !== id));
       setTrashCount((prev) => prev + 1);
+      toast.success("Đã xóa nhãn thành công");
     } catch (e: any) {
       console.error("Soft delete failed:", e);
       const detail =
           e?.response?.data?.detail ||
-          e?.detail || "Failed to remove tag";
+          e?.detail || "Không thể xóa nhãn";
         toast.error(detail);
     } finally {
       setDeletingId(null);

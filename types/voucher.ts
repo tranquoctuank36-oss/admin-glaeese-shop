@@ -16,6 +16,62 @@ export interface Voucher {
   canceledAt: string;
 }
 
+export interface VoucherByStatus {
+  status: string;
+  count: number;
+}
+
+export interface VoucherByType {
+  type: string;
+  count: number;
+}
+
+export interface VoucherUsageStats {
+  totalUsed: number;
+  totalRemaining: number;
+  usageRate: number;
+}
+
+export interface TopUsedVoucher {
+  id: string;
+  code: string;
+  description: string;
+  type: string;
+  usedCount: number;
+  maxUsage: number;
+  usageRate: number;
+}
+
+export interface ExpiringVoucher {
+  id: string;
+  code: string;
+  description: string;
+  type: string;
+  validTo: string;
+  daysRemaining: number;
+}
+
+export interface VoucherStatistics {
+  totalVouchers: number;
+  activeVouchers: number;
+  byStatus: VoucherByStatus[];
+  byType: VoucherByType[];
+  usageStats: VoucherUsageStats;
+  topUsedVouchers: TopUsedVoucher[];
+  expiringVouchers: ExpiringVoucher[];
+  deletedVouchers: number;
+}
+
+export interface VoucherStatisticsResponse {
+  success: boolean;
+  message: string;
+  data: VoucherStatistics;
+  meta: {
+    requestId: string;
+    timestamptz: string;
+  };
+}
+
 export interface VoucherFilters {
   search?: string;
   page?: number;

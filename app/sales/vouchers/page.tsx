@@ -32,6 +32,7 @@ import {
   getVouchers,
   deleteVoucher,
   cancelVoucher,
+  getVoucherStatistics,
 } from "@/services/voucherService";
 import type { Voucher } from "@/types/voucher";
 import TablePagination from "@/components/TablePagination";
@@ -163,6 +164,7 @@ function VouchersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [trashCount, setTrashCount] = useState<number>(0);
+  const [stats, setStats] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -171,6 +173,17 @@ function VouchersPage() {
         setTrashCount(res.meta?.totalItems ?? 0);
       } catch (err) {
         console.error("Failed to count trash vouchers:", err);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const statsData = await getVoucherStatistics();
+        setStats(statsData.data ?? statsData);
+      } catch (err) {
+        console.error("Failed to fetch voucher statistics:", err);
       }
     })();
   }, []);
@@ -206,7 +219,7 @@ function VouchersPage() {
       setVouchers(response.data);
       setTotalPages(response.meta.totalPages);
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to load vouchers");
+      toast.error(error?.response?.data?.detail || "Không thể tải danh sách mã giảm giá");
     } finally {
       setLoading(false);
     }
@@ -215,21 +228,21 @@ function VouchersPage() {
   const handleDelete = async (id: string) => {
     try {
       await deleteVoucher(id);
-      toast.success("Voucher deleted successfully");
+      toast.success("Đã chuyển mã giảm giá vào thùng rác thành công!");
       fetchVouchers();
       setTrashCount((prev) => prev + 1);
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to delete voucher");
+      toast.error(error?.response?.data?.detail || "Không thể xóa mã giảm giá");
     }
   };
 
   const handleCancel = async (id: string) => {
     try {
       await cancelVoucher(id);
-      toast.success("Voucher cancelled successfully");
+      toast.success("Mã giảm giá đã được hủy thành công");
       fetchVouchers();
     } catch (error: any) {
-      toast.error(error?.response?.data?.detail || "Failed to cancel voucher");
+      toast.error(error?.response?.data?.detail || "Không thể hủy mã giảm giá");
     }
   };
 
@@ -353,21 +366,11 @@ function VouchersPage() {
           transition={{ duration: 0.4 }}
         >
           {/* Header */}
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button
-                size="icon-lg"
-                className="hover:bg-gray-300 rounded-full bg-gray-200"
-                onClick={() => router.push(Routes.sales.root)}
-                title="Quay lại"
-              >
-                <ArrowLeft className="text-gray-700 size-7" />
-              </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách mã giảm giá{" "}
-                  {totalPages > 0 &&
-                    `(${(currentPage - 1) * itemsPerPage + vouchers.length})`}
+                  Danh sách mã giảm giá
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
                   Tạo và quản lý mã giảm giá và chiến dịch khuyến mại
@@ -398,6 +401,284 @@ function VouchersPage() {
               </Button>
             </div>
           </div>
+
+          {/* Statistics Cards */}
+          {stats && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+            >
+              {/* Total Vouchers */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Tổng voucher</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">
+                      {stats.totalVouchers ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-blue-100 rounded-lg">
+                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Active Vouchers */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đang hoạt động</p>
+                    <p className="text-2xl font-bold text-green-600 mt-1">
+                      {stats.activeVouchers ?? 0}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-green-100 rounded-lg">
+                    <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Usage Stats */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đã sử dụng</p>
+                    <p className="text-2xl font-bold text-purple-600 mt-1">
+                      {stats.usageStats?.totalUsed ?? 0}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Tỷ lệ: {stats.usageStats?.usageRate?.toFixed(1) ?? 0}%
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-100 rounded-lg">
+                    <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Expiring Soon */}
+              {/* <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Sắp hết hạn</p>
+                    <p className="text-2xl font-bold text-orange-600 mt-1">
+                      {stats.expiringVouchers?.length ?? 0}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Trong 7 ngày tới
+                    </p>
+                  </div>
+                  <div className="p-3 bg-orange-100 rounded-lg">
+                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div> */}
+
+              {/* Remaining Vouchers */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Còn lại</p>
+                    <p className="text-2xl font-bold text-teal-600 mt-1">
+                      {stats.usageStats?.totalRemaining ?? 0}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Chưa sử dụng
+                    </p>
+                  </div>
+                  <div className="p-3 bg-teal-100 rounded-lg">
+                    <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* Deleted Vouchers */}
+              <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Đã xóa</p>
+                    <p className="text-2xl font-bold text-red-600 mt-1">
+                      {stats.deletedVouchers ?? 0}
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Trong thùng rác
+                    </p>
+                  </div>
+                  <div className="p-3 bg-red-100 rounded-lg">
+                    <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              {/* By Status */}
+              {stats.byStatus?.map((item: any, idx: number) => {
+                const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
+                  upcoming: { label: "Sắp diễn ra", color: "text-blue-600", bgColor: "bg-blue-100" },
+                  happening: { label: "Đang diễn ra", color: "text-green-600", bgColor: "bg-green-100" },
+                  expired: { label: "Hết hạn", color: "text-gray-600", bgColor: "bg-gray-100" },
+                  canceled: { label: "Đã hủy", color: "text-red-600", bgColor: "bg-red-100" },
+                };
+                const config = statusConfig[item.status] || { label: item.status, color: "text-gray-600", bgColor: "bg-gray-100" };
+                
+                return (
+                  <div key={idx} className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">{config.label}</p>
+                        <p className={`text-2xl font-bold mt-1 ${config.color}`}>
+                          {item.count ?? 0}
+                        </p>
+                      </div>
+                      <div className={`p-3 ${config.bgColor} rounded-lg`}>
+                        <svg className={`w-6 h-6 ${config.color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* By Type */}
+              {stats.byType?.map((item: any, idx: number) => {
+                const typeConfig: Record<string, { label: string; color: string; bgColor: string }> = {
+                  fixed: { label: "Giảm cố định", color: "text-blue-600", bgColor: "bg-blue-100" },
+                  percentage: { label: "Giảm %", color: "text-purple-600", bgColor: "bg-purple-100" },
+                  free_shipping: { label: "Miễn phí ship", color: "text-green-600", bgColor: "bg-green-100" },
+                };
+                const config = typeConfig[item.type] || { label: item.type, color: "text-gray-600", bgColor: "bg-gray-100" };
+                
+                return (
+                  <div key={idx} className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">{config.label}</p>
+                        <p className={`text-2xl font-bold mt-1 ${config.color}`}>
+                          {item.count ?? 0}
+                        </p>
+                      </div>
+                      <div className={`p-3 ${config.bgColor} rounded-lg`}>
+                        <svg className={`w-6 h-6 ${config.color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+
+          {/* Top Used Vouchers & Expiring Vouchers */}
+          {stats && (stats.topUsedVouchers?.length > 0 || stats.expiringVouchers?.length > 0) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"
+            >
+              {/* Top Used Vouchers */}
+              {stats.topUsedVouchers?.length > 0 && (
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Top voucher được sử dụng nhiều nhất
+                  </h3>
+                  <div className="space-y-3">
+                    {stats.topUsedVouchers.slice(0, 3).map((voucher: any, idx: number) => (
+                      <div key={voucher.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center gap-3 flex-1">
+                          <div className="flex items-center justify-center w-8 h-8 bg-purple-100 text-purple-600 rounded-full font-bold text-sm">
+                            {idx + 1}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 truncate">{voucher.code}</p>
+                            <p className="text-xs text-gray-500 truncate">{voucher.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-sm font-semibold text-gray-900">
+                              {voucher.usedCount}/{voucher.maxUsage}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {voucher.usageRate?.toFixed(1)}%
+                            </p>
+                          </div>
+                          {voucher.type === 'fixed' && (
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">Cố định</span>
+                          )}
+                          {voucher.type === 'percentage' && (
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-md">%</span>
+                          )}
+                          {voucher.type === 'free_shipping' && (
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md">Ship</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Expiring Vouchers Details */}
+              {stats.expiringVouchers?.length > 0 && (
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    Voucher sắp hết hạn
+                  </h3>
+                  <div className="space-y-3">
+                    {stats.expiringVouchers.slice(0, 3).map((voucher: any) => (
+                      <div key={voucher.id} className="flex items-center justify-between p-3 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-900 truncate">{voucher.code}</p>
+                          <p className="text-xs text-gray-500 truncate">{voucher.description}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="text-right">
+                            <p className="text-sm font-semibold text-orange-600">
+                              {voucher.daysRemaining} ngày
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {formatDate(voucher.validTo)}
+                            </p>
+                          </div>
+                          {voucher.type === 'fixed' && (
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">Cố định</span>
+                          )}
+                          {voucher.type === 'percentage' && (
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-md">%</span>
+                          )}
+                          {voucher.type === 'free_shipping' && (
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md">Ship</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
 
           {/* Search and Filter Bar */}
           <motion.div
@@ -770,14 +1051,14 @@ function VouchersPage() {
                               title="Hủy mã giảm giá"
                               message={
                                 <div>
-                                  Are you sure you want to cancel{" "}
+                                  Bạn có chắc muốn hủy mã giảm giá{" "}
                                   <strong>
-                                    {voucher.code || "this voucher"}
+                                    {voucher.code || "này"}
                                   </strong>
                                   ?
                                 </div>
                               }
-                              confirmText="Cancel Voucher"
+                              confirmText="Hủy mã giảm giá"
                               onConfirm={() => handleCancel(voucher.id)}
                             >
                               <Button
@@ -795,14 +1076,14 @@ function VouchersPage() {
                               title="Xóa mã giảm giá"
                               message={
                                 <div>
-                                  Are you sure you want to delete{" "}
+                                  Bạn có chắc muốn xóa mã giảm giá{" "}
                                   <strong>
-                                    {voucher.code || "this voucher"}
+                                    {voucher.code || "này"}
                                   </strong>
                                   ?
                                 </div>
                               }
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={() => handleDelete(voucher.id)}
                             >
                               <Button

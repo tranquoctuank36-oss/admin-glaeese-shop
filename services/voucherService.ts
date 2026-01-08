@@ -1,4 +1,4 @@
-import type { VoucherFilters, PaginatedVouchersResponse, Voucher } from "@/types/voucher";
+import type { VoucherFilters, PaginatedVouchersResponse, Voucher, VoucherStatisticsResponse } from "@/types/voucher";
 import { api } from "./api";
 
 export async function getVouchers(
@@ -83,4 +83,16 @@ export async function restoreVoucher(id: string): Promise<Voucher> {
 
 export async function forceDeleteVoucher(id: string): Promise<void> {
   await api.delete(`/admin/vouchers/${id}/force`);
+}
+
+export async function getVoucherStatistics(): Promise<VoucherStatisticsResponse> {
+  try {
+    const response = await api.get<VoucherStatisticsResponse>(
+      "/admin/vouchers/stats"
+    );
+    return response.data;
+  } catch (err) {
+    console.error("Failed to fetch voucher statistics:", err);
+    throw err;
+  }
 }

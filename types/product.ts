@@ -1,8 +1,8 @@
 
 export type UUID = string;
 
-export type Gender = "Male" | "Female" | "Unisex" | "Kid";
-export type ProductType = "Frame" | "Sunglasses";
+export type Gender = "male" | "female" | "unisex" | "kid";  // lowercase để match API
+export type ProductType = "frame" | "sunglasses";  // lowercase để match API
 
 export interface IdNameSlug {
   id: UUID;

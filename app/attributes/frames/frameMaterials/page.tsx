@@ -23,8 +23,8 @@ import {
   getFrameMaterials,
   softDeleteFrameMaterial,
 } from "@/services/frameService/frameMaterialService";
-import { getTrashFrameCounts } from "@/services/frameService/frameCommon";
 import toast from "react-hot-toast";
+import { useFrameCounts } from "@/context/FrameCountsContext";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -38,6 +38,7 @@ function formatDate(iso?: string) {
 
 export default function FrameMaterialsPage() {
   const router = useRouter();
+  const { refreshCounts } = useFrameCounts();
 
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
@@ -78,20 +79,6 @@ export default function FrameMaterialsPage() {
   const keyOf = (id: string, action: "delete") => `${id}|${action}`;
   const isOpen = (id: string) => openKey === keyOf(id, "delete");
 
-  const [trashCount, setTrashCount] = useState<number>(0);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getTrashFrameCounts();
-        setTrashCount(res.frameMaterials ?? 0);
-        console.log("Trash count:", res.frameMaterials ?? 0);
-      } catch (err) {
-        console.error("Failed to count trash frame materials:", err);
-      }
-    })();
-  }, []);
-
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -126,12 +113,13 @@ export default function FrameMaterialsPage() {
       setDeletingId(id);
       await softDeleteFrameMaterial(id);
       setRows((prev) => prev.filter((r) => r.id !== id));
-      setTrashCount((prev) => prev + 1);
+      toast.success("Đã xóa chất liệu gọng thành công");
+      refreshCounts(true); // Force refresh counts
     } catch (e: any) {
       console.error("Soft delete failed:", e);
       const detail =
           e?.response?.data?.detail ||
-          e?.detail || "Failed to remove frame material";
+          e?.detail || "Không thể xóa chất liệu gọng";
         toast.error(detail);
     } finally {
       setDeletingId(null);

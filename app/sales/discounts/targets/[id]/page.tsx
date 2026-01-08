@@ -168,7 +168,7 @@ function DiscountTargetsPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Sản phẩm áp dụng giảm giá
+                  Sản phẩm áp dụng cho chương trình giảm giá
                 </h1>
                 {discount && (
                   <p className="text-gray-600 mt-1">

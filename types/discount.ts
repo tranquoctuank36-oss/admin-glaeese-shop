@@ -53,3 +53,28 @@ export interface PaginatedDiscountsResponse {
   hasNext?: boolean;
   hasPrev?: boolean;
 }
+
+export interface DiscountStatistics {
+  totalDiscounts: number;
+  activeDiscounts: number;
+  byStatus: Array<{
+    status: string;
+    count: number;
+  }>;
+  byType: Array<{
+    type: string;
+    count: number;
+  }>;
+  totalVariantsWithDiscount: number;
+  deletedDiscounts: number;
+}
+
+export interface DiscountStatisticsResponse {
+  success: boolean;
+  message: string;
+  data: DiscountStatistics;
+  meta: {
+    requestId: string;
+    timestamptz: string;
+  };
+}

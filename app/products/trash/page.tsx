@@ -177,9 +177,9 @@ function ProductsTrashPage() {
       });
       setHasNext(!!res.hasNext);
       setHasPrev(!!res.hasPrev);
-      console.log(`Product "${name}" restored successfully`);
+      toast.success(`Sản phẩm "${name}" đã được khôi phục thành công`);
     } catch (error: any) {
-      console.error("Failed to restore product:", error);
+      console.error("Không thể khôi phục sản phẩm:", error);
       const detail = error?.response?.data?.detail || error?.detail;
       toast.error(detail);
     }
@@ -197,9 +197,9 @@ function ProductsTrashPage() {
       });
       setHasNext(!!res.hasNext);
       setHasPrev(!!res.hasPrev);
-      console.log(`Product "${name}" permanently deleted`);
+      toast.success(`Sản phẩm "${name}" đã bị xóa vĩnh viễn`);
     } catch (error: any) {
-      console.error("Failed to permanently delete product:", error);
+      console.error("Không thể xóa vĩnh viễn sản phẩm:", error);
       const detail = error?.response?.data?.detail || error?.detail;
       toast.error(detail);
     }
@@ -217,9 +217,9 @@ function ProductsTrashPage() {
       });
       setHasNext(!!res.hasNext);
       setHasPrev(!!res.hasPrev);
-      console.log(`${selectedProducts.length} products restored successfully`);
+      toast.success(`${selectedProducts.length} sản phẩm đã được khôi phục thành công`);
     } catch (error: any) {
-      console.error("Failed to restore products:", error);
+      console.error("Không thể khôi phục sản phẩm:", error);
       const detail = error?.response?.data?.detail || error?.detail;
       toast.error(detail);
     }
@@ -237,7 +237,7 @@ function ProductsTrashPage() {
       });
       setHasNext(!!res.hasNext);
       setHasPrev(!!res.hasPrev);
-      console.log(`${selectedProducts.length} products permanently deleted`);
+      toast.success(`Đã xóa vĩnh viễn ${selectedProducts.length} sản phẩm`);
     } catch (error) {
       console.error("Failed to permanently delete products:", error);
     }

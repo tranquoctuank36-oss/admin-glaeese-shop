@@ -111,7 +111,7 @@ export const sidebarItems: SidebarItem[] = [
   { name: "Kho hàng", href: Routes.stocks.root, icon: "Warehouse" },
   { 
     name: "Đơn hàng", 
-    href: Routes.orders.root, 
+    href: "", // No direct page, only dropdown
     icon: "ShoppingCart",
     subItems: [
       {
@@ -143,7 +143,7 @@ export const sidebarItems: SidebarItem[] = [
     icon: "DollarSign",
     subItems: [
       {
-        name: "Giảm giá",
+        name: "Chương trình giảm giá",
         href: Routes.sales.discounts.root,
         icon: "Percent",
       },

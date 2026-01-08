@@ -278,7 +278,7 @@ function DiscountsTrashPage() {
     try {
       setBusyId(id);
       await restoreDiscount(id);
-      toast.success("Đã khôi phục giảm giá thành công");
+      toast.success("Đã khôi phục chương trình giảm giá thành công");
       const next = discounts.filter((d) => d.id !== id);
       setDiscounts(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
@@ -299,10 +299,10 @@ function DiscountsTrashPage() {
     try {
       setBusyId(id);
       await forceDeleteDiscount(id);
-      toast.success("Đã xóa vĩnh viễn giảm giá");
       const next = discounts.filter((d) => d.id !== id);
       setDiscounts(next);
       if (next.length === 0 && hasPrev) backIfEmpty();
+      toast.success("Đã xóa vĩnh viễn chương trình giảm giá thành công");
     } catch (error: any) {
       console.error("Permanent delete failed:", error);
       const detail =

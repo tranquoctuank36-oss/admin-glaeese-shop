@@ -136,3 +136,17 @@ export async function getOrderStatistics(
   const response = await api.get("/admin/orders/statistics", { params });
   return response.data;
 }
+
+export interface SyncGHNStatusResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    synced: number;
+    failed: number;
+  };
+}
+
+export async function syncGHNOrderStatus(): Promise<SyncGHNStatusResponse> {
+  const response = await api.post("/admin/shipping/sync-ghn-status");
+  return response.data;
+}

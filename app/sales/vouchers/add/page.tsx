@@ -39,7 +39,7 @@ export default function AddVoucherPage() {
 
   const onSubmit = async (values: VoucherFormValues) => {
     await createVoucher(values as any);
-    toast.success("Voucher created successfully!");
+    toast.success("Đã tạo mã giảm giá thành công!");
     router.push(Routes.sales.vouchers.root);
   };
 
