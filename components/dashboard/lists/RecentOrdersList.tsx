@@ -87,7 +87,7 @@ export default function RecentOrdersList({
                     <span>•</span>
                     <span>{order.itemCount} sản phẩm</span>
                     <span>•</span>
-                    <span>{order.paymentMethod === "cod" ? "COD" : "VNPAY"}</span>
+                    <span>{order.paymentMethod === "COD" ? "COD" : "VNPAY"}</span>
                   </div>
                 </div>
                 <div className="text-right ml-4">

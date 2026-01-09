@@ -48,9 +48,16 @@ export default function PaymentMethodsBar({
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
           <YAxis
+            yAxisId="left"
             tick={{ fontSize: 12 }}
-            stroke="#9CA3AF"
+            stroke={CHART_COLORS.primary}
             tickFormatter={(value) => formatCurrency(value).replace(/\s?₫/, "")}
+          />
+          <YAxis
+            yAxisId="right"
+            orientation="right"
+            tick={{ fontSize: 12 }}
+            stroke={CHART_COLORS.success}
           />
           <Tooltip
             formatter={(value: number, name: string) => {
@@ -70,8 +77,8 @@ export default function PaymentMethodsBar({
             }}
           />
           <Legend />
-          <Bar dataKey="revenue" fill={CHART_COLORS.primary} name="Doanh thu" radius={[8, 8, 0, 0]} />
-          <Bar dataKey="orders" fill={CHART_COLORS.success} name="Số đơn" radius={[8, 8, 0, 0]} />
+          <Bar yAxisId="left" dataKey="revenue" fill={CHART_COLORS.primary} name="Doanh thu" radius={[8, 8, 0, 0]} />
+          <Bar yAxisId="right" dataKey="orders" fill={CHART_COLORS.success} name="Số đơn" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
