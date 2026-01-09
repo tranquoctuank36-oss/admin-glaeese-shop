@@ -1058,7 +1058,7 @@ function VouchersPage() {
                                   ?
                                 </div>
                               }
-                              confirmText="Hủy mã giảm giá"
+                              confirmText="Hủy"
                               onConfirm={() => handleCancel(voucher.id)}
                             >
                               <Button

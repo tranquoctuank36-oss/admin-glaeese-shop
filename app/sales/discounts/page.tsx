@@ -931,7 +931,7 @@ function DiscountsPage() {
                                   ?
                                 </div>
                               }
-                              confirmText="Xóa chương trình giảm giá"
+                              confirmText="Xóa  "
                               onConfirm={() => handleDelete(discount.id)}
                             >
                               <Button

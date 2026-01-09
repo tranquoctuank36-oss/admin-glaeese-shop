@@ -38,7 +38,7 @@ export default function BannersPage() {
   const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
     limit: 20,
     sortField: "sortOrder" as "title" | "createdAt" | "sortOrder",
-    sortOrder: "DESC",
+    sortOrder: "ASC",
   });
 
   const toggleTitleSort = () => {

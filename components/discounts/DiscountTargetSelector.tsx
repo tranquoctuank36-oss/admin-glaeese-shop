@@ -382,9 +382,9 @@ export default function DiscountTargetSelector({
           <div className="flex items-center justify-end gap-2 border-t pt-4">
             <Button
               type="button"
-              variant="ghost"
               onClick={() => setOpen(false)}
               disabled={saving}
+              className="w-20 bg-gray-500 hover:bg-gray-700 text-white hover:text-white"
             >
               Hủy
             </Button>
@@ -392,7 +392,7 @@ export default function DiscountTargetSelector({
               type="button"
               onClick={handleSubmit}
               disabled={selectedVariants.size === 0 || saving}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="w-20 bg-blue-600 hover:bg-blue-700 text-white"
             >
               {saving ? <Loader2 className="size-4 animate-spin" /> : "Thêm"}
             </Button>

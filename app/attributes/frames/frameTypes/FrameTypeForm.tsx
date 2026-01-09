@@ -114,7 +114,7 @@ export default function FrameTypeForm({
       <div className="flex justify-end gap-2 pt-2">
         <Button
           type="button"
-          className="h-10 bg-gray-500 hover:bg-gray-700 text-white"
+          className="h-10 w-25 bg-gray-500 hover:bg-gray-700 text-white"
           onClick={onCancel}
           disabled={loading}
         >
@@ -122,7 +122,7 @@ export default function FrameTypeForm({
         </Button>
         <Button
           type="submit"
-          className="h-10 bg-blue-600 hover:bg-blue-700 text-white"
+          className="h-10 w-25 bg-blue-600 hover:bg-blue-700 text-white"
         >
           {loading ? <Loader2 className="size-5 animate-spin" /> : submitLabel}
         </Button>

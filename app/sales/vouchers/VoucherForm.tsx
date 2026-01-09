@@ -376,7 +376,7 @@ export default function VoucherForm({
       <div className="flex justify-end gap-2 pt-2">
         <Button
           type="button"
-          className="h-10 w-20 bg-gray-500 hover:bg-gray-700 text-white"
+          className="h-10 w-25 bg-gray-500 hover:bg-gray-700 text-white"
           onClick={onCancel}
           disabled={loading}
         >
@@ -384,7 +384,7 @@ export default function VoucherForm({
         </Button>
         <Button
           type="submit"
-          className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
+          className="h-10 w-25 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
           disabled={loading || !canSubmit}
           title={!canSubmit ? "Vui lòng kiểm tra dữ liệu nhập" : submitLabel}
         >
