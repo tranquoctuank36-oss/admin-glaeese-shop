@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 import type { ProductVariant } from "@/types/product";
 import { getColors } from "@/services/colorService";
 import ProductImageSelector from "./ProductImageSelector";

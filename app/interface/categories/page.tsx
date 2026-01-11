@@ -15,10 +15,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
-import TablePagination from "@/components/TablePagination";
-import { useListQuery } from "@/components/data/useListQuery";
-import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import TablePagination from "@/components/shared/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { deleteCategory, getCategoriesFlat } from "@/services/categoryService";
 import { toast } from "react-hot-toast";
 

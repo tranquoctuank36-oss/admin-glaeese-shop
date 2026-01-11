@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import toast from "react-hot-toast";
-import FloatingInput from "./FloatingInput";
+import FloatingInput from "../shared/FloatingInput";
 import ForgotPasswordDialog from "./ForgotPasswordDialog";
 
 type ApiError = { response?: { status?: number } };

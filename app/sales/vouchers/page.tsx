@@ -35,9 +35,9 @@ import {
   getVoucherStatistics,
 } from "@/services/voucherService";
 import type { Voucher } from "@/types/voucher";
-import TablePagination from "@/components/TablePagination";
+import TablePagination from "@/components/shared/TablePagination";
 import { toast } from "react-hot-toast";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { Routes } from "@/lib/routes";
 
 // Custom Select Component

@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { Search, Shield, X, Pencil, Filter, Eye, Edit, ChevronDown, ShoppingCart, Clock, Package, Truck, CheckCircle, XCircle } from "lucide-react";
 import { getOrders, updateOrder, getOrderStatistics, OrderStatistics } from "@/services/orderService";
 import { Order } from "@/types/order";
-import { useListQuery } from "@/components/data/useListQuery";
-import TablePagination from "@/components/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import TablePagination from "@/components/shared/TablePagination";
 import { Button } from "@/components/ui/button";
 import { Routes } from "@/lib/routes";
 import toast from "react-hot-toast";
@@ -546,11 +546,11 @@ export default function AllOrdersPage() {
                     page: 1,
                   }));
                 }}
-                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer rounded-lg transition-colors"
               >
                 Đặt lại
               </button>
-            </div>
+            </div>  
           </motion.div>
         )}
       </motion.div>
@@ -641,17 +641,17 @@ export default function AllOrdersPage() {
                     </td>
 
                     <td className="px-4 py-3">
-                      <div className="min-w-[200px]">
-                        <div className="font-medium text-gray-900">
+                      <div className="max-w-[200px]">
+                        <div className="font-medium text-gray-900 truncate">
                           {order.recipientName}
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 truncate">
                           {order.recipientPhone} · {order.provinceName}
                         </div>
                         {order.customerNote && (
-                          <div className="mt-1 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-md flex items-center gap-1">
-                            <Pencil className="w-3 h-3" />
-                            <span>Khách: {order.customerNote}</span>
+                          <div className="mt-1 text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-md flex items-center gap-1 whitespace-nowrap overflow-hidden">
+                            <Pencil className="w-3 h-3 flex-shrink-0" />
+                            <span className="truncate">Khách: {order.customerNote}</span>
                           </div>
                         )}
                       </div>

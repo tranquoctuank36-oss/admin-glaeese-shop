@@ -74,48 +74,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setLoading(false);
           return;
         }
-
-        // if (storedRefresh) {
-        //   try {
-        //     const res = await apiGetRefreshToken();
-        //     const newAccess =
-        //       (res as any)?.accessToken ?? (res as any)?.data?.accessToken;
-        //     const newRefresh =
-        //       (res as any)?.refreshToken ?? (res as any)?.data?.refreshToken;
-
-        //     if (newAccess) {
-        //       localStorage.setItem(STORAGE.access, newAccess);
-        //       Cookies.set(STORAGE.access, newAccess, {
-        //         sameSite: "Lax",
-        //         secure: process.env.NODE_ENV === "production",
-        //       });
-        //       api.defaults.headers.common.Authorization = `Bearer ${newAccess}`;
-        //     }
-        //     if (newRefresh) {
-        //       localStorage.setItem(STORAGE.refresh, newRefresh);
-        //       Cookies.set(STORAGE.refresh, newRefresh, {
-        //         sameSite: "Lax",
-        //         secure: process.env.NODE_ENV === "production",
-        //       });
-        //     }
-
-        //     if (storedUser) {
-        //       try {
-        //         setUser(JSON.parse(storedUser));
-        //       } catch {
-        //         setUser(null);
-        //       }
-        //     }
-        //   } catch {
-        //     clearAuthClient();
-        //     setUser(null);
-        //   } finally {
-        //     setLoading(false);
-        //   }
-        //   return;
-        // }
-
-        // clearAuthClient();
         setUser(null);
         setLoading(false);
       } catch {
@@ -166,34 +124,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(loginUser);
     }
 
-    // try {   
-    //   const refreshRes = await apiGetRefreshToken();
-    //   const newAccess =
-    //     (refreshRes as any)?.accessToken ??
-    //     (refreshRes as any)?.data?.accessToken;
-    //   const refreshToken =
-    //     (refreshRes as any)?.refreshToken ??
-    //     (refreshRes as any)?.data?.refreshToken;
-
-    //   if (newAccess) {
-    //     localStorage.setItem(STORAGE.access, newAccess);
-    //     Cookies.set(STORAGE.access, newAccess, {
-    //       sameSite: "Lax",
-    //       secure: process.env.NODE_ENV === "production",
-    //     });
-    //     api.defaults.headers.common.Authorization = `Bearer ${newAccess}`;
-    //   }
-
-    //   if (refreshToken) {
-    //     localStorage.setItem(STORAGE.refresh, refreshToken);
-    //     Cookies.set(STORAGE.refresh, refreshToken, {
-    //       sameSite: "Lax",
-    //       secure: process.env.NODE_ENV === "production",
-    //     });
-    //   }
-    // } catch (e) {
-    //   console.error("Failed to obtain refresh token right after login:", e);
-    // }
   };
 
   const login = async (email: string, password: string): Promise<User> => {

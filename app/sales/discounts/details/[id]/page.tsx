@@ -30,7 +30,7 @@ import {
 } from "@/services/discountService";
 import type { Discount } from "@/types/discount";
 import toast from "react-hot-toast";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import DiscountTargetSelector from "@/components/discounts/DiscountTargetSelector";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";

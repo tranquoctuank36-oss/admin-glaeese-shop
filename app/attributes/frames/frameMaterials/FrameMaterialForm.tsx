@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 

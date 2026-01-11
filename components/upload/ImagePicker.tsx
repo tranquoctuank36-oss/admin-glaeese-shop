@@ -16,11 +16,11 @@ export type BannerUploaderProps = {
   required?: boolean;
   error?: boolean | string;
   helperText?: string;
-  ownerImageType?: "product_variant" | "brand" | "discount";
+  ownerImageType?: "product_variant" | "brand" | "discount" | "banner" | "review" | "order_return";
 };
 
-export default function BrandImageUploader({
-  label = "Hình ảnh Banner",
+export default function ImagePicker({
+  label = "Hình ảnh",
   value,
   onChange,
   disabled,
@@ -28,7 +28,7 @@ export default function BrandImageUploader({
   required,
   error,
   helperText,
-  ownerImageType = "brand",
+  ownerImageType = "product_variant",
 }: BannerUploaderProps) {
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState<ImageItem[]>([]);
@@ -73,11 +73,6 @@ export default function BrandImageUploader({
       setLoading(false);
     }
   };
-
-  // const handleSearchChange = (value: string) => {
-  //   setSearch(value);
-  //   setPage(1);
-  // };
 
   const handleSelectImage = (img: ImageItem) => {
     onChange({
@@ -125,7 +120,7 @@ export default function BrandImageUploader({
           >
             <ImagePlus className="size-8 text-gray-500" />
             <span className="mt-2 text-sm text-gray-600">
-              Nhấn để chọn hình ảnh Banner
+              Nhấn để chọn hình ảnh
             </span>
           </button>
         ) : (
@@ -180,21 +175,8 @@ export default function BrandImageUploader({
           style={{ maxWidth: '1200px', width: '98vw', maxHeight: '90vh' }}
         >
           <DialogHeader>
-            <DialogTitle>Chọn hình ảnh Banner</DialogTitle>
+            <DialogTitle>Chọn hình ảnh</DialogTitle>
           </DialogHeader>
-
-          {/* <div className="mb-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search images..."
-                value={search}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div> */}
 
           <div className="flex-1 overflow-y-auto min-h-0">
             {loading && page === 1 ? (

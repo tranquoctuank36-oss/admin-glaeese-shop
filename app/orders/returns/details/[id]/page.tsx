@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 
 export default function ReturnDetailsPage() {
   const router = useRouter();
@@ -45,6 +45,8 @@ export default function ReturnDetailsPage() {
   const [qcResult, setQcResult] = useState<'pass' | 'fail'>('pass');
   const [qcNote, setQcNote] = useState("");
   const [rejectedReason, setRejectedReason] = useState("");
+  const [shouldRefund, setShouldRefund] = useState(true);
+  const [refundAmount, setRefundAmount] = useState("");
   const [lightboxImage, setLightboxImage] = useState<{ url: string; alt: string } | null>(null);
 
   useEffect(() => {
@@ -79,6 +81,19 @@ export default function ReturnDetailsPage() {
         return;
       }
       
+      // Handle completed separately - use completeRefund
+      if (newStatus === "completed") {
+        await completeRefund(returnData.id);
+        toast.success("Đã hoàn tất yêu cầu trả hàng");
+        
+        // Refresh data
+        const data = await getReturnById(id);
+        setReturnData(data);
+        
+        setUpdating(false);
+        return;
+      }
+      
       await updateReturnStatus(
         returnData.id, 
         newStatus,
@@ -109,7 +124,13 @@ export default function ReturnDetailsPage() {
 
     try {
       setUpdating(true);
-      await performQualityCheck(returnData.id, qcResult, qcNote || undefined);
+      await performQualityCheck(
+        returnData.id, 
+        qcResult, 
+        qcNote || undefined,
+        shouldRefund,
+        refundAmount || undefined
+      );
       toast.success(`Đã kiểm tra chất lượng: ${qcResult === 'pass' ? 'Đạt' : 'Không đạt'}`);
       
       // Refresh data
@@ -120,29 +141,11 @@ export default function ReturnDetailsPage() {
       setShowQcDialog(false);
       setQcResult('pass');
       setQcNote("");
+      setShouldRefund(true);
+      setRefundAmount("");
     } catch (error: any) {
       console.error("Failed to perform QC:", error);
       const errorMessage = error.response?.data?.detail || error.detail || "Không thể thực hiện kiểm tra chất lượng";
-      toast.error(errorMessage);
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  const handleCompleteRefund = async () => {
-    if (!returnData) return;
-
-    try {
-      setUpdating(true);
-      await completeRefund(returnData.id);
-      toast.success("Đã hoàn tất yêu cầu trả hàng");
-      
-      // Refresh data
-      const data = await getReturnById(id);
-      setReturnData(data);
-    } catch (error: any) {
-      console.error("Failed to complete refund:", error);
-      const errorMessage = error.response?.data?.detail || error.detail || "Không thể hoàn tất yêu cầu trả hàng";
       toast.error(errorMessage);
     } finally {
       setUpdating(false);
@@ -751,15 +754,15 @@ export default function ReturnDetailsPage() {
                     );
                   }
                   
-                  // For completed, use confirm popover
+                  // For completed action, use confirm popover
                   if (action.value === "completed") {
                     return (
                       <ConfirmPopover
                         key={action.value}
                         title="Xác nhận hoàn tất?"
                         message="Bạn có chắc chắn muốn hoàn tất yêu cầu trả hàng này?"
-                        onConfirm={handleCompleteRefund}
-                        confirmText="Xác nhận"
+                        onConfirm={() => handleStatusUpdate(action.value)}
+                        confirmText={action.label}
                         cancelText="Hủy"
                         confirmLoading={updating}
                         confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
@@ -922,6 +925,65 @@ export default function ReturnDetailsPage() {
                 onChange={(e) => setQcNote(e.target.value)}
               />
             </div>
+
+            {qcResult === 'pass' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hoàn tiền <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShouldRefund(true)}
+                      className={`flex items-center justify-center cursor-pointer gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                        shouldRefund
+                          ? 'border-teal-500 bg-teal-50 text-teal-700'
+                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                      }`}
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Có
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShouldRefund(false)}
+                      className={`flex items-center justify-center cursor-pointer gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                        !shouldRefund
+                          ? 'border-red-500 bg-red-50 text-red-700'
+                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                      }`}
+                    >
+                      <XCircle className="w-5 h-5" />
+                      Không
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Số tiền hoàn lại
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 focus:border-blue-500 outline-none"
+                      placeholder="0"
+                      value={refundAmount ? parseFloat(refundAmount.replace(/,/g, '')).toLocaleString('en-US') : ''}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/,/g, '');
+                        if (value === '' || /^\d+$/.test(value)) {
+                          setRefundAmount(value);
+                        }
+                      }}
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+                      đ
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           <DialogFooter className="flex items-center gap-3">
@@ -930,6 +992,8 @@ export default function ReturnDetailsPage() {
                 setShowQcDialog(false);
                 setQcResult('pass');
                 setQcNote("");
+                setShouldRefund(true);
+                setRefundAmount("");
               }}
               disabled={updating}
               className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg"

@@ -61,7 +61,7 @@ import {
 import type { Product, ProductVariant } from "@/types/product";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import AddVariantDialog from "@/components/products/AddVariantDialog";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { toast } from "react-hot-toast";
 
 function fmt(iso?: string | null) {

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { Button } from "@/components/ui/button";
 import type { Gender, ProductType, ProductVariant } from "@/types/product";
 import { getBrands } from "@/services/brandService";
@@ -16,9 +16,9 @@ import { getColors } from "@/services/colorService";
 import type { ProductImage } from "@/types/product";
 import AddVariantDialog from "@/components/products/AddVariantDialog";
 import type { Brand } from "@/types/product";
-import SearchableFloatingSelect from "@/components/SearchableFloatingSelect";
+import SearchableFloatingSelect from "@/components/products/SearchableFloatingSelect";
 import { Plus, Pencil, Trash2, Edit, X, RotateCcw, Loader2 } from "lucide-react";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { deleteVariant } from "@/services/productService";
 
 export type ProductFormValues = {

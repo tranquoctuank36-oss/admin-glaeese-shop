@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
-import TablePagination from "@/components/TablePagination";
-import { useListQuery } from "@/components/data/useListQuery";
+import TablePagination from "@/components/shared/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
 import {
   getUserOrders,
   type UserOrder,

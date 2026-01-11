@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { Button } from "@/components/ui/button";
 import { Loader2, Pencil, Upload, X, Loader } from "lucide-react";
 import Image from "next/image";

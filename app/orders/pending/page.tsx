@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search, Shield, X, Send, Pencil, Filter, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import CancelOrderDialog from "@/components/orders/CancelOrderDialog";
 import {
   getOrders,
@@ -15,9 +15,9 @@ import {
   bulkConfirmOrders,
 } from "@/services/orderService";
 import { Order } from "@/types/order";
-import { useListQuery } from "@/components/data/useListQuery";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
 import toast from "react-hot-toast";
-import TablePagination from "@/components/TablePagination";
+import TablePagination from "@/components/shared/TablePagination";
 
 // Custom Select Component
 interface CustomSelectProps<T extends string> {

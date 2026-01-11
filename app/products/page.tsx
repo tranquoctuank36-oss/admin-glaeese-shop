@@ -28,13 +28,13 @@ import { getTags } from "@/services/tagService";
 import type { Product } from "@/types/product";
 import type { Brand } from "@/types/brand";
 import type { Tag } from "@/types/tag";
-import TablePagination from "@/components/TablePagination";
+import TablePagination from "@/components/shared/TablePagination";
 import { Button } from "@/components/ui/button";
-import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
-import { useListQuery } from "@/components/data/useListQuery";
+import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
 import { Routes } from "@/lib/routes";
 import { useRouter } from "next/navigation";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { toast } from "react-hot-toast";
 
 function statusBadgeClass(status?: string | null) {

@@ -3,9 +3,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import FloatingInput from "@/components/FloatingInput";
-import BannerUploader from "@/components/images/BrandImageUploader";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { Loader2 } from "lucide-react";
+import ImagePicker from "@/components/upload/ImagePicker";
 
 // Helper functions outside component
 const formatNumber = (value: string): string => {
@@ -290,7 +290,7 @@ export function DiscountForm({
         </div>
       )}
 
-      <BannerUploader
+      <ImagePicker
         label="Hình ảnh Banner"
         value={banner}
         onChange={(v) => setBanner(v)}

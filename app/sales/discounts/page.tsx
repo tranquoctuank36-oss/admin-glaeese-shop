@@ -19,8 +19,8 @@ import {
   Percent,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import TablePagination from "@/components/TablePagination";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import TablePagination from "@/components/shared/TablePagination";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import {
   getDiscounts,
   deleteDiscount,
@@ -429,11 +429,10 @@ function DiscountsPage() {
               transition={{ delay: 0.15 }}
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6"
             >
-              {/* Tổng voucher */}
               <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Tổng voucher</p>
+                    <p className="text-sm font-medium text-gray-600">Tổng chương trình khuyến mãi</p>
                     <p className="text-2xl font-bold text-blue-600 mt-1">
                       {statistics.totalDiscounts}
                     </p>

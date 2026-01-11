@@ -14,10 +14,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
-import TablePagination from "@/components/TablePagination";
-import { useListQuery } from "@/components/data/useListQuery";
-import SearchBar from "@/components/data/SearchBar";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import TablePagination from "@/components/shared/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import SearchBar from "@/components/listing/SearchBar";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { getBanners, deleteBanner } from "@/services/bannerService";
 import toast from "react-hot-toast";
 import Image from "next/image";

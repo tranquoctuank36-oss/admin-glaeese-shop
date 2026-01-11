@@ -97,7 +97,6 @@ export default function SearchableFloatingSelect({
         </label>
       </div>
 
-      {/* Error Message */}
       {showError && (
         <p className="text-xs text-red-500 mt-1">Vui lòng chọn một tùy chọn</p>
       )}

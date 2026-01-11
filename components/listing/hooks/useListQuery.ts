@@ -15,7 +15,7 @@ export type ListQueryState = {
   categoryStatus: "all" | string;
   productStatus?: "all" | string;
   imageStatus?: "all" | "draft" | "used";
-  ownerType?: "all" | "product_variant" | "brand" | "discount";
+  ownerType?: "all" | "product_variant" | "brand" | "discount" | "banner" | "review" | "order_return";
   roles?: string[];
   statuses?: string[];
   startDate?: string;

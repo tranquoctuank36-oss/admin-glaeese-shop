@@ -11,13 +11,10 @@ type Props = {
   showFilters: boolean;
   onToggleFilters: () => void;
 
-  /** Khu vực filter nâng cao (tùy chọn) */
   children?: React.ReactNode;
 
-  /** Khi gõ search nên reset trang về 1 – trang cha truyền vào */
   onSearchSideEffect?: () => void;
 
-  /** Placeholder cho input search (tùy chọn) */
   placeholder?: string;
 };
 

@@ -24,7 +24,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
-import TablePagination from "@/components/TablePagination";
+import TablePagination from "@/components/shared/TablePagination";
 import { Routes } from "@/lib/routes";
 
 dayjs.extend(utc);

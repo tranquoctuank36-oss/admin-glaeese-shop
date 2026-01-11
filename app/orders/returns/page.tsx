@@ -7,8 +7,8 @@ import { Search, Eye, Shield, ChevronDown } from "lucide-react";
 import { getReturns } from "@/services/returnService";
 import { getReturnStatistics } from "@/services/returnService";
 import { Return } from "@/types/return";
-import { useListQuery } from "@/components/data/useListQuery";
-import TablePagination from "@/components/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import TablePagination from "@/components/shared/TablePagination";
 import { Button } from "@/components/ui/button";
 import { Routes } from "@/lib/routes";
 

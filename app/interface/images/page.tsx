@@ -13,13 +13,13 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import TablePagination from "@/components/TablePagination";
-import { useListQuery } from "@/components/data/useListQuery";
+import TablePagination from "@/components/shared/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
 import { Routes } from "@/lib/routes";
 import { getImages, bulkDeleteImages } from "@/services/imagesService";
 import { ImageItem } from "@/types/image";
-import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import toast from "react-hot-toast";
 
 function formatDate(iso?: string) {

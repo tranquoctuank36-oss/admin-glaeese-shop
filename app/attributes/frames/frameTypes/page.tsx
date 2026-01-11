@@ -16,14 +16,14 @@ import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
 import { toast } from "react-hot-toast";
 
-import TablePagination from "@/components/TablePagination";
-import { useListQuery } from "@/components/data/useListQuery";
-import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
+import TablePagination from "@/components/shared/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
 import {
   getFrameTypes,
   softDeleteFrameType,
 } from "@/services/frameService/frameTypeService";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { useFrameCounts } from "@/context/FrameCountsContext";
 
 function formatDate(iso?: string) {

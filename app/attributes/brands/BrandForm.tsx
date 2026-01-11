@@ -3,9 +3,9 @@
 import React, { useMemo, useState } from "react";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import FloatingInput from "@/components/FloatingInput";
-import BannerUploader from "@/components/images/BrandImageUploader";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { toast } from "react-hot-toast";
+import ImagePicker from "@/components/upload/ImagePicker";
 
 export function slugify(input: string) {
   return input
@@ -222,7 +222,7 @@ export default function BrandForm({
         disabled={loading}
       />
 
-      <BannerUploader
+      <ImagePicker
         label="Hình ảnh banner"
         value={banner}
         onChange={(v) => setBanner(v)}

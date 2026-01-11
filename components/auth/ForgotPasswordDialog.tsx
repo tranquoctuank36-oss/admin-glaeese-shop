@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { forgotPassword } from "@/services/authService";
-import FloatingInput from "./FloatingInput";
+import FloatingInput from "../shared/FloatingInput";
 
 function isAxiosLikeError(
   err: unknown

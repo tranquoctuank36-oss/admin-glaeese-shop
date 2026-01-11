@@ -2,14 +2,13 @@
 
 import { Bell, LogOut } from "lucide-react";
 import Image from "next/image";
-import admin from "../public/avatar_user.png";
 import { useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import LoginDialog from "./LoginDialog";
 import { Button } from "@/components/ui/button";
 import * as Popover from "@radix-ui/react-popover";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import LoginDialog from "../auth/LoginDialog";
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -53,10 +52,6 @@ export default function Header() {
         </h1>
 
         <div className="flex items-center space-x-3 sm:space-x-6">
-          {/* <Bell
-            className="w-5 sm:w-6 h-5 sm:h-6 text-gray-600 cursor-pointer hover:fill-gray-800 hover:text-gray-800 transition-all duration-200"
-            fill="none"
-          /> */}
 
           {user ? (
             <Popover.Root open={open} onOpenChange={setOpen}>
@@ -67,13 +62,12 @@ export default function Header() {
                   aria-label="Account menu"
                 >
                   <Image
-                    src={admin}
+                    src={"/avatar_user.png"}
                     alt="admin"
                     width={35}
                     height={35}
                     className="rounded-full border border-gray-600 bg-gray-300 group-hover:brightness-110 transition"
                   />
-                  {/* ✅ Hiển thị “Hi, <firstName|You>” */}
                   <span className="hidden sm:block text-gray-800 font-bold transition">
                     Chào,&nbsp;{greetingName}
                   </span>
@@ -89,7 +83,7 @@ export default function Header() {
                 >
                   <div className="flex items-center gap-3">
                     <Image
-                      src={admin}
+                      src={"/avatar_user.png"}
                       alt="avatar"
                       width={40}
                       height={40}
@@ -97,7 +91,6 @@ export default function Header() {
                     />
                     <div className="min-w-0">
                       <p className="font-semibold truncate">Chào, {greetingName}</p>
-                      {/* Nếu cần email phụ trợ, giữ nguyên; không bắt buộc */}
                       {(user as any)?.email && (
                         <p className="text-xs text-gray-500 truncate">
                           {(user as any).email}
@@ -129,7 +122,7 @@ export default function Header() {
               aria-label="Login"
             >
               <Image
-                src={admin}
+                src={"/avatar_user.png"}
                 alt="admin"
                 width={35}
                 height={35}

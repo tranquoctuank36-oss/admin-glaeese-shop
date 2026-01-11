@@ -11,9 +11,9 @@ import {
   Eye,
   Edit,
 } from "lucide-react";
-import TablePagination from "@/components/TablePagination";
-import { useListQuery } from "@/components/data/useListQuery";
-import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
+import TablePagination from "@/components/shared/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
 import { getUsers, getUserStatistics } from "@/services/userService";
 import type { User, UserRole, UserStatus } from "@/types/user";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
@@ -42,7 +42,7 @@ function getRoleLabel(role: string): string {
 function getStatusLabel(status: string): string {
   const statusMap: Record<string, string> = {
     active: "Hoạt động",
-    inactive: "Không hoạt động",
+    inactive: "Chưa xác thực",
     suspended: "Bị khóa",
   };
   return statusMap[status] || status;
@@ -296,7 +296,7 @@ function UsersPage() {
               <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Không hoạt động</p>
+                    <p className="text-sm font-medium text-gray-600">Chưa xác thực</p>
                     <p className="text-2xl font-bold text-yellow-600 mt-1">
                       {stats.inactive ?? 0}
                     </p>

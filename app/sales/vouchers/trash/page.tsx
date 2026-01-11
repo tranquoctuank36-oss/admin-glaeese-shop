@@ -18,8 +18,8 @@ import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
-import TablePagination from "@/components/TablePagination";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import TablePagination from "@/components/shared/TablePagination";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import {
   getVouchers,
   restoreVoucher,

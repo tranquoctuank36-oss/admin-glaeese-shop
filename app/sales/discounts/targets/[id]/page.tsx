@@ -13,8 +13,8 @@ import {
   Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import TablePagination from "@/components/TablePagination";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import TablePagination from "@/components/shared/TablePagination";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import {
   getDiscountById,
   getDiscountTargets,

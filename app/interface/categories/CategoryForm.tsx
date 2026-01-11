@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Loader } from "lucide-react";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { Button } from "@/components/ui/button";
 import { CategoryTree, getCategoriesTree } from "@/services/categoryService";
 import toast from "react-hot-toast";
@@ -353,7 +353,7 @@ export default function CategoryForm({
       {/* Relative URL */}
       <FloatingInput
         id="relativeUrl"
-        label="URL tương đối (ví dụ: products?productType=frame&gender=Male)"
+        label="URL tương đối (ví dụ: products?productType=frame&genders=male)"
         required
         value={relativeUrl}
         onChange={(v) => setRelativeUrl(v)}

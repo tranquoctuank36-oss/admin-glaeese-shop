@@ -4,12 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search, ChevronDown, Printer, MoreVertical, AlertTriangle, RefreshCw, Package, Pencil, Filter, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { getPackingOrders } from "@/services/orderService";
 import { Order } from "@/types/order";
 import { calculateShippingFee, createShipment, printLabel } from "@/services/shippingService";
-import { useListQuery } from "@/components/data/useListQuery";
-import TablePagination from "@/components/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import TablePagination from "@/components/shared/TablePagination";
 import toast from "react-hot-toast";
 
 // Custom Select Component
@@ -125,6 +125,7 @@ export default function PackingOrdersPage() {
   const [width, setWidth] = useState<number>(15);
   const [height, setHeight] = useState<number>(10);
   const [note, setNote] = useState<string>("");
+  const [requiredNote, setRequiredNote] = useState<string>("CHOTHUHANG");
   const [estimatedFee, setEstimatedFee] = useState<number | null>(null);
   const [calculatingFee, setCalculatingFee] = useState(false);
   const [creatingShipment, setCreatingShipment] = useState(false);
@@ -239,7 +240,8 @@ export default function PackingOrdersPage() {
     setLength(20);
     setWidth(15);
     setHeight(10);
-    setNote("CHOXEMHANGKHONGTHU");
+    setNote("");
+    setRequiredNote("CHOTHUHANG");
     setEstimatedFee(null);
     setCalculatingFee(true);
   };
@@ -288,7 +290,7 @@ export default function PackingOrdersPage() {
         height,
         codAmount,
         note: note || undefined,
-        requiredNote: "CHOTHUHANG",
+        requiredNote,
       });
 
       if (response.success) {
@@ -299,7 +301,7 @@ export default function PackingOrdersPage() {
       }
     } catch (error: any) {
       console.error("Failed to create shipment:", error);
-      const errorMessage = error?.response?.data?.message || "Không thể tầo vận đơn";
+      const errorMessage = error?.response?.data?.detail || "Không thể tạo vận đơn";
       toast.error(errorMessage);
     } finally {
       setCreatingShipment(false);
@@ -902,18 +904,31 @@ export default function PackingOrdersPage() {
                       }
                     </span>
                   </div>
+                  
                   <div>
                     <label className="block text-xs text-gray-600 mb-1">
                       Lưu ý GHN:
                     </label>
                     <CustomSelect
-                      value={note}
-                      onChange={(v) => setNote(v)}
+                      value={requiredNote}
+                      onChange={(v) => setRequiredNote(v)}
                       options={[
                         { value: "CHOXEMHANGKHONGTHU", label: "Cho xem hàng không thử" },
                         { value: "CHOTHUHANG", label: "Cho thử hàng" },
                         { value: "KHONGCHOXEMHANG", label: "Không cho xem hàng" },
                       ]}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">
+                      Ghi chú:
+                    </label>
+                    <input
+                      type="text"
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder="Nhập ghi chú cho đơn hàng..."
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none text-sm"
                     />
                   </div>
                 </div>

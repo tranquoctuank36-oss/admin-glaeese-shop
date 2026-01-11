@@ -63,6 +63,7 @@ export const Routes = {
 
   stocks: {
     root: "/inventory",
+    movements: "/inventory/movements",
   },
 
   users: {
@@ -119,6 +120,7 @@ export const Routes = {
     packing: "/orders/packing",
     returns: "/orders/returns",
     returnDetails: (id: string) => `/orders/returns/details/${id}`,
+    refunds: "/orders/refunds",
     details: (id: string) => `/order-details/${id}`,
   },
   settings: "/settings",

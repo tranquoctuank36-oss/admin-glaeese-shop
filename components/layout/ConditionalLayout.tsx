@@ -22,7 +22,6 @@ export default function ConditionalLayout({
     );
   }
 
-  // Đã đăng nhập - hiển thị đầy đủ Sidebar và Header
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />

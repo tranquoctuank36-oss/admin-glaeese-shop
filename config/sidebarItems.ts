@@ -27,7 +27,8 @@ import {
   TicketPercent,
   PackageX,
   Megaphone,
-  Layout
+  Layout,
+  History,
 } from "lucide-react";
 import { Routes } from "@/lib/routes";
 
@@ -61,6 +62,7 @@ export const ICONS = {
   PackageX,
   Megaphone,
   Layout,
+  History,
 };
 
 export type SubMenuItem = {
@@ -111,7 +113,7 @@ export const sidebarItems: SidebarItem[] = [
   { name: "Kho hàng", href: Routes.stocks.root, icon: "Warehouse" },
   { 
     name: "Đơn hàng", 
-    href: "", // No direct page, only dropdown
+    href: "",
     icon: "ShoppingCart",
     subItems: [
       {
@@ -133,6 +135,11 @@ export const sidebarItems: SidebarItem[] = [
         name: "Trả hàng",
         href: Routes.orders.returns,
         icon: "PackageX",
+      },
+      {
+        name: "Hoàn tiền",
+        href: Routes.orders.refunds,
+        icon: "DollarSign",
       },
     ],
   },
@@ -177,8 +184,4 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
   { name: "Đánh giá", href: Routes.reviews.root, icon: "Star" },
-  // { name: "Cài đặt", href: Routes.settings, icon: "Settings" },
-  // { name: "Tin nhắn", href: Routes.messages, icon: "Mail" },
-  // { name: "Thông báo", href: Routes.notifications, icon: "Bell" },
-  // { name: "Trợ giúp", href: Routes.help, icon: "Info" },
 ];

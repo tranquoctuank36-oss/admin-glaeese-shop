@@ -14,9 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Routes } from "@/lib/routes";
 
-import TablePagination from "@/components/TablePagination";
-import { useListQuery } from "@/components/data/useListQuery";
-import ToolbarSearchFilters from "@/components/data/ToolbarSearchFilters";
+import TablePagination from "@/components/shared/TablePagination";
+import { useListQuery } from "@/components/listing/hooks/useListQuery";
+import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
 
 import {
   getFrameMaterials,
@@ -24,7 +24,7 @@ import {
   forceDeleteFrameMaterial,
 } from "@/services/frameService/frameMaterialService";
 
-import ConfirmPopover from "@/components/ConfirmPopover";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import toast from "react-hot-toast";
 import { useFrameCounts } from "@/context/FrameCountsContext";
 

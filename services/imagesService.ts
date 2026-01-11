@@ -26,7 +26,7 @@ export type ImageListQuery = {
   limit?: number;
   search?: string;
   status?: "draft" | "used" | "all";
-  ownerType?: "product_variant" | "brand" | "discount" | "all";
+  ownerType?: "product_variant" | "brand" | "discount" | "banner" | "review" | "order_return";
   sortField?: "createdAt" | "name";
   sortOrder?: "ASC" | "DESC";
 };
@@ -63,7 +63,7 @@ function buildListParams(q: ImageListQuery) {
   if (q.page) params.page = q.page;
   if (q.limit) params.limit = q.limit;
   if (q.status && q.status !== "all") params.status = q.status;
-  if (q.ownerType && q.ownerType !== "all") params.ownerType = q.ownerType;
+  if (q.ownerType) params.ownerType = q.ownerType;
   if (q.sortField) params.sortField = q.sortField;
   if (q.sortOrder) params.sortOrder = q.sortOrder;
 

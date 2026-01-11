@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { resetPassword } from "@/services/authService";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
 import { Check, Circle, Eye, EyeOff } from "lucide-react";

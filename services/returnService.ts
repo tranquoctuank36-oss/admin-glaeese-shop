@@ -48,13 +48,15 @@ export async function updateReturnStatus(
   status: string,
   adminNote?: string,
   rejectedReason?: string,
-  refundAmount?: string
+  refundAmount?: string,
+  shouldRefund?: boolean
 ): Promise<Return> {
   const response = await api.patch(`/admin/returns/${id}`, { 
     status, 
     adminNote, 
     rejectedReason,
-    refundAmount 
+    refundAmount,
+    shouldRefund
   });
   return response.data.data;
 }
@@ -67,11 +69,15 @@ export async function completeRefund(id: string): Promise<Return> {
 export async function performQualityCheck(
   id: string,
   result: 'pass' | 'fail',
-  note?: string
+  adminNote?: string,
+  shouldRefund?: boolean,
+  refundAmount?: string
 ): Promise<Return> {
   const response = await api.post(`/admin/returns/${id}/qc`, { 
     result, 
-    note 
+    adminNote,
+    shouldRefund,
+    refundAmount
   });
   return response.data.data;
 }

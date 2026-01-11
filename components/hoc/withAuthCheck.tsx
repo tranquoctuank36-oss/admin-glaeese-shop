@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LockKeyhole, LogIn } from "lucide-react";
 import { Button } from "../ui/button";
-import LoginDialog from "../LoginDialog";
+import LoginDialog from "../auth/LoginDialog";
 
 export function withAuthCheck<T extends object>(Component: React.ComponentType<T>) {
   return function AuthCheckWrapper(props: T) {

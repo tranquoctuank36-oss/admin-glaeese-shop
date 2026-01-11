@@ -1,7 +1,7 @@
 // components/TablePagination.tsx
 "use client";
 
-import Pagination from "@/components/data/Pagination";
+import Pagination from "@/components/listing/Pagination";
 import { ChevronDown } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 

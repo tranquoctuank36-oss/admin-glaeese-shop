@@ -37,19 +37,16 @@ export function FrameCountsProvider({ children }: { children: ReactNode }) {
   const CACHE_DURATION = 300000; // 5 minutes
 
   const refreshCounts = useCallback(async (forceRefresh = false) => {
-    // Check cache first (unless force refresh)
     if (!forceRefresh && cacheRef.current && Date.now() - cacheRef.current.timestamp < CACHE_DURATION) {
       setTabCounts(cacheRef.current.data.active);
       setTrashCounts(cacheRef.current.data.trash);
       return;
     }
 
-    // Cancel previous request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
 
-    // Create new abort controller
     abortControllerRef.current = new AbortController();
 
     try {
@@ -59,7 +56,6 @@ export function FrameCountsProvider({ children }: { children: ReactNode }) {
         getTrashFrameCounts(),
       ]);
       
-      // Update state and cache
       setTabCounts(activeCounts);
       setTrashCounts(trashCountsData);
       cacheRef.current = {
@@ -67,7 +63,6 @@ export function FrameCountsProvider({ children }: { children: ReactNode }) {
         data: { active: activeCounts, trash: trashCountsData }
       };
     } catch (e: any) {
-      // Ignore abort errors
       if (e.name !== 'AbortError' && e.name !== 'CanceledError') {
         console.error("Failed to fetch frame counts:", e);
       }

@@ -10,7 +10,7 @@ import type { User, UserRole, UserStatus } from "@/types/user";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import toast from "react-hot-toast";
 import { Routes } from "@/lib/routes";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 
 function EditUserPage() {
   const router = useRouter();

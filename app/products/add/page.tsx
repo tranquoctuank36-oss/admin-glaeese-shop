@@ -74,7 +74,6 @@ export default function AddProductPage() {
                 payload.variants = variants.map((variant) => ({
                   name: variant.name,
                   sku: variant.sku,
-                  quantityAvailable: variant.quantityAvailable || 0,
                   originalPrice: variant.originalPrice || null,
                   colorIds: variant.colorIds || [],
                   imageIds: variant.productImagesIds || [],

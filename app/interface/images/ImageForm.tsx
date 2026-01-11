@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import FloatingInput from "@/components/FloatingInput";
+import FloatingInput from "@/components/shared/FloatingInput";
 import { ImagePlus, X, Upload, Loader2 } from "lucide-react";
 import {
   getPresignedUrl,
