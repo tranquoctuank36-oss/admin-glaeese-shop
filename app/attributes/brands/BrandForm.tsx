@@ -227,6 +227,7 @@ export default function BrandForm({
         value={banner}
         onChange={(v) => setBanner(v)}
         disabled={loading}
+        ownerImageType="brand"
       />
       {error && (
         <p className="text-center text-sm text-red-600 pt-2">{error}</p>
@@ -243,7 +244,7 @@ export default function BrandForm({
         </Button>
         <Button
           type="submit"
-          className="h-10 w-25bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
+          className="h-10 w-25 bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-2"
           disabled={loading || !canSubmit}
           title={!canSubmit ? "Vui lòng kiểm tra dữ liệu nhập" : submitLabel}
         >
