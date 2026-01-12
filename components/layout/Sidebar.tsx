@@ -78,8 +78,17 @@ export default function Sidebar() {
             const isActive = pathname === item.href;
             const hasSub = !!item.subItems?.length;
             const hasActiveChild = !!item.subItems?.some((s) => pathname === s.href);
+            
+            // Check if any submenu or its detail pages are active
+            const hasActiveChildOrDetail = !!item.subItems?.some((s) => {
+              if (pathname === s.href) return true;
+              // Check for detail pages like /orders/refunds/details/[id] or /orders/returns/details/[id]
+              if (s.href && pathname.startsWith(s.href + '/')) return true;
+              return false;
+            });
+            
             // Parent active khi: đang ở trang parent HOẶC có submenu đang active
-            const isParentActive = isActive || hasActiveChild || 
+            const isParentActive = isActive || hasActiveChildOrDetail || 
               (item.href !== "/" && item.href !== "" && pathname.startsWith(item.href));
             const isOpen = openSubmenu === item.name;
 

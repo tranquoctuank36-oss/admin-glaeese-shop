@@ -69,13 +69,13 @@ export async function completeRefund(id: string): Promise<Return> {
 export async function performQualityCheck(
   id: string,
   result: 'pass' | 'fail',
-  adminNote?: string,
+  qcNote?: string,
   shouldRefund?: boolean,
   refundAmount?: string
 ): Promise<Return> {
   const response = await api.post(`/admin/returns/${id}/qc`, { 
     result, 
-    adminNote,
+    qcNote,
     shouldRefund,
     refundAmount
   });

@@ -629,13 +629,13 @@ export default function AllOrdersPage() {
                           </div>
                           <div 
                             className="text-xs text-gray-500 cursor-help relative group"
-                            // title={`Cập nhật: ${new Date(order.updatedAt).toLocaleString("vi-VN")}`}
                           >
-                            {getRelativeTime(order.createdAt)}
+                            {getRelativeTime(order.updatedAt || order.createdAt)}
                             <div className="absolute left-0 top-full mt-1 z-50 hidden group-hover:block min-w-[180px] p-2 bg-gray-900 text-white text-xs rounded shadow-lg whitespace-nowrap">
-                              Cập nhật: {new Date(order.updatedAt).toLocaleString("vi-VN")}
-                            </div>
-                          </div>
+                              <div>Tạo: {new Date(order.createdAt).toLocaleString("vi-VN")}</div>
+                              <div className="mt-1">Cập nhật: {new Date(order.updatedAt).toLocaleString("vi-VN")}</div>
+                            </div>  
+                          </div>  
                         </div>
                       </div>
                     </td>

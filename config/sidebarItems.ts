@@ -83,6 +83,7 @@ export type SidebarItem = {
 export const sidebarItems: SidebarItem[] = [
   { name: "Tổng quan", href: Routes.root, icon: "House" },
   { name: "Sản phẩm", href: Routes.products.root, icon: "Package" },
+  { name: "Kho hàng", href: Routes.stocks.root, icon: "Warehouse" },
   {
     name: "Thuộc tính",
     href: Routes.attributes.root,
@@ -110,7 +111,6 @@ export const sidebarItems: SidebarItem[] = [
       },
     ],
   },
-  { name: "Kho hàng", href: Routes.stocks.root, icon: "Warehouse" },
   { 
     name: "Đơn hàng", 
     href: "",

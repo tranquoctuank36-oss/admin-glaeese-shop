@@ -298,7 +298,7 @@ export default function FrameShapesPage() {
                             <Button
                               size="icon-sm"
                               className="p-2 hover:bg-green-100 rounded-lg transition-colors"
-                              title="Edit"
+                              title="Chỉnh sửa"
                               onClick={() =>
                                 router.push(
                                   Routes.attributes.frames.frameShapes.edit.replace(
@@ -321,9 +321,9 @@ export default function FrameShapesPage() {
                                   o ? keyOf(shape.id, "delete") : null
                                 )
                               }
-                              title="Remove this frame shape?"
+                              title="Xóa hình dạng gọng này?"
                               message={<b>{shape.name}</b>}
-                              confirmText="Remove"
+                              confirmText="Xóa"
                               onConfirm={async () => {
                                 setDeletingId(shape.id);
                                 try {
@@ -343,7 +343,7 @@ export default function FrameShapesPage() {
                               <Button
                                 size="icon-sm"
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-                                title="Remove"
+                                title="Xóa"
                                 onClick={() =>
                                   setOpenKey(keyOf(shape.id, "delete"))
                                 }
@@ -361,7 +361,7 @@ export default function FrameShapesPage() {
                       <tr>
                         <td colSpan={5} className="px-6 py-6">
                           <div className="text-center text-gray-600">
-                            Frame Shapes is empty.
+                            Danh sách hình dạng gọng trống.
                           </div>
                         </td>
                       </tr>

@@ -290,14 +290,6 @@ export default function ReturnDetailsPage() {
               <h1 className="text-3xl font-bold text-gray-800">
                 Chi tiết yêu cầu trả hàng
               </h1>
-              <div className="mt-1 space-y-0.5">
-                <p className="text-gray-600">
-                  Mã trả hàng: <span className="font-semibold text-blue-600">{returnData.returnCode}</span>
-                </p>
-                <p className="text-gray-600">
-                  Mã đơn hàng: <span className="font-semibold">{returnData.orderCode}</span>
-                </p>
-              </div>
             </div>
           </div>
           <div>
@@ -327,8 +319,22 @@ export default function ReturnDetailsPage() {
               Thông tin trả hàng
             </h2>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
+                <label className="text-sm font-bold text-gray-600">
+                  Mã trả hàng
+                </label>
+                <p className="mt-1 text-gray-600 font-mono">{returnData.returnCode}</p>
+              </div>
+
+              <div>
+                <label className="text-sm font-bold text-gray-600">
+                  Mã đơn hàng
+                </label>
+                <p className="mt-1 text-gray-900 font-mono">{returnData.orderCode}</p>
+              </div>
+
+              <div className="md:col-span-2">
                 <label className="text-sm font-bold text-gray-600">
                   Lý do trả hàng
                 </label>
@@ -336,7 +342,7 @@ export default function ReturnDetailsPage() {
               </div>
 
               {returnData.customerNote && (
-                <div>
+                <div className="md:col-span-2">
                   <label className="text-sm font-bold text-gray-600">
                     Ghi chú khách hàng
                   </label>
@@ -350,7 +356,7 @@ export default function ReturnDetailsPage() {
 
               {returnData.adminNote &&
                 Object.keys(returnData.adminNote).length > 0 && (
-                  <div>
+                  <div className="md:col-span-2">
                     <label className="text-sm font-bold text-gray-600">
                       Ghi chú nội bộ
                     </label>
@@ -364,7 +370,7 @@ export default function ReturnDetailsPage() {
 
               {returnData.rejectedReason &&
                 Object.keys(returnData.rejectedReason).length > 0 && (
-                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="md:col-span-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                     <label className="text-sm font-bold text-red-800">
                       Lý do từ chối
                     </label>
@@ -420,7 +426,7 @@ export default function ReturnDetailsPage() {
               )}
 
               {returnData.images && returnData.images.length > 0 && (
-                <div>
+                <div className="md:col-span-2">
                   <label className="text-sm font-bold text-gray-600 flex items-center gap-1">
                     <ImageIcon className="w-4 h-4" />
                     Hình ảnh ({returnData.images.length})

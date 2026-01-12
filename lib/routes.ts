@@ -121,6 +121,8 @@ export const Routes = {
     returns: "/orders/returns",
     returnDetails: (id: string) => `/orders/returns/details/${id}`,
     refunds: "/orders/refunds",
+    refundAdd: "/orders/refunds/add",
+    refundDetails: (id: string) => `/orders/refunds/details/${id}`,
     details: (id: string) => `/order-details/${id}`,
   },
   settings: "/settings",
