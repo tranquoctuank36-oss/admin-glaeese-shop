@@ -9,7 +9,8 @@ import {
   getReturnStatistics, 
   updateReturnStatus, 
   performQualityCheck,  
-  completeRefund 
+  completeRefund,
+  updateShouldRefund
 } from "@/services/returnService";
 import { Return } from "@/types/return";
 import { useListQuery } from "@/components/listing/hooks/useListQuery";
@@ -136,6 +137,12 @@ export default function ReturnsPage() {
   const [rejectedReason, setRejectedReason] = useState("");
   const [shouldRefund, setShouldRefund] = useState(true);
   const [refundAmount, setRefundAmount] = useState("");
+  const [showRefundDialog, setShowRefundDialog] = useState(false);
+  const [refundDialogData, setRefundDialogData] = useState<{
+    shouldRefund: boolean;
+    refundAmount: string;
+    reason: string;
+  }>({ shouldRefund: true, refundAmount: "", reason: "" });
 
   // Fetch statistics
   useEffect(() => {
@@ -290,7 +297,15 @@ export default function ReturnsPage() {
         additionalData?.rejectedReason,
         additionalData?.refundAmount
       );
-      toast.success("Đã cập nhật trạng thái");
+      
+      // Show specific success messages based on status
+      const successMessages: Record<string, string> = {
+        'approved': 'Đã duyệt yêu cầu trả hàng thành công',
+        'rejected': 'Đã từ chối yêu cầu trả hàng',
+        'received_at_warehouse': 'Đã xác nhận nhận hàng tại kho',
+      };
+      
+      toast.success(successMessages[newStatus] || "Đã cập nhật trạng thái thành công");
       await fetchData();
       
       setShowRejectDialog(false);
@@ -359,6 +374,18 @@ export default function ReturnsPage() {
           },
         ];
       case "qc_pass":
+        return [
+          {
+            label: "Cập nhật hoàn tiền",
+            value: "update_refund",
+            color: "blue",
+          },
+          {
+            label: "Hoàn tất yêu cầu",
+            value: "completed",
+            color: "green",
+          },
+        ];
       case "qc_fail":
         return [
           {
@@ -746,7 +773,7 @@ export default function ReturnsPage() {
                             const rect = e.currentTarget.getBoundingClientRect();
                             if (openActionMenu === returnItem.id) {
                               setOpenActionMenu(null);
-                              setMenuPosition(null);
+                              setMenuPosition(null);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
                             } else {
                               setOpenActionMenu(returnItem.id);
                               setMenuPosition({
@@ -821,19 +848,36 @@ export default function ReturnsPage() {
                   {actions.map((action) => {
                     if (action.value === "approved") {
                       return (
-                        <button
+                        <ConfirmPopover
                           key={action.value}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleStatusUpdate(currentReturn, action.value);
-                            setOpenActionMenu(null);
-                            setMenuPosition(null);
+                          title="Xác nhận duyệt"
+                          message={
+                            <>
+                              Bạn có chắc chắn muốn <span className="font-semibold">duyệt yêu cầu trả hàng</span> này không?
+                            </>
+                          }
+                          confirmText="Xác nhận"
+                          cancelText="Hủy"
+                          confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
+                          confirmLoading={updating}
+                          onConfirm={async () => {
+                            try {
+                              await handleStatusUpdate(currentReturn, action.value);
+                              setOpenActionMenu(null);
+                              setMenuPosition(null);
+                            } catch (error) {
+                              // Error already handled in handleStatusUpdate
+                            }
                           }}
-                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-green-600"
                         >
-                          <CheckCircle className="w-4 h-4" />
-                          {action.label}
-                        </button>
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-green-600"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            {action.label}
+                          </button>
+                        </ConfirmPopover>
                       );
                     }
 
@@ -858,19 +902,36 @@ export default function ReturnsPage() {
 
                     if (action.value === "received_at_warehouse") {
                       return (
-                        <button
+                        <ConfirmPopover
                           key={action.value}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleStatusUpdate(currentReturn, action.value);
-                            setOpenActionMenu(null);
-                            setMenuPosition(null);
+                          title="Xác nhận nhận hàng"
+                          message={
+                            <>
+                              Bạn có chắc chắn đã <span className="font-semibold">nhận hàng tại kho</span> chưa?
+                            </>
+                          }
+                          confirmText="Xác nhận"
+                          cancelText="Hủy"
+                          confirmClassName="h-10 bg-indigo-600 hover:bg-indigo-700 text-white"
+                          confirmLoading={updating}
+                          onConfirm={async () => {
+                            try {
+                              await handleStatusUpdate(currentReturn, action.value);
+                              setOpenActionMenu(null);
+                              setMenuPosition(null);
+                            } catch (error) {
+                              // Error already handled in handleStatusUpdate
+                            }
                           }}
-                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-indigo-600"
                         >
-                          <CheckCircle className="w-4 h-4" />
-                          {action.label}
-                        </button>
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-indigo-600"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            {action.label}
+                          </button>
+                        </ConfirmPopover>
                       );
                     }
 
@@ -892,21 +953,62 @@ export default function ReturnsPage() {
                       );
                     }
 
-                    if (action.value === "completed") {
+                    if (action.value === "update_refund") {
                       return (
                         <button
                           key={action.value}
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleStatusUpdate(currentReturn, action.value);
+                            setSelectedReturn(currentReturn);
+                            setRefundDialogData({
+                              shouldRefund: true,
+                              refundAmount: "",
+                              reason: ""
+                            });
+                            setShowRefundDialog(true);
                             setOpenActionMenu(null);
                             setMenuPosition(null);
                           }}
-                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-green-600"
+                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-blue-600"
                         >
                           <CheckCircle className="w-4 h-4" />
                           {action.label}
                         </button>
+                      );
+                    }
+
+                    if (action.value === "completed") {
+                      return (
+                        <ConfirmPopover
+                          key={action.value}
+                          title="Xác nhận hoàn tất"
+                          message={
+                            <>
+                              Bạn có chắc chắn muốn <span className="font-semibold">hoàn tất yêu cầu trả hàng</span> này?
+                            </>
+                          }
+                          confirmText="Xác nhận"
+                          cancelText="Hủy"
+                          confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
+                          confirmLoading={updating}
+                          onConfirm={async () => {
+                            try {
+                              await handleStatusUpdate(currentReturn, action.value);
+                              setOpenActionMenu(null);
+                              setMenuPosition(null);
+                            } catch (error) {
+                              // Error already handled in handleStatusUpdate
+                            }
+                          }}
+                        >
+                          <button
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-green-600"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            {action.label}
+                          </button>
+                        </ConfirmPopover>
                       );
                     }
 
@@ -1108,6 +1210,143 @@ export default function ReturnsPage() {
               className={`flex-1 ${
                 qcResult === 'pass'
                   ? 'bg-teal-600 hover:bg-teal-700'
+                  : 'bg-red-600 hover:bg-red-700'
+              } text-white font-medium py-2 rounded-lg`}
+            >
+              {updating ? "Đang xử lý..." : "Xác nhận"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Refund Dialog */}
+      <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Cập nhật hoàn tiền
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hoàn tiền <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setRefundDialogData(prev => ({ ...prev, shouldRefund: true }))}
+                  className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
+                    refundDialogData.shouldRefund
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className={`w-5 h-5 ${refundDialogData.shouldRefund ? 'text-green-600' : 'text-gray-400'}`} />
+                    <span className={`font-medium ${refundDialogData.shouldRefund ? 'text-green-700' : 'text-gray-600'}`}>
+                      Có
+                    </span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => setRefundDialogData(prev => ({ ...prev, shouldRefund: false }))}
+                  className={`flex-1 py-3 px-4 rounded-lg border-2 transition-all ${
+                    !refundDialogData.shouldRefund
+                      ? 'border-red-500 bg-red-50'
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <XCircle className={`w-5 h-5 ${!refundDialogData.shouldRefund ? 'text-red-600' : 'text-gray-400'}`} />
+                    <span className={`font-medium ${!refundDialogData.shouldRefund ? 'text-red-700' : 'text-gray-600'}`}>
+                      Không
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {refundDialogData.shouldRefund && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Số tiền hoàn lại
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 focus:border-blue-500 outline-none"
+                    placeholder="0"
+                    value={refundDialogData.refundAmount ? parseFloat(refundDialogData.refundAmount.replace(/,/g, '')).toLocaleString('en-US') : ''}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/,/g, '');
+                      if (value === '' || /^\d+$/.test(value)) {
+                        setRefundDialogData(prev => ({ ...prev, refundAmount: value }));
+                      }
+                    }}
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">
+                    đ
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lý do
+              </label>
+              <textarea
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none min-h-[100px]"
+                placeholder="Nhập lý do hoặc ghi chú..."
+                value={refundDialogData.reason}
+                onChange={(e) => setRefundDialogData(prev => ({ ...prev, reason: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="flex items-center gap-3">
+            <Button
+              onClick={() => {
+                setShowRefundDialog(false);
+                setRefundDialogData({ shouldRefund: true, refundAmount: "", reason: "" });
+              }}
+              disabled={updating}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!selectedReturn) return;
+                
+                try {
+                  setUpdating(true);
+                  await updateShouldRefund(
+                    selectedReturn.id,
+                    refundDialogData.shouldRefund,
+                    refundDialogData.refundAmount || undefined,
+                    refundDialogData.reason || undefined
+                  );
+                  toast.success(`Đã ${refundDialogData.shouldRefund ? 'cập nhật hoàn tiền' : 'hủy hoàn tiền'} thành công`);
+                  
+                  await fetchData();
+                  
+                  setShowRefundDialog(false);
+                  setRefundDialogData({ shouldRefund: true, refundAmount: "", reason: "" });
+                  setSelectedReturn(null);
+                } catch (error: any) {
+                  console.error("Failed to update refund:", error);
+                  const errorMessage = error.response?.data?.detail || error.detail || "Không thể cập nhật hoàn tiền";
+                  toast.error(errorMessage);
+                } finally {
+                  setUpdating(false);
+                }
+              }}
+              disabled={updating}
+              className={`flex-1 ${
+                refundDialogData.shouldRefund
+                  ? 'bg-green-600 hover:bg-green-700'
                   : 'bg-red-600 hover:bg-red-700'
               } text-white font-medium py-2 rounded-lg`}
             >

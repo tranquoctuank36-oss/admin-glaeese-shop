@@ -130,7 +130,7 @@ function getStatusBadge(status: ReviewStatus) {
     case "pending":
       return (
         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700">
-          Đang chờ
+          Chờ duyệt
         </span>
       );
     case "rejected":
@@ -349,7 +349,7 @@ function ReviewsPage() {
                 <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Đang chờ</p>
+                      <p className="text-sm font-medium text-gray-600">Chờ duyệt</p>
                       <p className="text-2xl font-bold text-yellow-600 mt-1">
                         {stats.pending ?? 0}
                       </p>
@@ -504,7 +504,7 @@ function ReviewsPage() {
                       }}
                       options={[
                         { value: "", label: "Tất cả trạng thái" },
-                        { value: "pending", label: "Đang chờ" },
+                        { value: "pending", label: "Chờ duyệt" },
                         { value: "approved", label: "Đã duyệt" },
                         { value: "rejected", label: "Đã từ chối" },
                         { value: "hidden", label: "Đã ẩn" },
@@ -816,7 +816,7 @@ function ReviewsPage() {
                   onChange={(v) => setSelectedStatus(v as ReviewStatus)}
                   options={[
                     { value: "approved", label: "Đã duyệt" },
-                    { value: "pending", label: "Đang chờ" },
+                    { value: "pending", label: "Chờ duyệt" },
                     { value: "rejected", label: "Đã từ chối" },
                     { value: "hidden", label: "Ẩn" },
                   ]}

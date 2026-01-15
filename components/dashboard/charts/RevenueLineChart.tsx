@@ -32,7 +32,6 @@ export default function RevenueLineChart({
   }
 
   const chartData = data.map((item) => {
-    // Convert "2026-01-02" to "02-01-2026"
     const [year, month, day] = item.label.split('-');
     const formattedLabel = `${day}-${month}-${year}`;
     

@@ -117,7 +117,7 @@ export default function Sidebar() {
                               className={`p-1.5 rounded-full transition-all ${
                                 isSyncing 
                                   ? "bg-blue-200 cursor-not-allowed" 
-                                  : "hover:bg-blue-600 bg-blue-500 cursor-pointer"
+                                  : "hover:bg-blue-300 bg-blue-200 cursor-pointer"
                               }`}
                               title="Đồng bộ trạng thái đơn hàng GHN"
                             >
@@ -171,7 +171,9 @@ export default function Sidebar() {
                 {hasSub && isOpen && isSidebarOpen && (
                   <div className="mb-2 space-y-1">
                     {item.subItems!.map((sub) => {
-                      const subActive = pathname === sub.href;
+                      // Check if current submenu is active or any of its child routes
+                      const subActive = pathname === sub.href || 
+                        (sub.href && pathname.startsWith(sub.href + '/'));
                       const SubIcon = sub.icon ? ICONS[sub.icon] : null;
                       return (
                         <Link key={sub.name} href={sub.href}>

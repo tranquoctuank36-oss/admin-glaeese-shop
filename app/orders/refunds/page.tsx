@@ -11,6 +11,7 @@ import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import { useRouter } from "next/navigation";
 import { Routes } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
 
 // Custom Select Component
 interface CustomSelectProps<T extends string> {
@@ -707,13 +708,39 @@ function RefundsPage() {
                                   Xem chi tiết
                                 </button>
                                 {canApprove(refund.status) && (
-                                  <button
-                                    onClick={() => openActionDialog('approve', refund)}
-                                    className="w-full px-4 py-2 text-left text-sm cursor-pointer hover:bg-gray-50 flex items-center gap-2 text-green-600"
+                                  <ConfirmPopover
+                                    title="Duyệt hoàn tiền"
+                                    message={
+                                      <>
+                                        Bạn có chắc chắn muốn <span className="font-semibold">duyệt hoàn tiền?</span>
+                                      </>
+                                    }
+                                    confirmText="Xác nhận"
+                                    cancelText="Hủy"
+                                    confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
+                                    confirmLoading={actionLoading}
+                                    onConfirm={async () => {
+                                      try {
+                                        setActionLoading(true);
+                                        await approveRefund(refund.id, { note: "" });
+                                        toast.success("Đã duyệt hoàn tiền thành công");
+                                        setOpenActionMenu(null);
+                                        fetchRefunds();
+                                      } catch (error: any) {
+                                        toast.error(error?.response?.data?.detail || "Không thể thực hiện thao tác");
+                                      } finally {
+                                        setActionLoading(false);
+                                      }
+                                    }}
                                   >
-                                    <CheckCircle size={16} />
-                                    Duyệt hoàn tiền
-                                  </button>
+                                    <button
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="w-full px-4 py-2 text-left text-sm cursor-pointer hover:bg-gray-50 flex items-center gap-2 text-green-600"
+                                    >
+                                      <CheckCircle size={16} />
+                                      Duyệt hoàn tiền
+                                    </button>
+                                  </ConfirmPopover>
                                 )}
                                 {canReject(refund.status) && (
                                   <button

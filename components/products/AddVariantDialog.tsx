@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import React from "react";
 import { createPortal } from "react-dom";
 import { toast } from "react-hot-toast";
 import {
@@ -16,8 +17,9 @@ import { getColors } from "@/services/colorService";
 import ProductImageSelector from "./ProductImageSelector";
 import { getImages } from "@/services/imagesService";
 import type { ImageItem } from "@/types/image";
-import { X, Plus, Search, Loader2 } from "lucide-react";
+import { X, Plus, Search, Loader2, Upload } from "lucide-react";
 import { createVariant, updateVariant, addImagesToVariant, removeImagesFromVariant } from "@/services/productService";
+import { uploadImage } from "@/services/imagesService";
 
 interface AddVariantDialogProps {
   open: boolean;
@@ -81,6 +83,8 @@ export default function AddVariantDialog({
   const [lightboxImageIndex, setLightboxImageIndex] = useState<number>(0);
   const [isMounted, setIsMounted] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const MAX_IMAGES = 5;
 
@@ -301,15 +305,90 @@ export default function AddVariantDialog({
       } catch (error: any) {
         console.error("Error removing image:", error);
         toast.error(error?.response?.data?.detail || "Không thể xóa hình ảnh");
-        return; // Don't update UI if API call failed
+        return; 
       }
     }
-    // If creating new variant (no variantId yet), just update local state
-    // Images will be saved when form is submitted
-    
-    // Update local state for both cases
+ 
     setProductImagesIds((prev) => prev.filter((id) => id !== imageId));
     setSelectedImages((prev) => prev.filter((img) => img.id !== imageId));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const remainingSlots = MAX_IMAGES - selectedImages.length;
+    if (remainingSlots <= 0) {
+      toast.error(`Bạn chỉ được chọn tối đa ${MAX_IMAGES} hình ảnh.`);
+      return;
+    }
+
+    const filesToUpload = Array.from(files).slice(0, remainingSlots);
+    
+    // Validate file types
+    const invalidFiles = filesToUpload.filter(file => !file.type.startsWith("image/"));
+    if (invalidFiles.length > 0) {
+      toast.error("Vui lòng chỉ chọn tệp hình ảnh");
+      return;
+    }
+
+    setUploading(true);
+    setError("");
+
+    try {
+      // Upload all files in parallel
+      const uploadPromises = filesToUpload.map(file => 
+        uploadImage(file, "product_variant")
+      );
+      
+      const uploadResults = await Promise.all(uploadPromises);
+      const newImageIds = uploadResults.map(result => result.id);
+      
+      // Add new images to existing ones
+      const updatedImageIds = [...productImagesIds, ...newImageIds];
+      
+      // If editing existing variant, update backend
+      if (variantId) {
+        try {
+          await addImagesToVariant(variantId, newImageIds);
+          toast.success(`Đã tải lên ${uploadResults.length} hình ảnh thành công!`);
+        } catch (error: any) {
+          console.error("Error adding images to variant:", error);
+          toast.error(error?.response?.data?.detail || "Không thể thêm hình ảnh");
+          return;
+        }
+      } else {
+        toast.success(`Đã tải lên ${uploadResults.length} hình ảnh thành công!`);
+      }
+      
+      // Update local state
+      setProductImagesIds(updatedImageIds);
+      
+      // Add to selected images for preview
+      const newImages = uploadResults.map(result => ({
+        id: result.id,
+        publicUrl: result.publicUrl,
+        altText: null,
+        sortOrder: null,
+        key: result.id,
+        status: 'active' as const,
+        ownerType: 'product_variant' as const,
+        createdAt: new Date().toISOString(),
+      }));
+      
+      setSelectedImages(prev => [...prev, ...newImages]);
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      const detail = error?.response?.data?.detail || error?.message;
+      setError(detail || "Tải ảnh lên thất bại");
+      toast.error(detail || "Tải ảnh lên thất bại");
+    } finally {
+      setUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -334,7 +413,7 @@ export default function AddVariantDialog({
       return;
     }
     if (productImagesIds.length === 0) {
-      setError("Vui lòng chọn hình ảnh sản phẩm");
+      setError("Vui lòng chọn hình ảnh biến thể sản phẩm");
       return;
     }
 
@@ -660,7 +739,7 @@ export default function AddVariantDialog({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pr-8">
                       <FloatingInput
                         id={`attr-key-${index}`}
-                        label="Key (ví dụ: polarized)"
+                        label="Mã (ví dụ: polarized)"
                         value={attr.key}
                         onChange={(v) => {
                           const newAttrs = [...attributes];
@@ -670,23 +749,23 @@ export default function AddVariantDialog({
                         disabled={loading}
                       />
                       <FloatingInput
-                        id={`attr-value-${index}`}
-                        label="Value (ví dụ: true)"
-                        value={attr.value}
+                        id={`attr-label-${index}`}
+                        label="Tên hiển thị (ví dụ: Phân cực)"
+                        value={attr.label}
                         onChange={(v) => {
                           const newAttrs = [...attributes];
-                          newAttrs[index].value = v;
+                          newAttrs[index].label = v;
                           setAttributes(newAttrs);
                         }}
                         disabled={loading}
                       />
                       <FloatingInput
-                        id={`attr-label-${index}`}
-                        label="Label (ví dụ: Phân cực)"
-                        value={attr.label}
+                        id={`attr-value-${index}`}
+                        label="Giá trị (ví dụ: có)"
+                        value={attr.value}
                         onChange={(v) => {
                           const newAttrs = [...attributes];
-                          newAttrs[index].label = v;
+                          newAttrs[index].value = v;
                           setAttributes(newAttrs);
                         }}
                         disabled={loading}
@@ -702,18 +781,43 @@ export default function AddVariantDialog({
           <div className="mt-4">
             <div className="flex justify-between items-center mb-3">
               <label className="block text-sm font-semibold text-gray-700">
-                Hình ảnh sản phẩm
+                Hình ảnh biến thể sản phẩm
               </label>
-              <Button
-                type="button"
-                onClick={handleOpenImageSelector}
-                className="h-8 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-1.5"
-                disabled={loading}
-              >
-                <Plus className="w-3.5 h-3.5" />
-                Chọn hình ảnh
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-8 px-3 text-xs bg-green-600 hover:bg-green-700 text-white inline-flex items-center gap-1.5"
+                  disabled={loading || uploading || selectedImages.length >= MAX_IMAGES}
+                >
+                  {uploading ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Upload className="w-3.5 h-3.5" />
+                  )}
+                  {uploading ? "Đang tải..." : "Tải lên"}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleOpenImageSelector}
+                  className="h-8 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-1.5"
+                  disabled={loading || uploading}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Chọn hình ảnh
+                </Button>
+              </div>
             </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileUpload}
+              disabled={loading || uploading}
+              className="hidden"
+            />
 
             {selectedImages.length === 0 ? (
               <p className="text-sm text-gray-500 italic">
@@ -767,7 +871,7 @@ export default function AddVariantDialog({
           <div className="flex justify-end gap-2 pt-4">
             <Button
               type="button"
-              className="h-10 w-20 bg-gray-500 hover:bg-gray-700 text-white"
+              className="h-10 w-25 bg-gray-500 hover:bg-gray-700 text-white"
               onClick={handleCancel}
               disabled={loading}
             >
@@ -776,7 +880,7 @@ export default function AddVariantDialog({
             <Button
               type="button"
               onClick={handleSubmit}
-              className="h-10 w-20 bg-blue-600 hover:bg-blue-700 text-white"
+              className="h-10 w-25 bg-blue-600 hover:bg-blue-700 text-white"
               disabled={loading}
             >
               {loading ? (

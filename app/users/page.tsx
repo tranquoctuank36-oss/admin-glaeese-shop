@@ -265,7 +265,7 @@ function UsersPage() {
                 <Plus size={20} />
                 Thêm người dùng
               </Button>
-              <PeriodSelector value={period} onChange={setPeriod} />
+              {/* <PeriodSelector value={period} onChange={setPeriod} /> */}
             </div>
           </div>
 

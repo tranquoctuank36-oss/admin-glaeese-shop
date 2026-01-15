@@ -82,6 +82,20 @@ export async function performQualityCheck(
   return response.data.data;
 }
 
+export async function updateShouldRefund(
+  id: string,
+  shouldRefund: boolean,
+  refundAmount?: string,
+  reason?: string
+): Promise<Return> {
+  const response = await api.patch(`/admin/returns/${id}/should-refund`, { 
+    shouldRefund,
+    refundAmount,
+    reason
+  });
+  return response.data.data;
+}
+
 export async function getReturnStatistics() {
   try {
     const res = await api.get("/admin/returns/statistics");

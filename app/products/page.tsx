@@ -404,7 +404,7 @@ function ProductsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
                 Sản phẩm
@@ -441,7 +441,7 @@ function ProductsPage() {
           </div>
 
           {/* Period Selector */}
-          <div className="mb-2">
+          {/* <div className="mb-2">
             <div className="flex items-center gap-2 justify-end">
               <label className="text-sm font-medium text-gray-700">Thống kê:</label>
               <div className="w-48">
@@ -458,7 +458,7 @@ function ProductsPage() {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Statistics Cards */}
           {counts && (

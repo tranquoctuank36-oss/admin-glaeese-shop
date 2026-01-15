@@ -639,13 +639,13 @@ function VouchersPage() {
                             </p>
                           </div>
                           {voucher.type === 'fixed' && (
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">Cố định</span>
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">Số tiền cố định</span>
                           )}
                           {voucher.type === 'percentage' && (
                             <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-md">%</span>
                           )}
                           {voucher.type === 'free_shipping' && (
-                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md">Ship</span>
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md">Free Ship</span>
                           )}
                         </div>
                       </div>
@@ -996,7 +996,7 @@ function VouchersPage() {
                                       : voucher.value
                                   }%`
                                 : voucher.type === "free_shipping"
-                                ? "Free"
+                                ? "Free Ship"
                                 : `${Number(voucher.value).toLocaleString(
                                     "en-US"
                                   )}đ`}

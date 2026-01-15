@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { ImagePlus, X, Search, Loader2 } from "lucide-react";
-import { getImages } from "@/services/imagesService";
+import { useEffect, useState, useRef } from "react";
+import { ImagePlus, X, Search, Loader2, Upload } from "lucide-react";
+import { getImages, uploadImage } from "@/services/imagesService";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ImageItem } from "@/types/image";
+import toast from "react-hot-toast";
 
 export type BannerUploaderProps = {
   label?: string;
@@ -36,6 +37,8 @@ export default function ImagePicker({
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const hasError =
     (!!error && typeof error === "boolean") ||
@@ -85,6 +88,44 @@ export default function ImagePicker({
 
   const handleLoadMore = () => {
     setPage(prev => prev + 1);
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Vui lòng chỉ chọn tệp hình ảnh");
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // Upload image
+      const uploadResult = await uploadImage(file, ownerImageType);
+      
+      // Set the uploaded image as selected
+      onChange({
+        publicUrl: uploadResult.publicUrl,
+        id: uploadResult.id,
+        altText: undefined,
+      });
+      
+      toast.success("Tải lên hình ảnh thành công!");
+      setOpen(false);
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      const detail = error?.response?.data?.detail || error?.message;
+      toast.error(detail || "Tải ảnh lên thất bại");
+    } finally {
+      setUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   return (
@@ -177,6 +218,30 @@ export default function ImagePicker({
           <DialogHeader>
             <DialogTitle>Chọn hình ảnh</DialogTitle>
           </DialogHeader>
+
+          <div className="mb-4">
+            <Button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-9 px-4 bg-green-600 hover:bg-green-700 text-white inline-flex items-center gap-2"
+              disabled={disabled || uploading}
+            >
+              {uploading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Upload className="w-4 h-4" />
+              )}
+              {uploading ? "Đang tải..." : "Tải lên"}
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              disabled={disabled || uploading}
+              className="hidden"
+            />
+          </div>
 
           <div className="flex-1 overflow-y-auto min-h-0">
             {loading && page === 1 ? (

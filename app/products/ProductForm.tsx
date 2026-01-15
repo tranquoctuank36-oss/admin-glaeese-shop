@@ -659,7 +659,6 @@ export default function ProductForm({
       {/* Frame Information */}
       <div className="border-b pb-6">
         <h2 className="text-lg font-bold mb-4">Thông tin gọng kính</h2>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FloatingInput
             id="frameShapeId"

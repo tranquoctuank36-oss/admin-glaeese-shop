@@ -14,7 +14,7 @@ export type BannerFormValues = {
   title: string;
   imageId: string;
   imageUrl?: string; // For preview only
-  linkUrl?: string;
+  linkUrl?: string | null;
   sortOrder?: number;
 };
 
@@ -103,7 +103,7 @@ export default function BannerForm({
       await onSubmit({
         title: title.trim(),
         imageId: imageId.trim(),
-        linkUrl: linkUrl.trim() || undefined,
+        linkUrl: linkUrl.trim() || null,
         sortOrder: sortOrder ? parseInt(sortOrder) : 0,
       });
     } catch (err: any) {

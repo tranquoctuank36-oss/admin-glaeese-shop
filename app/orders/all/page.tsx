@@ -439,6 +439,7 @@ export default function AllOrdersPage() {
                   }}
                   options={[
                     { value: "", label: "Tất cả" },
+                    { value: "awaiting_payment", label: "Chờ thanh toán" },
                     { value: "pending", label: "Chờ xác nhận" },
                     { value: "processing", label: "Đang xử lý" },
                     { value: "shipping", label: "Đang giao" },
@@ -470,7 +471,6 @@ export default function AllOrdersPage() {
                     { value: "", label: "Tất cả" },
                     { value: "pending", label: "Chờ thanh toán" },
                     { value: "paid", label: "Đã thanh toán" },
-                    { value: "cod_collected", label: "Đã thu COD" },
                     { value: "failed", label: "Thất bại" },
                   ]}
                 />

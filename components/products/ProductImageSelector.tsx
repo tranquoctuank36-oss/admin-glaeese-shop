@@ -104,7 +104,7 @@ export default function ProductImageSelector({
       >
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
-            Chọn hình ảnh sản phẩm
+            Chọn hình ảnh biến thể sản phẩm
           </DialogTitle>
         </DialogHeader>
 

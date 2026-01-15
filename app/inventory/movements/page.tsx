@@ -498,7 +498,7 @@ function StockMovementsPage() {
                       {/* <th className="px-4 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Mã tham chiếu
                       </th> */}
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider w-80">
                         Ghi chú
                       </th>
                     </tr>
@@ -556,8 +556,8 @@ function StockMovementsPage() {
                           </span>
                         </td> */}
 
-                        <td className="px-6 py-4">
-                          <span className="text-sm text-gray-600">
+                        <td className="px-6 py-4 max-w-xs">
+                          <span className="text-sm text-gray-600 break-words">
                             {movement.note || "-"}
                           </span>
                         </td>

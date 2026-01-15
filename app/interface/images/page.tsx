@@ -390,7 +390,7 @@ export default function ImagesPage() {
                             }`}
                           >
                             {image.ownerType === "product_variant" || image.ownerType === "product"
-                              ? "Sản Phẩm"
+                              ? "Biến thể Sản Phẩm"
                               : image.ownerType === "brand"
                               ? "Thương Hiệu"
                               : image.ownerType === "discount"

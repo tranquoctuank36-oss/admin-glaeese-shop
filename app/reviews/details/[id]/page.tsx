@@ -50,7 +50,7 @@ function getStatusBadge(status: ReviewStatus) {
     case "pending":
       return (
         <span className="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-700">
-          Đang chờ
+          Chờ duyệt
         </span>
       );
     case "rejected":
@@ -346,24 +346,22 @@ function ReviewDetailsPage() {
         {/* Lightbox Modal */}
         {lightboxImage && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
             onClick={() => setLightboxImage(null)}
           >
             <Button
-              className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors"
+              className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-gray-200 transition-colors z-10"
               onClick={() => setLightboxImage(null)}
               title="Đóng"
             >
               <X className="w-6 h-6 text-gray-800" />
             </Button>
-            <div className="max-w-7xl max-h-[90vh] p-4">
-              <img
-                src={lightboxImage.url}
-                alt={lightboxImage.alt}
-                className="max-w-full max-h-full object-contain"
-                onClick={(e) => e.stopPropagation()}
-              />
-            </div>
+            <img
+              src={lightboxImage.url}
+              alt={lightboxImage.alt}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
           </div>
         )}
       </main>
