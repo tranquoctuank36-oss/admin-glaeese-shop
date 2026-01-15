@@ -239,13 +239,48 @@ export async function updateUser(userId: string, payload: UpdateUserPayload): Pr
   }
 }
 
-export async function getUserStatistics() {
+export async function getUserStatistics(preset?: string) {
   try {
-    const res = await api.get("/admin/users/statistics");
+    const params: Record<string, any> = {};
+    if (preset) {
+      // Map StatsPeriod values to API expected values
+      const presetMap: Record<string, string> = {
+        'today': 'today',
+        'week': 'this_week',
+        'month': 'this_month',
+        'quarter': 'this_month',
+        'year': 'this_year',
+        'custom': 'custom'
+      };
+      params.preset = presetMap[preset] || 'this_month';
+      console.log('getUserStatistics called with:', { 
+        original: preset, 
+        mapped: params.preset, 
+        allParams: params 
+      });
+    }
+    const res = await api.get("/admin/users/statistics", { params });
+    console.log('getUserStatistics response:', res.data);
     return res.data ?? {};
   } catch (err) {
     console.error("Failed to fetch user statistics:", err);
     return {};
+  }
+}
+
+export interface CreateUserPayload {
+  email: string;
+  roles: UserRole[];
+  sendInviteEmail?: boolean;
+  temporaryPassword?: string;
+}
+
+export async function createUser(payload: CreateUserPayload): Promise<User> {
+  try {
+    const res = await api.post("/admin/users", payload);
+    return toUser(res.data?.data ?? res.data);
+  } catch (err) {
+    return handleError(err, "Failed to create user");
   }
 }
 

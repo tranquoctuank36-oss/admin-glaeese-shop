@@ -51,10 +51,20 @@ function getRoleLabel(role: string): string {
 function getStatusLabel(status: string): string {
   const statusMap: Record<string, string> = {
     active: "Hoạt động",
-    inactive: "Không hoạt động",
+    inactive: "Chưa xác thực",
     suspended: "Bị khóa",
   };
   return statusMap[status] || status;
+}
+
+function getGenderLabel(gender?: string): string {
+  if (!gender) return "-";
+  const genderMap: Record<string, string> = {
+    male: "Nam",
+    female: "Nữ",
+    other: "Khác",
+  };
+  return genderMap[gender.toLowerCase()] || gender;
 }
 
 function UserDetailsPage() {
@@ -243,7 +253,7 @@ function UserDetailsPage() {
                 <label className="text-sm font-medium text-gray-500">
                   Giới tính
                 </label>
-                <p className="text-gray-800 capitalize">{user.gender || "-"}</p>
+                <p className="text-gray-800">{getGenderLabel(user.gender || "-")}</p>
               </div>
 
               <div>

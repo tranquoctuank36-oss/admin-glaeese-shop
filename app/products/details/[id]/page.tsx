@@ -267,7 +267,7 @@ function SortableVariantItem({
       className="border-2 rounded-xl p-5 bg-gradient-to-br border-gray-200 from-gray-50 to-white hover:shadow-lg transition-all cursor-grab active:cursor-grabbing"
     >
       <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2 flex-1">
+        <div className="flex items-center gap-2 flex-1 mr-4">
           <div className="flex items-center gap-1">
             <div className="flex items-center justify-center w-7 h-7 bg-blue-500 text-white text-sm font-bold rounded-full">
               {index + 1}
@@ -361,6 +361,27 @@ function SortableVariantItem({
                   )}
                   <span className="text-xs font-medium text-gray-700">
                     {color.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {variant.attributes && variant.attributes.length > 0 && (
+          <div className="flex justify-between py-1 border-b border-gray-100">
+            <span className="text-gray-600">Thuộc tính:</span>
+            <div className="flex flex-col gap-1.5 items-end">
+              {variant.attributes.map((attr: any, aidx: number) => (
+                <div
+                  key={aidx}
+                  className="flex items-center gap-2 px-2.5 py-1 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 shadow-sm"
+                >
+                  <span className="text-xs font-semibold text-blue-700">
+                    {attr.label || attr.key}:
+                  </span>
+                  <span className="text-xs font-medium text-gray-700">
+                    {attr.value}
                   </span>
                 </div>
               ))}
@@ -1278,6 +1299,29 @@ function ProductDetailPage() {
                                 )}
                                 <span className="text-xs font-medium text-gray-700">
                                   {color.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {variant.attributes && variant.attributes.length > 0 && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <span className="text-gray-600 text-xs font-medium block mb-2">
+                            Thuộc tính:
+                          </span>
+                          <div className="flex flex-col gap-2">
+                            {variant.attributes.map((attr: any, aidx: number) => (
+                              <div
+                                key={aidx}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 shadow-sm"
+                              >
+                                <span className="text-xs font-semibold text-blue-700">
+                                  {attr.label || attr.key}:
+                                </span>
+                                <span className="text-xs font-medium text-gray-700">
+                                  {attr.value}
                                 </span>
                               </div>
                             ))}

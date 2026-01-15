@@ -11,7 +11,7 @@ function SalesPage() {
 
   const salesModules = [
     {
-      title: "Quản lý chương trình giảm giá",
+      title: "Chương trình giảm giá",
       description: "Tạo và quản lý chương trình giảm giá sản phẩm, giá khuyến mại và ưu đãi đặc biệt",
       icon: Percent,
       color: "from-purple-50 to-white",
@@ -20,7 +20,7 @@ function SalesPage() {
       path: Routes.sales.discounts.root,
     },
     {
-      title: "Quản lý mã giảm giá",
+      title: "Mã giảm giá",
       description: "Tạo và quản lý mã giảm giá và chiến dịch khuyến mại",
       icon: Ticket,
       color: "from-blue-50 to-white",

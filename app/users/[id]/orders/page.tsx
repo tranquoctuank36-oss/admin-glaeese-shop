@@ -196,46 +196,46 @@ function UserOrdersPage() {
     const statusLower = status.toLowerCase();
     switch (statusLower) {
       case "awaiting_payment":
-        return "bg-orange-100 text-orange-800 border border-orange-300";
+        return "bg-orange-100 text-orange-800";
       case "pending":
-        return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+        return "bg-yellow-100 text-yellow-800";
       case "processing":
-        return "bg-blue-100 text-blue-800 border border-blue-300";
+        return "bg-blue-100 text-blue-800";
       case "shipping":
-        return "bg-indigo-100 text-indigo-800 border border-indigo-300";
+        return "bg-indigo-100 text-indigo-800";
       case "delivered":
-        return "bg-green-100 text-green-800 border border-green-300";
+        return "bg-green-100 text-green-800";
       case "completed":
-        return "bg-emerald-100 text-emerald-800 border border-emerald-300";
+        return "bg-emerald-100 text-emerald-800";
       case "cancelled":
-        return "bg-red-100 text-red-800 border border-red-300";
+        return "bg-red-100 text-red-800";
       case "expired":
-        return "bg-gray-100 text-gray-800 border border-gray-300";
+        return "bg-gray-100 text-gray-800";
       case "returned":
-        return "bg-pink-100 text-pink-800 border border-pink-300";
+        return "bg-pink-100 text-pink-800";
       case "on_hold":
-        return "bg-purple-100 text-purple-800 border border-purple-300";
+        return "bg-purple-100 text-purple-800";
       // Fallback for old status formats
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800 border border-yellow-300";
+        return "bg-yellow-100 text-yellow-800";
       case "AWAITING_PAYMENT":
-        return "bg-orange-100 text-orange-800 border border-orange-300";
+        return "bg-orange-100 text-orange-800";
       case "PLACED":
-        return "bg-blue-100 text-blue-800 border border-blue-300";
+        return "bg-blue-100 text-blue-800";
       case "PAID":
-        return "bg-green-100 text-green-800 border border-green-300";
+        return "bg-green-100 text-green-800";
       case "CONFIRMED":
-        return "bg-green-100 text-green-800 border border-green-300";
+        return "bg-green-100 text-green-800";
       case "PREPARING_SHIPMENT":
-        return "bg-indigo-100 text-indigo-800 border border-indigo-300";
+        return "bg-indigo-100 text-indigo-800";
       case "SHIPPED":
-        return "bg-indigo-100 text-indigo-800 border border-indigo-300";
+        return "bg-indigo-100 text-indigo-800";
       case "DELIVERED":
-        return "bg-green-100 text-green-800 border border-green-300";
+        return "bg-green-100 text-green-800";
       case "CANCELLED":
-        return "bg-red-100 text-red-800 border border-red-300";
+        return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800 border border-gray-300";
+        return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -348,7 +348,7 @@ function UserOrdersPage() {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Sản phẩm
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                         Tổng
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
@@ -407,7 +407,7 @@ function UserOrdersPage() {
                           </div>
                         </td>
 
-                        <td className="px-6 py-4 text-left">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           <p className="text-gray-800 font-semibold">
                             {formatCurrency(order.grandTotal)}
                           </p>

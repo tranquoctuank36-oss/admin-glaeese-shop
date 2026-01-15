@@ -293,7 +293,7 @@ function StocksPage() {
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Hàng trong kho</h1>
+                <h1 className="text-3xl font-bold text-gray-800">Kho hàng</h1>
                 <p className="text-sm text-gray-500 mt-1">Quản lý mức tồn kho và tình trạng sản phẩm</p>
               </div>
             </div>
@@ -471,7 +471,7 @@ function StocksPage() {
                 setSearchTerm(v);
                 setCurrentPage(1);
               }}
-              placeholder="Tìm kiếm theo tên sản phẩm hoặc SKU..."
+              placeholder="Tìm kiếm theo tên biến thể sản phẩm hoặc SKU..."
               stockStatus={statusFilter === "" ? "all" : (statusFilter as any)}
               onFiltersChange={(patch) => {
                 if (patch.stockStatus !== undefined) {

@@ -7,8 +7,8 @@ export interface Refund {
   orderId: Record<string, any>; 
   paymentId: Record<string, any>;
   orderReturnId: Record<string, any>;
-  refundType: "vnpay" | "bank_transfer";
-  trigger: "return" | "goodwill" | "error" | "promotion" | "manual";
+  refundType: "online_payment" | "bank_transfer";
+  trigger: "return" | "manual" | "cancel_order";
   amount: string;
   status: "pending" | "approved" | "rejected" | "processing" | "success" | "failed" | "cancelled";
   reason: Record<string, any>;

@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import {
   DollarSign,
   ShoppingCart,
@@ -30,12 +28,12 @@ export default function OverviewCards({ data, loading = false }: OverviewCardsPr
         value={data ? formatCurrency(data.totalRevenue) : "0đ"}
         icon={DollarSign}
         growth={data?.revenueGrowth}
-        subtitle={data ? `TB: ${formatCurrency(data.averageOrderValue)}/đơn` : undefined}
+        subtitle={data ? `Trung bình: ${formatCurrency(data.averageOrderValue)}/đơn` : undefined}
         loading={loading}
         color="blue"
       />
       <EnhancedStatCard
-        title="Tổng đơn hàng"
+        title="Tổng đơn hàng đã giao"
         value={data ? formatCompactNumber(data.totalOrders) : "0"}
         icon={ShoppingCart}
         growth={data?.ordersGrowth}
@@ -44,7 +42,7 @@ export default function OverviewCards({ data, loading = false }: OverviewCardsPr
         color="green"
       />
       <EnhancedStatCard
-        title="Khách hàng"
+        title="Khách hàng đang hoạt động"
         value={data ? formatCompactNumber(data.totalCustomers) : "0"}
         icon={Users}
         subtitle={data ? `Tỉ lệ chuyển đổi: ${data.conversionRate % 1 === 0 ? data.conversionRate.toFixed(0) : data.conversionRate.toFixed(1)}%` : undefined}

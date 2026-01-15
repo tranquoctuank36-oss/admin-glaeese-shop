@@ -52,6 +52,7 @@ export default function AddVariantDialog({
   };
 
   const [name, setName] = useState(variant?.name || "");
+  const [productName, setProductName] = useState("");
   const [sku, setSku] = useState(variant?.sku || "");
   const [quantityAvailable, setQuantityAvailable] = useState(
     String(variant?.quantityAvailable || 0)
@@ -63,6 +64,7 @@ export default function AddVariantDialog({
   const [productImagesIds, setProductImagesIds] = useState<string[]>(
     variant?.productImagesIds || []
   );
+  const [attributes, setAttributes] = useState<Array<{key: string; value: string; label: string}>>(variant?.attributes || []);
   const [isActive, setIsActive] = useState<boolean>(variant?.isActive ?? true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -151,6 +153,7 @@ export default function AddVariantDialog({
       );
       setColorIds(variant.colorIds || []);
       setProductImagesIds(variant.productImagesIds || []);
+      setAttributes(variant.attributes || []);
       setIsActive(variant.isActive ?? true);
 
       // Load selected images for preview
@@ -195,6 +198,7 @@ export default function AddVariantDialog({
       setColorIds([]);
       setProductImagesIds([]);
       setSelectedImages([]);
+      setAttributes([]);
       setIsActive(true);
     }
     setError("");
@@ -350,6 +354,7 @@ export default function AddVariantDialog({
         colorIds: colorIds.length > 0 ? colorIds : undefined,
         productImagesIds:
           productImagesIds.length > 0 ? productImagesIds : undefined,
+        attributes: attributes.length > 0 ? attributes : undefined,
       };
 
       // If editing existing variant with ID, call update API
@@ -361,6 +366,7 @@ export default function AddVariantDialog({
           isActive: variantData.isActive,
           colorIds: variantData.colorIds || [],
           imageIds: variantData.productImagesIds || [],
+          attributes: variantData.attributes || [],
         };
 
         await updateVariant(variantId, updatePayload);
@@ -377,6 +383,7 @@ export default function AddVariantDialog({
           isActive: variantData.isActive,
           colorIds: variantData.colorIds || [],
           imageIds: variantData.productImagesIds || [],
+          attributes: variantData.attributes || [],
         };
 
         await createVariant(productId, createPayload);
@@ -397,6 +404,7 @@ export default function AddVariantDialog({
       setColorIds([]);
       setProductImagesIds([]);
       setSelectedImages([]);
+      setAttributes([]);
       setIsActive(true);
       setError("");
       setLoading(false);
@@ -415,6 +423,7 @@ export default function AddVariantDialog({
     setColorIds([]);
     setProductImagesIds([]);
     setSelectedImages([]);
+    setAttributes([]);
     setIsActive(true);
     setError("");
     setColorSearch("");
@@ -430,7 +439,7 @@ export default function AddVariantDialog({
       onOpenChange(isOpen);
     }}>
       <DialogContent
-        className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
+        className="sm:max-w-[850px] max-h-[90vh] overflow-y-auto"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -443,23 +452,41 @@ export default function AddVariantDialog({
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FloatingInput
-              id="variant-name"
-              label="Tên biến thể sản phẩm"
-              required
-              value={name}
-              onChange={setName}
-              disabled={loading}
-            />
+            <div>
+              <FloatingInput
+                id="variant-name"
+                label="Tên biến thể sản phẩm"
+                required
+                value={name}
+                onChange={setName}
+                disabled={loading}
+              />
+              <p className="text-xs text-gray-500 mt-1 ml-1">
+                Cấu trúc: {(() => {
+                  const selectedColorNames = colors
+                    .filter(color => colorIds.includes(color.id))
+                    .map(color => color.name)
+                    .join(", ");
+                  const productPart = productName || "[Tên sản phẩm]";
+                  const colorPart = selectedColorNames || "[Màu sắc]";
+                  return `${productPart} - ${colorPart}`;
+                })()}
+              </p>
+            </div>
 
-            <FloatingInput
-              id="variant-sku"
-              label="SKU"
-              required
-              value={sku}
-              onChange={setSku}
-              disabled={loading}
-            />
+            <div>
+              <FloatingInput
+                id="variant-sku"
+                label="SKU (VD: GKN-OR5019-001-XD)"
+                required
+                value={sku}
+                onChange={setSku}
+                disabled={loading}
+              />
+              <p className="text-xs text-gray-500 mt-1 ml-1">
+                Cấu trúc: [Loại][Giới tính]-[Thương hiệu]-[Mã sản phẩm]-[Chữ cái màu]
+              </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -592,6 +619,81 @@ export default function AddVariantDialog({
                 >
                   Xóa tất cả
                 </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Attributes Section */}
+          <div className="mt-4">
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                Thuộc tính
+              </label>
+              <Button
+                type="button"
+                onClick={() => setAttributes([...attributes, { key: "", value: "", label: "" }])}
+                className="h-8 px-3 text-xs bg-blue-600 hover:bg-blue-700 text-white inline-flex items-center gap-1.5"
+                disabled={loading}
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Thêm thuộc tính
+              </Button>
+            </div>
+
+            {attributes.length === 0 ? (
+              <p className="text-sm text-gray-500 italic">
+                Chưa có thuộc tính nào.
+              </p>
+            ) : (
+              <div className="space-y-3 border border-gray-200 rounded-lg p-3 bg-gray-50">
+                {attributes.map((attr, index) => (
+                  <div key={index} className="bg-white p-3 rounded-lg border border-gray-200 relative">
+                    <Button
+                      type="button"
+                      onClick={() => setAttributes(attributes.filter((_, i) => i !== index))}
+                      className="absolute top-2 right-2 w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center"
+                      disabled={loading}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pr-8">
+                      <FloatingInput
+                        id={`attr-key-${index}`}
+                        label="Key (ví dụ: polarized)"
+                        value={attr.key}
+                        onChange={(v) => {
+                          const newAttrs = [...attributes];
+                          newAttrs[index].key = v;
+                          setAttributes(newAttrs);
+                        }}
+                        disabled={loading}
+                      />
+                      <FloatingInput
+                        id={`attr-value-${index}`}
+                        label="Value (ví dụ: true)"
+                        value={attr.value}
+                        onChange={(v) => {
+                          const newAttrs = [...attributes];
+                          newAttrs[index].value = v;
+                          setAttributes(newAttrs);
+                        }}
+                        disabled={loading}
+                      />
+                      <FloatingInput
+                        id={`attr-label-${index}`}
+                        label="Label (ví dụ: Phân cực)"
+                        value={attr.label}
+                        onChange={(v) => {
+                          const newAttrs = [...attributes];
+                          newAttrs[index].label = v;
+                          setAttributes(newAttrs);
+                        }}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

@@ -55,6 +55,7 @@ export interface CreateManualRefundPayload {
   amount: number;
   reason: string;
   trigger: string;
+  refundType: string;
   orderReturnId?: string;
   bankAccountName: string;
   bankAccountNumber: string;

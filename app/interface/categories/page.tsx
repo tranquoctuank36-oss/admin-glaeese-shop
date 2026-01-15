@@ -207,10 +207,8 @@ export default function CategoriesPage() {
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800">Danh sách danh mục</h1>
-              <p className="text-gray-600 mt-1">
-                Quản lý danh mục (danh sách phẳng)
-              </p>
+              <h1 className="text-3xl font-bold text-gray-800">Danh mục</h1>
+              <p className="text-gray-600 mt-1">Quản lý danh mục sản phẩm</p>
             </div>
 
             <div className="flex gap-2">
@@ -273,7 +271,7 @@ export default function CategoriesPage() {
           >
             <div className="rounded-xl overflow-hidden">
               <div className="overflow-x-auto">
-                <table className="table-auto">
+                <table className="w-full">
                   <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                       <th className="px-4 py-3 w-60 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -365,7 +363,7 @@ export default function CategoriesPage() {
                       <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold text-gray-600">
-                            Cấp độ
+                            Độ sâu
                           </span>
                           <button
                             type="button"
@@ -376,7 +374,7 @@ export default function CategoriesPage() {
                                 ? `Sắp xếp: ${
                                     q.sortOrder === "ASC" ? "Thấp" : "Cao"
                                   } (click để thay đổi)`
-                                : "Chưa sắp xếp (click để sắp xếp theo Cấp độ)"
+                                : "Chưa sắp xếp (click để sắp xếp theo Độ sâu)"
                             }
                           >
                             {q.sortField === "level" ? (

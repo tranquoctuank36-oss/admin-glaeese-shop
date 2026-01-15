@@ -12,7 +12,7 @@ import {
   Legend,
 } from "recharts";
 import type { RevenueByPeriod } from "@/types/dashboard";
-import { formatCurrency } from "@/lib/dashboardUtils";
+import { formatCurrency, formatCompactNumber } from "@/lib/dashboardUtils";
 
 interface RevenueLineChartProps {
   data: RevenueByPeriod[];
@@ -31,11 +31,17 @@ export default function RevenueLineChart({
     );
   }
 
-  const chartData = data.map((item) => ({
-    label: item.label,
-    revenue: parseFloat(item.revenue),
-    orderCount: item.orderCount,
-  }));
+  const chartData = data.map((item) => {
+    // Convert "2026-01-02" to "02-01-2026"
+    const [year, month, day] = item.label.split('-');
+    const formattedLabel = `${day}-${month}-${year}`;
+    
+    return {
+      label: formattedLabel,
+      revenue: parseFloat(item.revenue),
+      orderCount: item.orderCount,
+    };
+  });
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
@@ -43,7 +49,7 @@ export default function RevenueLineChart({
         Doanh thu theo thời gian
       </h3>
       <ResponsiveContainer width="100%" height={350}>
-        <LineChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+        <LineChart data={chartData} margin={{ top: 5, right: 20, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
           <XAxis
             dataKey="label"
@@ -51,16 +57,44 @@ export default function RevenueLineChart({
             stroke="#9CA3AF"
           />
           <YAxis
+            width={70}
             tick={{ fontSize: 12 }}
             stroke="#9CA3AF"
-            tickFormatter={(value) => formatCurrency(value).replace(/\s?₫/, "")}
+            tickFormatter={(value) => new Intl.NumberFormat("en-US").format(value) + "đ"}
           />
           <Tooltip
-            formatter={(value: number) => formatCurrency(value)}
+            formatter={(value: number, name: string, props: any) => {
+              if (name === "Doanh thu") {
+                return [formatCurrency(value), "Doanh thu"];
+              }
+              return [value, name];
+            }}
+            labelFormatter={(label) => label}
             contentStyle={{
               backgroundColor: "white",
               border: "1px solid #e5e7eb",
               borderRadius: "8px",
+              padding: "12px",
+            }}
+            itemStyle={{
+              padding: "4px 0",
+            }}
+            content={({ active, payload, label }) => {
+              if (active && payload && payload.length) {
+                const data = payload[0].payload;
+                return (
+                  <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3">
+                    <p className="font-semibold text-gray-900 mb-2">{label}</p>
+                    <p className="text-blue-600 font-medium">
+                      Doanh thu: {formatCurrency(data.revenue)}
+                    </p>
+                    <p className="text-gray-600 text-sm mt-1">
+                      Số đơn: {data.orderCount} đơn
+                    </p>
+                  </div>
+                );
+              }
+              return null;
             }}
           />
           <Legend 

@@ -49,6 +49,7 @@ export default function PaymentMethodsBar({
           <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#9CA3AF" />
           <YAxis
             yAxisId="left"
+            width={70}
             tick={{ fontSize: 12 }}
             stroke={CHART_COLORS.primary}
             tickFormatter={(value) => formatCurrency(value).replace(/\s?₫/, "")}

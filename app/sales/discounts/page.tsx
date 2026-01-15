@@ -389,7 +389,7 @@ function DiscountsPage() {
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách các chương trình giảm giá
+                  Chương trình giảm giá
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Tạo và quản lý các chương trình giảm giá sản phẩm và giá khuyến mại
@@ -617,7 +617,11 @@ function DiscountsPage() {
               </div>
               <Button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
+                className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 rounded-lg transition-all ${
+                  showFilters
+                    ? 'border-1 border-blue-500'
+                    : 'border border-gray-300 hover:border-gray-500'
+                }`}
               >
                 <Filter size={20} />
                 Bộ lọc
@@ -905,7 +909,7 @@ function DiscountsPage() {
                                   ?
                                 </div>
                               }
-                              confirmText="Hủy chương trình giảm giá"
+                              confirmText="Hủy"
                               onConfirm={() => handleCancel(discount.id)}
                             >
                               <Button
@@ -930,7 +934,7 @@ function DiscountsPage() {
                                   ?
                                 </div>
                               }
-                              confirmText="Xóa  "
+                              confirmText="Xóa"
                               onConfirm={() => handleDelete(discount.id)}
                             >
                               <Button

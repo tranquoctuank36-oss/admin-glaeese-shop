@@ -68,6 +68,7 @@ export const Routes = {
 
   users: {
     root: "/users",
+    add: "/users/add",
     details: "/users/details/[id]",
     edit: "/users/edit/[id]",
     addresses: "/users/[id]/addresses",

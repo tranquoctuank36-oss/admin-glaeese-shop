@@ -52,7 +52,7 @@ function CustomSelect<T extends string>({
         type="button"
         onClick={() => setOpen(!open)}
         className={`text-sm px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between min-w-[120px] ${
-          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+          open ? "border-1 border-blue-400" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         <span className="text-sm text-gray-900">
@@ -97,8 +97,11 @@ export default function CategoriesReviewPage() {
   const [maxDepth, setMaxDepth] = useState<number>(0);
 
   const [status, setStatus] = useState<CategoryStatusOption>("all");
-  const [sortField, setSortField] = useState<SortField>("priority");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("ASC");
+  const [sort, setSort] = useState<string>("priority-ASC");
+
+  // Parse sortField and sortOrder from combined sort state
+  const sortField = sort.split("-")[0] as SortField;
+  const sortOrder = sort.split("-")[1] as SortOrder;
 
   const [tree, setTree] = useState<CategoryTree[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -150,13 +153,11 @@ export default function CategoriesReviewPage() {
     return nodes.map(recurse).filter(Boolean) as CategoryTree[];
   };
 
-  // ---------- initial load: fetch depth 5 to discover up to 5 levels ----------
   useEffect(() => {
     let alive = true;
     (async () => {
       setLoading(true);
       try {
-        // request depth=5 (cap)
         const res = await getCategoriesTree({
           depth: "5",
           sortField: "priority",
@@ -164,13 +165,11 @@ export default function CategoriesReviewPage() {
         });
         if (!alive) return;
         const rows = res.data ?? [];
-        // compute max depth found but cap at 5
         const levels = collectLevels(rows);
         const computedMax = levels.length ? Math.max(...levels) : 0;
         const cappedMax = Math.min(5, Math.max(0, computedMax));
         setMaxDepth(cappedMax);
 
-        // default depth to the deepest found (capped) if not set
         setDepth((d) =>
           typeof d === "undefined" ? (`${cappedMax}` as DepthFilter) : d
         );
@@ -184,16 +183,12 @@ export default function CategoriesReviewPage() {
     };
   }, []);
 
-  // ---------- refetch when depth or sortField/order change ----------
-  // We fetch tree up to requested depth to ensure nested children data exists.
   useEffect(() => {
-    // if depth not set yet, nothing to do
     if (typeof depth === "undefined") return;
     let alive = true;
     (async () => {
       setLoading(true);
       try {
-        // request tree up to requested depth (cap at 5)
         const requested = Math.min(5, Math.max(0, Number(depth)));
         const res = await getCategoriesTree({
           depth: `${requested}`,
@@ -202,12 +197,10 @@ export default function CategoriesReviewPage() {
         });
         if (!alive) return;
         const rows = res.data ?? [];
-        // recalc maxDepth from returned rows but cap at 5; only increase maxDepth if bigger
         const levels = collectLevels(rows);
         const computedMax = levels.length ? Math.max(...levels) : 0;
         const cappedMax = Math.min(5, Math.max(0, computedMax));
         setMaxDepth((prev) => Math.max(prev ?? 0, cappedMax));
-        // if current depth > cappedMax, clamp it
         if (Number(depth) > cappedMax) {
           setDepth(`${cappedMax}` as DepthFilter);
         }
@@ -221,7 +214,6 @@ export default function CategoriesReviewPage() {
     };
   }, [depth, sortField, sortOrder]);
 
-  // depth options (0 .. maxDepth)
   const depthOptions: DepthFilter[] = Array.from(
     { length: maxDepth + 1 },
     (_, i) => `${i}` as DepthFilter
@@ -282,7 +274,7 @@ export default function CategoriesReviewPage() {
               <div className="text-base text-gray-700 font-bold">Bộ lọc:</div>
 
               <label className="text-sm text-gray-700 flex items-center gap-2">
-                <span className="text-base">Cấp độ:</span>
+                <span className="text-base">Độ sâu:</span>
                 <CustomSelect
                   value={depth ?? `${maxDepth}`}
                   onChange={(v) => setDepth(v as DepthFilter)}
@@ -310,25 +302,17 @@ export default function CategoriesReviewPage() {
               <label className="text-sm text-gray-700 flex items-center gap-2">
                 <span className="text-base">Sắp xếp theo: </span>
                 <CustomSelect
-                  value={sortField}
-                  onChange={(v) => setSortField(v as SortField)}
+                  value={sort}
+                  onChange={(v) => setSort(v)}
                   options={[
-                    { value: "priority", label: "Mức ưu tiên" },
-                    { value: "createdAt", label: "Ngày tạo" },
-                    { value: "name", label: "Tên" },
-                    { value: "level", label: "Cấp độ" },
-                  ]}
-                />
-              </label>
-
-              <label className="text-sm text-gray-700 flex items-center gap-2">
-                <span className="text-base">Thứ tự:</span>
-                <CustomSelect
-                  value={sortOrder}
-                  onChange={(v) => setSortOrder(v as SortOrder)}
-                  options={[
-                    { value: "ASC", label: "Tăng dần" },
-                    { value: "DESC", label: "Giảm dần" },
+                    { value: "priority-ASC", label: "Mức ưu tiên tăng dần" },
+                    { value: "priority-DESC", label: "Mức ưu tiên giảm dần" },
+                    { value: "createdAt-ASC", label: "Ngày tạo tăng dần" },
+                    { value: "createdAt-DESC", label: "Ngày tạo giảm dần" },
+                    { value: "name-ASC", label: "Tên A-Z" },
+                    { value: "name-DESC", label: "Tên Z-A" },
+                    { value: "level-ASC", label: "Độ sâu tăng dần" },
+                    { value: "level-DESC", label: "Độ sâu giảm dần" },
                   ]}
                 />
               </label>
@@ -338,8 +322,7 @@ export default function CategoriesReviewPage() {
                 onClick={() => {
                   setDepth("5");
                   setStatus("all");
-                  setSortField("priority");
-                  setSortOrder("ASC");
+                  setSort("priority-ASC");
                 }}
               >
                 Đặt lại

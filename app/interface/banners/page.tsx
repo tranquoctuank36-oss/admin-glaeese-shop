@@ -133,9 +133,9 @@ export default function BannersPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Danh sách banner {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+                Banners {meta?.totalItems !== undefined && `(${meta.totalItems})`}
               </h1>
-              <p className="text-gray-600 mt-1">Quản lý banner trang chủ</p>
+              <p className="text-gray-600 mt-1">Quản lý banners trang chủ</p>
             </div>
 
             <Button

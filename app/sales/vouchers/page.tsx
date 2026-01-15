@@ -79,7 +79,7 @@ function CustomSelect<T extends string>({
         type="button"
         onClick={() => setOpen(!open)}
         className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
-          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+          open ? "border-1 border-blue-400" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         <span className="text-sm text-gray-900">
@@ -148,6 +148,7 @@ function convertToISOString(dateTimeLocal: string): string {
 
 function VouchersPage() {
   const router = useRouter();
+  const filtersRef = useRef<HTMLDivElement>(null);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -165,6 +166,22 @@ function VouchersPage() {
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [trashCount, setTrashCount] = useState<number>(0);
   const [stats, setStats] = useState<any>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+
+    if (showFilters) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showFilters]);
 
   useEffect(() => {
     (async () => {
@@ -370,7 +387,7 @@ function VouchersPage() {
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách mã giảm giá
+                  Mã giảm giá
                 </h1>
                 <p className="text-sm text-gray-500 mt-1">
                   Tạo và quản lý mã giảm giá và chiến dịch khuyến mại
@@ -663,13 +680,13 @@ function VouchersPage() {
                             </p>
                           </div>
                           {voucher.type === 'fixed' && (
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">Cố định</span>
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-md">Số tiền cố định</span>
                           )}
                           {voucher.type === 'percentage' && (
                             <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-md">%</span>
                           )}
                           {voucher.type === 'free_shipping' && (
-                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md">Ship</span>
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-md">Free Ship</span>
                           )}
                         </div>
                       </div>
@@ -682,6 +699,7 @@ function VouchersPage() {
 
           {/* Search and Filter Bar */}
           <motion.div
+            ref={filtersRef}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -707,7 +725,9 @@ function VouchersPage() {
               </div>
               <Button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
+                className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 rounded-lg transition-colors ${
+                  showFilters ? 'border-1 border-blue-500' : 'border border-gray-300 hover:border-gray-500'
+                }`}
               >
                 <Filter size={20} />
                 Bộ lọc

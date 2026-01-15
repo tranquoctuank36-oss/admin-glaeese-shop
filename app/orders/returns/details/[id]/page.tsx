@@ -228,6 +228,7 @@ export default function ReturnDetailsPage() {
           },
         ];
       case "qc_pass":
+      case "qc_fail":
         return [
           {
             label: "Hoàn tất yêu cầu",
@@ -334,6 +335,36 @@ export default function ReturnDetailsPage() {
                 <p className="mt-1 text-gray-900 font-mono">{returnData.orderCode}</p>
               </div>
 
+              {returnData.qcResult && (
+                <div>
+                  <label className="text-sm font-bold text-gray-600">
+                    Kết quả QC
+                  </label>
+                  <p className={`mt-1 font-semibold ${
+                    (typeof returnData.qcResult === 'string' ? returnData.qcResult : '') === 'pass' 
+                      ? 'text-teal-600' 
+                      : 'text-red-600'
+                  }`}>
+                    {typeof returnData.qcResult === "string"
+                      ? returnData.qcResult === 'pass' ? 'Đạt' : 'Không đạt'
+                      : JSON.stringify(returnData.qcResult)}
+                  </p>
+                </div>
+              )}
+
+              {returnData.status === 'completed' && (
+                <div>
+                  <label className="text-sm font-bold text-gray-600">
+                    Trạng thái hoàn tiền
+                  </label>
+                  <p className={`mt-1 font-semibold ${
+                    returnData.shouldRefund ? 'text-green-600' : 'text-orange-600'
+                  }`}>
+                    {returnData.shouldRefund ? 'Được hoàn tiền' : 'Không hoàn tiền'}
+                  </p>
+                </div>
+              )}
+
               <div className="md:col-span-2">
                 <label className="text-sm font-bold text-gray-600">
                   Lý do trả hàng
@@ -368,37 +399,6 @@ export default function ReturnDetailsPage() {
                   </div>
                 )}
 
-              {returnData.rejectedReason &&
-                Object.keys(returnData.rejectedReason).length > 0 && (
-                  <div className="md:col-span-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <label className="text-sm font-bold text-red-800">
-                      Lý do từ chối
-                    </label>
-                    <p className="mt-1 text-red-700">
-                      {typeof returnData.rejectedReason === "string"
-                        ? returnData.rejectedReason
-                        : JSON.stringify(returnData.rejectedReason)}
-                    </p>
-                  </div>
-                )}
-
-              {returnData.qcResult && (
-                <div>
-                  <label className="text-sm font-bold text-gray-600">
-                    Kết quả QC
-                  </label>
-                  <p className={`mt-1 font-semibold ${
-                    (typeof returnData.qcResult === 'string' ? returnData.qcResult : '') === 'pass' 
-                      ? 'text-teal-600' 
-                      : 'text-red-600'
-                  }`}>
-                    {typeof returnData.qcResult === "string"
-                      ? returnData.qcResult === 'pass' ? 'Đạt' : 'Không đạt'
-                      : JSON.stringify(returnData.qcResult)}
-                  </p>
-                </div>
-              )}
-
               {returnData.qcNote && Object.keys(returnData.qcNote).length > 0 && (
                 <div className="md:col-span-2">
                   <label className="text-sm font-bold text-gray-600">
@@ -412,18 +412,19 @@ export default function ReturnDetailsPage() {
                 </div>
               )}
 
-              {returnData.status === 'completed' && (
-                <div>
-                  <label className="text-sm font-bold text-gray-600">
-                    Trạng thái hoàn tiền
-                  </label>
-                  <p className={`mt-1 font-semibold ${
-                    returnData.shouldRefund ? 'text-green-600' : 'text-orange-600'
-                  }`}>
-                    {returnData.shouldRefund ? 'Được hoàn tiền' : 'Không hoàn tiền'}
-                  </p>
-                </div>
-              )}
+              {returnData.rejectedReason &&
+                Object.keys(returnData.rejectedReason).length > 0 && (
+                  <div className="md:col-span-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <label className="text-sm font-bold text-red-800">
+                      Lý do từ chối
+                    </label>
+                    <p className="mt-1 text-red-700">
+                      {typeof returnData.rejectedReason === "string"
+                        ? returnData.rejectedReason
+                        : JSON.stringify(returnData.rejectedReason)}
+                    </p>
+                  </div>
+                )}
 
               {returnData.images && returnData.images.length > 0 && (
                 <div className="md:col-span-2">
@@ -670,144 +671,6 @@ export default function ReturnDetailsPage() {
             </div>
           </motion.div>
 
-          {/* Actions */}
-          {getStatusActions(returnData.status).length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-lg shadow border border-gray-200 p-6"
-            >
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                Thao tác
-              </h2>
-
-              <div className="space-y-3">
-                {getStatusActions(returnData.status).map((action) => {
-                  // For approve action, use confirm popover
-                  if (action.value === "approved") {
-                    return (
-                      <ConfirmPopover
-                        key={action.value}
-                        title="Xác nhận duyệt yêu cầu?"
-                        message="Bạn có chắc chắn muốn duyệt yêu cầu trả hàng này?"
-                        onConfirm={() => handleStatusUpdate(action.value)}
-                        confirmText={action.label}
-                        cancelText="Hủy"
-                        confirmLoading={updating}
-                        confirmClassName="h-10 bg-blue-600 hover:bg-blue-700 text-white"
-                        widthClass="w-[320px]"
-                      >
-                        <Button
-                          disabled={updating}
-                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          {action.label}
-                        </Button>
-                      </ConfirmPopover>
-                    );
-                  }
-                  
-                  // For reject action, use confirm popover
-                  if (action.value === "rejected") {
-                    return (
-                      <Button
-                        key={action.value}
-                        onClick={() => setShowRejectDialog(true)}
-                        disabled={updating}
-                        className="w-full bg-red-600 hover:bg-red-700 text-white"
-                      >
-                        {action.label}
-                      </Button>
-                    );
-                  }
-                  
-                  // For received_at_warehouse, use confirm popover
-                  if (action.value === "received_at_warehouse") {
-                    return (
-                      <ConfirmPopover
-                        key={action.value}
-                        title="Xác nhận đã nhận hàng?"
-                        message="Bạn có chắc chắn đã nhận được hàng trả về kho?"
-                        onConfirm={() => handleStatusUpdate(action.value)}
-                        confirmText={action.label}
-                        cancelText="Hủy"
-                        confirmLoading={updating}
-                        confirmClassName="h-10 bg-indigo-600 hover:bg-indigo-700 text-white"
-                        widthClass="w-[320px]"
-                      >
-                        <Button
-                          disabled={updating}
-                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
-                        >
-                          {action.label}
-                        </Button>
-                      </ConfirmPopover>
-                    );
-                  }
-                  
-                  // For QC check, open dialog
-                  if (action.value === "qc_check") {
-                    return (
-                      <Button
-                        key={action.value}
-                        onClick={() => handleStatusUpdate(action.value)}
-                        disabled={updating}
-                        className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-                      >
-                        {action.label}
-                      </Button>
-                    );
-                  }
-                  
-                  // For completed action, use confirm popover
-                  if (action.value === "completed") {
-                    return (
-                      <ConfirmPopover
-                        key={action.value}
-                        title="Xác nhận hoàn tất?"
-                        message="Bạn có chắc chắn muốn hoàn tất yêu cầu trả hàng này?"
-                        onConfirm={() => handleStatusUpdate(action.value)}
-                        confirmText={action.label}
-                        cancelText="Hủy"
-                        confirmLoading={updating}
-                        confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
-                        widthClass="w-[320px]"
-                      >
-                        <Button
-                          disabled={updating}
-                          className="w-full bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          {action.label}
-                        </Button>
-                      </ConfirmPopover>
-                    );
-                  }
-                  
-                  // For other actions, direct button (should not reach here)
-                  return (
-                    <Button
-                      key={action.value}
-                      onClick={() => handleStatusUpdate(action.value)}
-                      disabled={updating}
-                      className={`w-full ${
-                        action.color === "green"
-                          ? "bg-green-600 hover:bg-green-700"
-                          : action.color === "orange"
-                          ? "bg-orange-600 hover:bg-orange-700"
-                          : action.color === "indigo"
-                          ? "bg-indigo-600 hover:bg-indigo-700"
-                          : "bg-gray-600 hover:bg-gray-700"
-                      } text-white`}
-                    >
-                      {updating ? "Đang xử lý..." : action.label}
-                    </Button>
-                  );
-                })}
-              </div>
-            </motion.div>
-          )}
-
           {/* View Order Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -826,200 +689,6 @@ export default function ReturnDetailsPage() {
           </motion.div>
         </div>
       </div>
-
-      {/* Reject Dialog */}
-      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gray-800">
-              Từ chối yêu cầu trả hàng
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Lý do từ chối <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none min-h-[120px]"
-                placeholder="Nhập lý do từ chối..."
-                value={rejectedReason}
-                onChange={(e) => setRejectedReason(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <DialogFooter className="flex items-center gap-3">
-            <Button
-              onClick={() => {
-                setShowRejectDialog(false);
-                setRejectedReason("");
-              }}
-              disabled={updating}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg"
-            >
-              Hủy
-            </Button>
-            <Button
-              onClick={() => {
-                if (!rejectedReason.trim()) {
-                  toast.error("Vui lòng nhập lý do từ chối");
-                  return;
-                }
-                handleStatusUpdate("rejected", {
-                  rejectedReason,
-                });
-              }}
-              disabled={updating || !rejectedReason.trim()}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg"
-            >
-              {updating ? "Đang xử lý..." : "Xác nhận từ chối"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* QC Dialog */}
-      <Dialog open={showQcDialog} onOpenChange={setShowQcDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-gray-800">
-              Kiểm tra chất lượng hàng trả
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Kết quả kiểm tra <span className="text-red-500">*</span>
-              </label>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setQcResult('pass')}
-                  className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all cursor-pointer ${
-                    qcResult === 'pass'
-                      ? 'border-teal-500 bg-teal-50 text-teal-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  <CheckCircle className="w-5 h-5 inline mr-2" />
-                  Đạt
-                </button>
-                <button
-                  onClick={() => setQcResult('fail')}
-                  className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all cursor-pointer ${
-                    qcResult === 'fail'
-                      ? 'border-red-500 bg-red-50 text-red-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  <XCircle className="w-5 h-5 inline mr-2" />
-                  Không đạt
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ghi chú kiểm tra
-              </label>
-              <textarea
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none min-h-[120px]"
-                placeholder="Nhập ghi chú về tình trạng hàng..."
-                value={qcNote}
-                onChange={(e) => setQcNote(e.target.value)}
-              />
-            </div>
-
-            {qcResult === 'pass' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hoàn tiền <span className="text-red-500">*</span>
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setShouldRefund(true)}
-                      className={`flex items-center justify-center cursor-pointer gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                        shouldRefund
-                          ? 'border-teal-500 bg-teal-50 text-teal-700'
-                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                      }`}
-                    >
-                      <CheckCircle className="w-5 h-5" />
-                      Có
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShouldRefund(false)}
-                      className={`flex items-center justify-center cursor-pointer gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
-                        !shouldRefund
-                          ? 'border-red-500 bg-red-50 text-red-700'
-                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
-                      }`}
-                    >
-                      <XCircle className="w-5 h-5" />
-                      Không
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Số tiền hoàn lại
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 focus:border-blue-500 outline-none"
-                      placeholder="0"
-                      value={refundAmount ? parseFloat(refundAmount.replace(/,/g, '')).toLocaleString('en-US') : ''}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/,/g, '');
-                        if (value === '' || /^\d+$/.test(value)) {
-                          setRefundAmount(value);
-                        }
-                      }}
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
-                      đ
-                    </span>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-
-          <DialogFooter className="flex items-center gap-3">
-            <Button
-              onClick={() => {
-                setShowQcDialog(false);
-                setQcResult('pass');
-                setQcNote("");
-                setShouldRefund(true);
-                setRefundAmount("");
-              }}
-              disabled={updating}
-              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg"
-            >
-              Hủy
-            </Button>
-            <Button
-              onClick={handleQcCheck}
-              disabled={updating}
-              className={`flex-1 ${
-                qcResult === 'pass'
-                  ? 'bg-teal-600 hover:bg-teal-700'
-                  : 'bg-red-600 hover:bg-red-700'
-              } text-white font-medium py-2 rounded-lg`}
-            >
-              {updating ? "Đang xử lý..." : "Xác nhận"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       {/* Lightbox Modal */}
       {lightboxImage && (

@@ -208,7 +208,7 @@ export default function BrandsTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Thùng rác – Danh sách thương hiệu
+                  Thùng rác – Thương hiệu
                 </h1> 
                 <p className="text-gray-600 mt-1">
                   Khôi phục hoặc xóa vĩnh viễn thương hiệu đã xóa

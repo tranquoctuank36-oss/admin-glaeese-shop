@@ -385,7 +385,7 @@ function DiscountsTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Thùng rác - Giảm giá
+                  Thùng rác - Chương trình giảm giá
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Khôi phục hoặc xóa vĩnh viễn giảm giá
@@ -421,7 +421,11 @@ function DiscountsTrashPage() {
               </div>
               <Button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
+                className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 rounded-lg transition-all ${
+                  showFilters
+                    ? 'border-1 border-blue-500'
+                    : 'border border-gray-300 hover:border-gray-500'
+                }`}
               >
                 <Filter size={20} />
                 Bộ lọc

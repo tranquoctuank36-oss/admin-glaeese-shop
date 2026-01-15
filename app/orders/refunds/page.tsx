@@ -232,9 +232,7 @@ function RefundsPage() {
   const getTriggerLabel = (trigger: string) => {
     const triggerLabels: Record<string, string> = {
       return: "Trả hàng",
-      goodwill: "Thiện chí",
-      error: "Lỗi",
-      promotion: "Khuyến mãi",
+      cancel_order: "Hủy đơn",
       manual: "Thủ công",
     };
     return triggerLabels[trigger] || trigger;
@@ -242,8 +240,8 @@ function RefundsPage() {
 
   const getRefundTypeLabel = (type: string) => {
     const typeLabels: Record<string, string> = {
-      vnpay: "VNPAY",
-      bank_transfer: "Chuyển khoản",
+      online_payment: "Thanh toán trực tuyến",
+      bank_transfer: "Chuyển khoản ngân hàng",
     };
     return typeLabels[type] || type;
   };
@@ -360,7 +358,7 @@ function RefundsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Quản lý hoàn tiền
+                  Hoàn tiền
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Quản lý và theo dõi tất cả hoàn tiền
@@ -391,7 +389,7 @@ function RefundsPage() {
               {/* Total Refunds */}
               <div className="bg-white rounded-lg shadow border border-gray-200 p-4 hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-semibold text-gray-600">Tổng</p>
+                  <p className="text-sm font-semibold text-gray-600">Tổng hoàn tiền</p>
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -576,9 +574,7 @@ function RefundsPage() {
                       options={[
                         { value: "", label: "Tất cả" },
                         { value: "return", label: "Trả hàng" },
-                        { value: "goodwill", label: "Thiện chí" },
-                        { value: "error", label: "Lỗi" },
-                        { value: "promotion", label: "Khuyến mãi" },
+                        { value: "cancel_order", label: "Hủy đơn" },
                         { value: "manual", label: "Thủ công" },
                       ]}
                     />
@@ -597,8 +593,8 @@ function RefundsPage() {
                       }}
                       options={[
                         { value: "", label: "Tất cả" },
-                        { value: "vnpay", label: "VNPAY" },
-                        { value: "bank_transfer", label: "Chuyển khoản" },
+                        { value: "online_payment", label: "Thanh toán trực tuyến" },
+                        { value: "bank_transfer", label: "Chuyển khoản ngân hàng" },
                       ]}
                     />
                   </div>

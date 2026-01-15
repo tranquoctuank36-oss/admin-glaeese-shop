@@ -27,7 +27,7 @@ export default function AdditionalStatsCards({
         title="Trả hàng"
         value={returns ? formatCompactNumber(returns.totalReturns) : "0"}
         icon={RotateCcw}
-        subtitle={returns ? `${returns.pendingReturns} đơn chờ • QC: ${returns.qcPassRate % 1 === 0 ? returns.qcPassRate.toFixed(0) : returns.qcPassRate.toFixed(1)}%` : undefined}
+        subtitle={returns ? `${returns.pendingReturns} đơn chờ • QC đạt: ${returns.qcPassRate % 1 === 0 ? returns.qcPassRate.toFixed(0) : returns.qcPassRate.toFixed(1)}%` : undefined}
         loading={loading}
         color="orange"
       />
@@ -35,7 +35,7 @@ export default function AdditionalStatsCards({
         title="Hoàn tiền"
         value={refunds ? formatCurrency(refunds.totalRefundAmount) : "0đ"}
         icon={DollarSign}
-        subtitle={refunds ? `${refunds.totalRefunds} giao dịch • TB: ${formatCurrency(refunds.averageRefundAmount)}` : undefined}
+        subtitle={refunds ? `${refunds.totalRefunds} giao dịch • Trung bình: ${formatCurrency(refunds.averageRefundAmount)}` : undefined}
         loading={loading}
         color="red"
       />
@@ -43,7 +43,7 @@ export default function AdditionalStatsCards({
         title="Khuyến mãi"
         value={promotions ? `${promotions.activeVouchers + promotions.activeDiscounts}` : "0"}
         icon={Tag}
-        subtitle={promotions ? `${promotions.totalVoucherUsed} lượt • ${formatCurrency(promotions.totalDiscountAmount)}` : undefined}
+        subtitle={promotions ? `${promotions.totalVoucherUsed} lượt sử dụng voucher` : undefined}
         loading={loading}
         color="purple"
       />

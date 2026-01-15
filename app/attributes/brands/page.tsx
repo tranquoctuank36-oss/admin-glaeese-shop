@@ -174,7 +174,7 @@ export default function BrandsPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Danh sách thương hiệu {meta?.totalItems !== undefined && `(${meta.totalItems})`}
+                Thương hiệu {meta?.totalItems !== undefined && `(${meta.totalItems})`}
               </h1>
               <p className="text-gray-600 mt-1">
                 Quản lý thương hiệu cho sản phẩm của bạn

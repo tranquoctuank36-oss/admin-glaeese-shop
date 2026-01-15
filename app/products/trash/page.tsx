@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Eye,
   RotateCcw,
   Trash2,
-  ArrowUpAZ,
-  ArrowDownAZ,
-  ArrowUpDown,
   X,
+  Search,
+  ChevronDown,
+  Filter,
 } from "lucide-react";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import {
@@ -18,12 +18,14 @@ import {
   restoreProduct,
   forceDeleteProduct,
 } from "@/services/productService";
+import { getBrands } from "@/services/brandService";
+import { getTags } from "@/services/tagService";
 import type { Product } from "@/types/product";
+import type { Brand } from "@/types/brand";
+import type { Tag } from "@/types/tag";
 import TablePagination from "@/components/shared/TablePagination";
 import { Button } from "@/components/ui/button";
-import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
 import { useListQuery } from "@/components/listing/hooks/useListQuery";
-import { Routes } from "@/lib/routes";
 import { useRouter } from "next/navigation";
 import ConfirmPopover from "@/components/shared/ConfirmPopover";
 import { toast } from "react-hot-toast";
@@ -81,10 +83,89 @@ function fmt(iso?: string | null) {
   ).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
+// Custom Select Component
+interface CustomSelectProps<T extends string> {
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string }[];
+}
+
+function CustomSelect<T extends string>({
+  value,
+  onChange,
+  options,
+}: CustomSelectProps<T>) {
+  const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [open]);
+
+  const selectedOption = options.find((opt) => opt.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`h-[42px] w-full px-3 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
+          open ? "border-1 border-blue-400" : "border-gray-300 hover:border-gray-400"
+        }`}
+      >
+        <span className="text-sm text-gray-900">
+          {selectedOption ? selectedOption.label : "Chọn..."}
+        </span>
+        <ChevronDown
+          size={16}
+          className={`text-gray-500 transition-transform ${
+            open ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setOpen(false);
+              }}
+              className={`px-3 py-2 cursor-pointer transition-colors text-sm ${
+                option.value === value
+                  ? "bg-blue-50 text-blue-600 font-medium"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              {option.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProductsTrashPage() {
+  const [showFilters, setShowFilters] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [lightboxImage, setLightboxImage] = useState<{ url: string; alt: string } | null>(null);
   const router = useRouter();
+  const filtersRef = useRef<HTMLDivElement>(null);
 
   const [rows, setRows] = useState<Product[]>([]);
   const [meta, setMeta] = useState<{
@@ -95,32 +176,40 @@ function ProductsTrashPage() {
   const [hasPrev, setHasPrev] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
 
-  const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery({
-    limit: 20,
-    sortField: "deletedAt",
-    sortOrder: "DESC",
-    isDeleted: "true",
-  });
-
-  const toggleNameSort = () => {
-    if (q.sortField !== "name")
-      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const });
-    else if (q.sortOrder === "ASC")
-      setAndResetPage({ sortField: "name", sortOrder: "DESC" as const });
-    else
-      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const });
-  };
-
-  const toggleDeletedAtSort = () => {
-    if (q.sortField !== "deletedAt") {
-      setAndResetPage({ sortField: "deletedAt", sortOrder: "DESC" as const });
-    } else if (q.sortOrder === "DESC") {
-      setAndResetPage({ sortField: "deletedAt", sortOrder: "ASC" as const });
-    } else {
-      setAndResetPage({ sortField: "deletedAt", sortOrder: "DESC" as const });
+  const { q, setQ, setAndResetPage, apiParams, apiKey } = useListQuery(
+    {
+      limit: 20,
+      sortField: "name",
+      sortOrder: "ASC",
+      isDeleted: "true",
+      productType: "",
+      gender: "",
+      brandId: "",
+      tagId: "",
+    } as any,
+    {
+      allowedsortField: ["name", "viewCount", "averageRating", "totalSold"] as const,
     }
-  };
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+
+    if (showFilters) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showFilters]);
 
   useEffect(() => {
     let alive = true;
@@ -151,6 +240,40 @@ function ProductsTrashPage() {
       alive = false;
     };
   }, [apiKey]);
+
+  // Load brands for filter
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await getBrands({ limit: 100, isDeleted: false });
+        if (!alive) return;
+        setBrands(res.data ?? []);
+      } catch (error) {
+        console.error("Failed to fetch brands:", error);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Load tags for filter
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const res = await getTags({ limit: 100, isDeleted: false });
+        if (!alive) return;
+        setTags(res.data ?? []);
+      } catch (error) {
+        console.error("Failed to fetch tags:", error);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const allSelected =
     rows.length > 0 && selectedProducts.length === rows.length;
@@ -266,7 +389,7 @@ function ProductsTrashPage() {
                   <ArrowLeft className="text-gray-700 size-7" />
                 </Button>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Thùng rác – Danh sách sản phẩm
+                  Thùng rác – Sản phẩm
                 </h1>
               </div>
               <p className="text-gray-600 mt-1 ml-12">
@@ -276,20 +399,175 @@ function ProductsTrashPage() {
           </div>
 
           {/* Search & Filter */}
-          <ToolbarSearchFilters
-            value={q.search}
-            onSearchChange={(v) => setAndResetPage({ search: v, page: 1 })}
-            productStatus={(q as any).productStatus ?? "all"}
-            onFiltersChange={(patch) => {
-              if (typeof patch.productStatus !== "undefined") {
-                setAndResetPage({
-                  productStatus: patch.productStatus,
-                  page: 1,
-                } as any);
-              }
-            }}
-            placeholder="Tìm kiếm sản phẩm đã xóa..."
-          />
+          <motion.div
+            ref={filtersRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-6 bg-white rounded-lg shadow border border-gray-200 p-3"
+          >
+            {/* Search Bar */}
+            <div className="flex items-center gap-3">
+              <div className="relative flex-1">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  size={20}
+                />
+                <input
+                  type="text"
+                  className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
+                  placeholder="Tìm kiếm sản phẩm đã xóa..."
+                  value={q.search || ""}
+                  onChange={(e) => setAndResetPage({ search: e.target.value, page: 1 })}
+                />
+              </div>
+              <CustomSelect
+                value={`${q.sortField}-${q.sortOrder}`}
+                onChange={(v) => {
+                  const [field, order] = v.split("-");
+                  setAndResetPage({
+                    sortField: field,
+                    sortOrder: order as "ASC" | "DESC",
+                    page: 1,
+                  } as any);
+                }}
+                options={[
+                  { value: "name-ASC", label: "Tên A-Z" },
+                  { value: "name-DESC", label: "Tên Z-A" },
+                  { value: "viewCount-DESC", label: "Lượt xem nhiều nhất" },
+                  { value: "averageRating-DESC", label: "Đánh giá cao nhất" },
+                  { value: "totalSold-DESC", label: "Bán chạy nhất" },
+                ]}
+              />
+              <Button
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 rounded-lg transition-colors ${
+                  showFilters ? 'border-1 border-blue-500' : 'border border-gray-300 hover:border-gray-500'
+                }`}
+              >
+                <Filter size={20} />
+                Bộ lọc
+              </Button>
+            </div>
+
+            {/* Collapsible Filter Panel */}
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+                className="mt-4 border-t border-gray-200 pt-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Trạng thái
+                    </label>
+                    <CustomSelect
+                      value={(q as any).status || ""}
+                      onChange={(v) => setAndResetPage({ status: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "draft", label: "Bản nháp" },
+                        { value: "published", label: "Đã xuất bản" },
+                        { value: "unlisted", label: "Chưa liệt kê" },
+                        { value: "archived", label: "Đã lưu trữ" },
+                      ]}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Loại sản phẩm
+                    </label>
+                    <CustomSelect
+                      value={(q as any).productType || ""}
+                      onChange={(v) => setAndResetPage({ productType: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "frame", label: "Gọng kính" },
+                        { value: "sunglasses", label: "Kính mát" },
+                      ]}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Giới tính
+                    </label>
+                    <CustomSelect
+                      value={(q as any).gender || ""}
+                      onChange={(v) => setAndResetPage({ gender: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        { value: "male", label: "Nam" },
+                        { value: "female", label: "Nữ" },
+                        { value: "unisex", label: "Unisex" },
+                        { value: "kid", label: "Trẻ em" },
+                      ]}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Thương hiệu
+                    </label>
+                    <CustomSelect
+                      value={(q as any).brandId || ""}
+                      onChange={(v) => setAndResetPage({ brandId: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        ...brands.map(brand => ({
+                          value: brand.id,
+                          label: brand.name
+                        }))
+                      ]}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nhãn
+                    </label>
+                    <CustomSelect
+                      value={(q as any).tagId || ""}
+                      onChange={(v) => setAndResetPage({ tagId: v, page: 1 } as any)}
+                      options={[
+                        { value: "", label: "Tất cả" },
+                        ...tags.map(tag => ({
+                          value: tag.id,
+                          label: tag.name
+                        }))
+                      ]}
+                    />
+                  </div>
+                </div>
+
+                {/* Reset Button */}
+                <div className="flex justify-end mt-3">
+                  <button
+                    onClick={() => {
+                      setAndResetPage({
+                        search: "",
+                        status: "",
+                        productType: "",
+                        gender: "",
+                        brandId: "",
+                        tagId: "",
+                        sortField: "createdAt",
+                        sortOrder: "DESC" as const,
+                        page: 1,
+                      } as any);
+                    }}
+                    className="text-sm text-gray-600 hover:text-gray-800 transition-colors cursor-pointer hover:bg-gray-100 px-3 py-1 rounded-lg"
+                  >
+                    Đặt lại
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
         </motion.div>
 
         {/* Bulk actions */}
@@ -311,13 +589,13 @@ function ProductsTrashPage() {
                 confirmClassName="h-10 bg-emerald-600 hover:bg-emerald-700 text-white"
               >
                 <Button className="px-4 py-2 bg-white border border-green-300 text-green-700 rounded-lg hover:bg-green-50">
-                  Khôi phục được chọn
+                  Khôi phục sản phẩm
                 </Button>
               </ConfirmPopover>
               <ConfirmPopover
                 title="Xóa vĩnh viễn sản phẩm?"
                 message={`Bạn có chắc chắn muốn xóa vĩnh viễn ${selectedProducts.length} sản phẩm?`}
-                confirmText="Xóa vĩnh viễn"
+                confirmText="Xóa"
                 onConfirm={handleBulkDelete}
               >
                 <Button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
@@ -352,26 +630,7 @@ function ProductsTrashPage() {
                     />
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-600 truncate max-w-[320px]">
-                        Tên
-                      </span>
-                      <button
-                        type="button"
-                        onClick={toggleNameSort}
-                        className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
-                      >
-                        {q.sortField === "name" ? (
-                          q.sortOrder === "ASC" ? (
-                            <ArrowUpAZ className="size-5" />
-                          ) : (
-                            <ArrowDownAZ className="size-5" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="size-5" />
-                        )}
-                      </button>
-                    </div>
+                    Tên
                   </th>
                   <th className="px-6 py-4 w-40 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
                     Danh mục
@@ -383,33 +642,7 @@ function ProductsTrashPage() {
                     Trạng thái
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-xs font-bold text-gray-600">
-                        Ngày xóa
-                      </span>
-                      <button
-                        type="button"
-                        onClick={toggleDeletedAtSort}
-                        className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                        title={
-                          q.sortField === "deletedAt"
-                            ? `Sorting: ${
-                                q.sortOrder === "ASC" ? "ASC" : "DESC"
-                              } (click to change)`
-                            : "No sorting (click to sort by Deleted At)"
-                        }
-                      >
-                        {q.sortField === "deletedAt" ? (
-                          q.sortOrder === "ASC" ? (
-                            <ArrowUpAZ className="size-5" />
-                          ) : (
-                            <ArrowDownAZ className="size-5" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="size-5" />
-                        )}
-                      </button>
-                    </div>
+                    Ngày xóa
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
                     Thao tác 
@@ -562,7 +795,7 @@ function ProductsTrashPage() {
                                 ?
                               </div>
                             }
-                            confirmText="Xóa vĩnh viễn"
+                            confirmText="Xóa"
                             onConfirm={() =>
                               handlePermanentDelete(product.id, product.name)
                             }

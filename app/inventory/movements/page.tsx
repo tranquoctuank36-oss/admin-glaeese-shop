@@ -340,12 +340,6 @@ function StockMovementsPage() {
                       SKU: {selectedStock.productVariant.sku}
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-600">Tồn kho hiện tại</p>
-                    <p className="text-2xl font-bold text-blue-600">
-                      {selectedStock.quantityAvailable}
-                    </p>
-                  </div>
                 </div>
               </motion.div>
             )}

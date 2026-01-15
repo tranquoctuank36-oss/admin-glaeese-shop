@@ -10,16 +10,19 @@ import {
   User as UserIcon,
   Eye,
   Edit,
+  Plus,
 } from "lucide-react";
 import TablePagination from "@/components/shared/TablePagination";
 import { useListQuery } from "@/components/listing/hooks/useListQuery";
 import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
 import { getUsers, getUserStatistics } from "@/services/userService";
 import type { User, UserRole, UserStatus } from "@/types/user";
+import type { StatsPeriod } from "@/types/dashboard";
 import { withAuthCheck } from "@/components/hoc/withAuthCheck";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Routes } from "@/lib/routes";
+import PeriodSelector from "@/components/dashboard/PeriodSelector";
 
 function formatDate(iso?: string) {
   if (!iso) return "-";
@@ -171,13 +174,15 @@ function UsersPage() {
 
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<any>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
+  const [period, setPeriod] = useState<StatsPeriod>("month");
 
   useEffect(() => {
     (async () => {
       const statsData = await getUserStatistics();
       setStats(statsData.data ?? statsData);
     })();
-  }, []);
+  }, [period]);
 
   useEffect(() => {
     let alive = true;
@@ -245,12 +250,22 @@ function UsersPage() {
             <div className="flex items-center gap-3">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Danh sách người dùng
+                  Người dùng
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Quản lý tài khoản và quyền người dùng
                 </p>
               </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                onClick={() => router.push(Routes.users.add)}
+                className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
+              >
+                <Plus size={20} />
+                Thêm người dùng
+              </Button>
+              <PeriodSelector value={period} onChange={setPeriod} />
             </div>
           </div>
 
@@ -503,7 +518,7 @@ function UsersPage() {
                       </th>
 
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 justify-center">
                           <span className="text-xs font-bold text-gray-600">
                             Ngày tạo
                           </span>
@@ -565,8 +580,8 @@ function UsersPage() {
                           </div>
                         </td>
 
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex flex-wrap gap-1">
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
                             {user.roles && user.roles.length > 0 ? (
                               user.roles.map((role) => (
                                 <span
@@ -600,7 +615,7 @@ function UsersPage() {
                           </span>
                         </td>
 
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-4 text-center whitespace-nowrap">
                           <span className="text-gray-600">
                             {formatDate(user.createdAt) || "-"}
                           </span>

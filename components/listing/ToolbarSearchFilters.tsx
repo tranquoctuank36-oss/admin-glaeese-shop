@@ -167,6 +167,8 @@ export default function ToolbarSearchFilters({
   depth,
   maxDepth,
 }: Props) {
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  
   const parsedMax = Number.isFinite(Number(maxDepth))
     ? Math.trunc(Number(maxDepth))
     : 0;
@@ -198,9 +200,13 @@ export default function ToolbarSearchFilters({
           />
         </div>
 
-        <Popover>
+        <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
           <PopoverTrigger asChild>
-            <Button className="h-11 rounded-xl px-4 relative border border-gray-300 bg-white hover:border-gray-500 text-gray-500 hover:text-gray-700">
+            <Button className={`h-11 rounded-xl px-4 relative bg-white text-gray-500 hover:text-gray-700 transition-all ${
+              isFilterOpen 
+                ? 'border-1 border-blue-500' 
+                : 'border border-gray-300 hover:border-gray-500'
+            }`}>
               <Filter className="mr-2 size-4" />
               Bộ lọc
             </Button>
@@ -303,7 +309,7 @@ export default function ToolbarSearchFilters({
                       { value: "all", label: "Tất cả" },
                       { value: "product_variant", label: "Biến thể sản phẩm" },
                       { value: "brand", label: "Thương hiệu" },
-                      { value: "discount", label: "Giảm giá" },
+                      { value: "discount", label: "Chương trình giảm giá" },
                       { value: "review", label: "Đánh giá" },
                       { value: "order_return", label: "Trả hàng" },
                       { value: "banner", label: "Banner" },
@@ -375,7 +381,7 @@ export default function ToolbarSearchFilters({
                     {["active", "inactive", "suspended"].map((status) => {
                       const statusLabel = 
                         status === "active" ? "Hoạt động" :
-                        status === "inactive" ? "Không hoạt động" :
+                        status === "inactive" ? "Chưa xác thực" :
                         "Bị khóa";
                       return (
                         <label

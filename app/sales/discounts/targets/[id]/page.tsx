@@ -265,31 +265,6 @@ function DiscountTargetsPage() {
                         Giá cuối
                       </th>
                       <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
-                        <div className="flex items-center justify-center gap-2">
-                          <span>ADDED AT</span>
-                          <button
-                            type="button"
-                            onClick={() => toggleSort("createdAt")}
-                            className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                            title={
-                              sortField === "createdAt"
-                                ? `Sorting: ${sortOrder} (click to change)`
-                                : "No sorting (click to sort by Added At)"
-                            }
-                          >
-                            {sortField === "createdAt" ? (
-                              sortOrder === "ASC" ? (
-                                <ArrowUpAZ className="size-5" />
-                              ) : (
-                                <ArrowDownAZ className="size-5" />
-                              )
-                            ) : (
-                              <ArrowUpDown className="size-5" />
-                            )}
-                          </button>
-                        </div>
-                      </th>
-                      <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider whitespace-nowrap">
                         Thao tác
                       </th>
                     </tr>
@@ -299,8 +274,8 @@ function DiscountTargetsPage() {
                       <tr>
                         <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
                           {search
-                            ? "No product variants found"
-                            : "No product variants added yet"}
+                            ? "Không tìm thấy sản phẩm"
+                            : "Chưa có sản phẩm nào được thêm"}
                         </td>
                       </tr>
                     ) : (
@@ -326,7 +301,7 @@ function DiscountTargetsPage() {
                             />
                           ) : (
                             <div className="w-16 h-16 bg-gray-100 rounded border border-gray-200 flex items-center justify-center">
-                              <span className="text-gray-400 text-xs">No image</span>
+                              <span className="text-gray-400 text-xs">Không có ảnh</span>
                             </div>
                           )}
                         </td>
@@ -378,13 +353,6 @@ function DiscountTargetsPage() {
                         <td className="px-6 py-4 text-center">
                           <span className="font-semibold text-green-600">
                             {Number(variant.finalPrice).toLocaleString("en-US")}đ
-                          </span>
-                        </td>
-
-                        {/* Added At */}
-                        <td className="px-6 py-4 text-center whitespace-nowrap">
-                          <span className="text-gray-600">
-                            {new Date().toLocaleDateString("en-GB")}
                           </span>
                         </td>
 

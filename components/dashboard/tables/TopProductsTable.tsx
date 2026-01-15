@@ -39,7 +39,7 @@ export default function TopProductsTable({
         </h3>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200">

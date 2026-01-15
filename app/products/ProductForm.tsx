@@ -521,17 +521,27 @@ export default function ProductForm({
         <h2 className="text-lg font-bold mb-4">Thông tin cơ bản</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <FloatingInput
-            id="name"
-            label="Tên sản phẩm"
-            required
-            value={name}
-            disabled={loading}
-            onChange={(v) => {
-              setName(v);
-              if (!slugEdited) setSlug(slugify(v));
-            }}
-          />
+          <div>
+            <FloatingInput
+              id="name"
+              label="Tên sản phẩm (VD: Adidas OR5019)"
+              required
+              value={name}
+              disabled={loading}
+              onChange={(v) => {
+                setName(v);
+                if (!slugEdited) setSlug(slugify(v));
+              }}
+            />
+            <p className="text-xs text-gray-500 mt-1 ml-1">
+              Cấu trúc: {(() => {
+                const brand = brands.find(b => b.id === brandId);
+                const brandPart = brand?.name || "[Thương hiệu]";
+                const codePart = "[Mã sản phẩm]";
+                return `${brandPart} - ${codePart}`;
+              })()}
+            </p>
+          </div>
 
           <div>
             <FloatingInput
@@ -1037,6 +1047,29 @@ export default function ProductForm({
                               ) : null;
                             })
                           )}
+                        </div>
+                      </div>
+                    )}
+                    {/* Display Attributes */}
+                    {variant.attributes && variant.attributes.length > 0 && (
+                      <div>
+                        <span className="text-sm font-medium text-gray-700">
+                          Thuộc tính:
+                        </span>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {variant.attributes.map((attr, aidx) => (
+                            <div
+                              key={aidx}
+                              className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 shadow-sm"
+                            >
+                              <span className="text-xs font-semibold text-blue-700">
+                                {attr.label || attr.key}:
+                              </span>
+                              <span className="text-xs font-medium text-gray-700">
+                                {attr.value}
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     )}

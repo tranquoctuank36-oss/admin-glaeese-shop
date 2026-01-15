@@ -171,7 +171,7 @@ export default function TagsTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Thùng Rác - Danh sách nhãn
+                  Thùng Rác - Nhãn
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Khôi phục hoặc xóa vĩnh viễn các nhãn đã xóa

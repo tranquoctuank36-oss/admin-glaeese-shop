@@ -7,10 +7,6 @@ import {
   Edit,
   Trash2,
   Eye,
-  MoreVertical,
-  ArrowUpAZ,
-  ArrowDownAZ,
-  ArrowUpDown,
   X,
   ChevronDown,
   Search,
@@ -28,9 +24,9 @@ import { getTags } from "@/services/tagService";
 import type { Product } from "@/types/product";
 import type { Brand } from "@/types/brand";
 import type { Tag } from "@/types/tag";
+import type { StatsPeriod } from "@/types/dashboard";
 import TablePagination from "@/components/shared/TablePagination";
 import { Button } from "@/components/ui/button";
-import ToolbarSearchFilters from "@/components/listing/ToolbarSearchFilters";
 import { useListQuery } from "@/components/listing/hooks/useListQuery";
 import { Routes } from "@/lib/routes";
 import { useRouter } from "next/navigation";
@@ -128,7 +124,7 @@ function CustomSelect<T extends string>({
         type="button"
         onClick={() => setOpen(!open)}
         className={`h-[42px] w-full px-3 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
-          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+          open ? "border-1 border-blue-400" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         <span className="text-sm text-gray-900">
@@ -183,6 +179,7 @@ function ProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [trashCount, setTrashCount] = useState(0);
   const [counts, setCounts] = useState<any>(null);
+  const [period, setPeriod] = useState<StatsPeriod>("month");
   const [brands, setBrands] = useState<Brand[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const filtersRef = useRef<HTMLDivElement>(null);
@@ -203,26 +200,6 @@ function ProductsPage() {
     }
   );
 
-  const toggleNameSort = () => {
-    if (q.sortField !== "name")
-      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const });
-    else if (q.sortOrder === "ASC")
-      setAndResetPage({ sortField: "name", sortOrder: "DESC" as const });
-    else
-      setAndResetPage({ sortField: "name", sortOrder: "ASC" as const });
-  };
-
-  const toggleCreatedAtSort = () => {
-    if (q.sortField !== "createdAt") {
-      setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const });
-    } else if (q.sortOrder === "DESC") {
-      setAndResetPage({ sortField: "createdAt", sortOrder: "ASC" as const });
-    } else {
-      setAndResetPage({ sortField: "createdAt", sortOrder: "DESC" as const });
-    }
-  };
-
-  // Close filters dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
@@ -303,7 +280,17 @@ function ProductsPage() {
     let alive = true;
     (async () => {
       try {
-        const countsData = await getProductCounts();
+        // Map period to API format
+        const presetMap: Record<StatsPeriod, string> = {
+          today: "today",
+          week: "this_week",
+          month: "this_month",
+          quarter: "this_month",
+          year: "this_year",
+          custom: "custom",
+        };
+        const preset = presetMap[period];
+        const countsData = await getProductCounts(preset as any);
         if (!alive) return;
         setCounts(countsData.data ?? countsData);
       } catch (error) {
@@ -313,7 +300,7 @@ function ProductsPage() {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [period]);
 
   // Load brands for filter
   useEffect(() => {
@@ -417,10 +404,10 @@ function ProductsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">
-                Danh sách sản phẩm
+                Sản phẩm
               </h1>
               <p className="text-gray-600 mt-1">
                 Quản lý kho hàng kính mắt của bạn
@@ -450,6 +437,26 @@ function ProductsPage() {
                 <Plus size={20} />
                 Thêm sản phẩm
               </Button>
+            </div>
+          </div>
+
+          {/* Period Selector */}
+          <div className="mb-2">
+            <div className="flex items-center gap-2 justify-end">
+              <label className="text-sm font-medium text-gray-700">Thống kê:</label>
+              <div className="w-48">
+                <CustomSelect
+                  value={period}
+                  onChange={setPeriod}
+                  options={[
+                    { value: "today" as StatsPeriod, label: "Hôm nay" },
+                    { value: "week" as StatsPeriod, label: "Tuần này" },
+                    { value: "month" as StatsPeriod, label: "Tháng này" },
+                    { value: "quarter" as StatsPeriod, label: "Quý này" },
+                    { value: "year" as StatsPeriod, label: "Năm nay" },
+                  ]}
+                />
+              </div>
             </div>
           </div>
 
@@ -609,7 +616,7 @@ function ProductsPage() {
                 <input
                   type="text"
                   className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-                  placeholder="Tìm kiếm theo tên, thương hiệu, nhãn và SKU..."
+                  placeholder="Tìm kiếm theo tên, thương hiệu, nhãn..."
                   value={q.search || ""}
                   onChange={(e) => setAndResetPage({ search: e.target.value, page: 1 })}
                 />
@@ -636,7 +643,9 @@ function ProductsPage() {
               />
               <Button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
+                className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 rounded-lg transition-colors ${
+                  showFilters ? 'border-1 border-blue-500' : 'border border-gray-300 hover:border-gray-500'
+                }`}
               >
                 <Filter size={20} />
                 Bộ lọc
@@ -775,7 +784,7 @@ function ProductsPage() {
                 onConfirm={handleBulkDelete}
               >
                 <Button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                  Xóa được chọn
+                  Xóa sản phẩm
                 </Button>
               </ConfirmPopover>
             </div>
@@ -805,27 +814,8 @@ function ProductsPage() {
                       className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                     />
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-600 truncate max-w-[320px]">
-                        Tên
-                      </span>
-                      <button
-                        type="button"
-                        onClick={toggleNameSort}
-                        className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 transition-colors cursor-pointer"
-                      >
-                        {q.sortField === "name" ? (
-                          q.sortOrder === "ASC" ? (
-                            <ArrowUpAZ className="size-5" />
-                          ) : (
-                            <ArrowDownAZ className="size-5" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="size-5" />
-                        )}
-                      </button>
-                    </div>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase">
+                    Tên
                   </th>
                   <th className="px-6 py-4 w-40 text-left text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
                     Danh mục
@@ -837,33 +827,7 @@ function ProductsPage() {
                     Trạng thái
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-gray-600">
-                        Ngày tạo
-                      </span>
-                      <button
-                        type="button"
-                        onClick={toggleCreatedAtSort}
-                        className="inline-flex items-center justify-center rounded-md border border-gray-300 px-2 py-1 text-[11px] uppercase text-gray-600 hover:bg-gray-200 cursor-pointer"
-                        title={
-                          q.sortField === "createdAt"
-                            ? `Sắp xếp: ${
-                                q.sortOrder === "ASC" ? "Tăng" : "Giảm"
-                              } (nhấp để thay đổi)`
-                            : "Không sắp xếp (nhấp để sắp xếp theo Ngày tạo)"
-                        }
-                      >
-                        {q.sortField === "createdAt" ? (
-                          q.sortOrder === "ASC" ? (
-                            <ArrowUpAZ className="size-5" />
-                          ) : (
-                            <ArrowDownAZ className="size-5" />
-                          )
-                        ) : (
-                          <ArrowUpDown className="size-5" />
-                        )}
-                      </button>
-                    </div>
+                    Ngày tạo
                   </th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-gray-600 uppercase whitespace-nowrap">
                     Thao tác

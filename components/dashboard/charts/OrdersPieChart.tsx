@@ -37,11 +37,12 @@ export default function OrdersPieChart({
         <PieChart>
           <Pie
             data={chartData}
-            cx="50%"
+            cx="45%"
             cy="50%"
+
             labelLine={true}
             label={(entry: any) => {
-              const pct = entry.percentage % 1 === 0 ? entry.percentage.toFixed(0) : entry.percentage.toFixed(1);
+              const pct = entry.percentage.toFixed(2);
               return `${entry.name}: ${pct}%`;
             }}
             outerRadius={110}
@@ -59,9 +60,7 @@ export default function OrdersPieChart({
           </Pie>
           <Tooltip
             formatter={(value: number, name: string, props: any) => {
-              const pct = props.payload.percentage % 1 === 0 
-                ? props.payload.percentage.toFixed(0) 
-                : props.payload.percentage.toFixed(1);
+              const pct = props.payload.percentage.toFixed(2);
               return `${value} đơn (${pct}%)`;
             }}
           />

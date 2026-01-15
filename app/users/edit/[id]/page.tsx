@@ -148,9 +148,6 @@ function EditUserPage() {
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">Chỉnh sửa thông tin người dùng</h1>
-                {/* <p className="text-gray-600 mt-1">
-                  Update user information for {user.email}
-                </p> */}
               </div>
             </div>
           </div>
@@ -198,7 +195,7 @@ function EditUserPage() {
                 required
                 options={[
                   { value: "active", label: "Hoạt động" },
-                  { value: "inactive", label: "Không hoạt động" },
+                  { value: "inactive", label: "Chưa xác thực" },
                   { value: "suspended", label: "Bị khóa" },
                 ]}
               />

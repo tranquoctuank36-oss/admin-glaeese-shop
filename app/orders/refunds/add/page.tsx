@@ -17,7 +17,8 @@ function AddRefundPage() {
     orderId: "",
     amount: 0,
     reason: "",
-    trigger: "goodwill",
+    trigger: "return",
+    refundType: "bank_transfer",
     orderReturnId: "",
     bankAccountName: "",
     bankAccountNumber: "",
@@ -27,7 +28,7 @@ function AddRefundPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.orderId || !formData.amount || !formData.reason || !formData.bankAccountName || !formData.bankAccountNumber || !formData.bankName) {
+    if (!formData.orderId || !formData.amount || !formData.reason || !formData.trigger || !formData.refundType || !formData.bankAccountName || !formData.bankAccountNumber || !formData.bankName) {
       toast.error("Vui lòng điền đầy đủ thông tin bắt buộc");
       return;
     }
@@ -118,10 +119,28 @@ function AddRefundPage() {
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none cursor-pointer"
                 required
               >
+                <option value="return">Trả hàng</option>
+                <option value="cancel_order">Hủy đơn</option>
                 <option value="goodwill">Thiện chí</option>
                 <option value="error">Lỗi</option>
                 <option value="promotion">Khuyến mãi</option>
                 <option value="manual">Thủ công</option>
+              </select>
+            </div>
+
+            {/* Refund Type */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Loại hoàn tiền <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={formData.refundType}
+                onChange={(e) => setFormData({ ...formData, refundType: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none cursor-pointer"
+                required
+              >
+                <option value="online_payment">Thanh toán trực tuyến</option>
+                <option value="bank_transfer">Chuyển khoản ngân hàng</option>
               </select>
             </div>
 

@@ -176,7 +176,7 @@ export default function ColorsTrashPage() {
               </Button>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">
-                  Thùng Rác - Danh sách màu sắc
+                  Thùng Rác - Màu sắc
                 </h1>
                 <p className="text-gray-600 mt-1">
                   Khôi phục hoặc xóa vĩnh viễn các màu sắc đã xóa

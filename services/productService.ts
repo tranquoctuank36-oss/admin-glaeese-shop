@@ -24,9 +24,9 @@ export type ProductListQuery = {
   frameShapesIds?: UUID[];
   frameTypesIds?: UUID[];
   frameMaterialsIds?: UUID[];
-  brandIds?: UUID[];  // Sửa từ brandsIds
+  brandIds?: UUID[];
   categoriesIds?: UUID[];
-  tagIds?: UUID[];  // Sửa từ tagsIds
+  tagIds?: UUID[];
 
   minLenseWidth?: number;  maxLenseWidth?: number;
   minBridgeWidth?: number; maxBridgeWidth?: number;
@@ -251,9 +251,23 @@ export const forceDeleteProduct = async (id: UUID) => {
   }
 };
 
-export const getProductCounts = async () => {
+export type ProductStatisticsPreset = 
+  | "today" 
+  | "yesterday" 
+  | "this_week" 
+  | "last_week" 
+  | "this_month" 
+  | "last_month" 
+  | "this_year" 
+  | "custom";
+
+export const getProductCounts = async (preset?: ProductStatisticsPreset) => {
   try {
-    const res = await api.get(`/admin/products/statistics`);
+    const params: any = {};
+    if (preset) {
+      params.preset = preset;
+    }
+    const res = await api.get(`/admin/products/statistics`, { params });
     return res.data ?? {};
   } catch (err) {
     console.error("Failed to fetch product counts:", err);

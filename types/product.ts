@@ -43,6 +43,7 @@ export interface ProductVariant {
   productImagesIds?: string[];
   productImages?: ProductImage[]; // Add images array
   thumbnailImage?: ProductImage; // Add thumbnail image
+  attributes?: Array<{key: string; value: string; label: string}>; // Add attributes
 }
 
 export interface  Product {

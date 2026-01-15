@@ -73,7 +73,7 @@ function CustomSelect<T extends string>({
         type="button"
         onClick={() => setOpen(!open)}
         className={`w-full px-3 py-2 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
-          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+          open ? "border-1 border-blue-400" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         <span className="text-sm text-gray-900">
@@ -191,6 +191,7 @@ function getTypeBadge(type: string) {
 
 function VouchersTrashPage() {
   const router = useRouter();
+  const filtersRef = useRef<HTMLDivElement>(null);
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -216,6 +217,22 @@ function VouchersTrashPage() {
   const keyOf = (id: string, action: "restore" | "delete") => `${id}|${action}`;
   const isOpen = (id: string, action: "restore" | "delete") =>
     openKey === keyOf(id, action);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (filtersRef.current && !filtersRef.current.contains(event.target as Node)) {
+        setShowFilters(false);
+      }
+    };
+
+    if (showFilters) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showFilters]);
 
   const fetchVouchers = async () => {
     try {
@@ -401,6 +418,7 @@ function VouchersTrashPage() {
 
           {/* Search and Filter Bar */}
           <motion.div
+            ref={filtersRef}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -423,7 +441,9 @@ function VouchersTrashPage() {
               </div>
               <Button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 border border-gray-300 hover:border-gray-500 rounded-lg transition-colors"
+                className={`flex items-center gap-2 h-[42px] px-4 bg-white text-gray-600 hover:text-gray-900 rounded-lg transition-colors ${
+                  showFilters ? 'border-1 border-blue-500' : 'border border-gray-300 hover:border-gray-500'
+                }`}
               >
                 <Filter size={20} />
                 Bộ lọc

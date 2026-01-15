@@ -3,14 +3,29 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Search, Eye, Shield, ChevronDown } from "lucide-react";
-import { getReturns } from "@/services/returnService";
-import { getReturnStatistics } from "@/services/returnService";
+import { Search, MoreVertical, Shield, ChevronDown, CheckCircle, XCircle, Eye } from "lucide-react";
+import { 
+  getReturns, 
+  getReturnStatistics, 
+  updateReturnStatus, 
+  performQualityCheck,  
+  completeRefund 
+} from "@/services/returnService";
 import { Return } from "@/types/return";
 import { useListQuery } from "@/components/listing/hooks/useListQuery";
 import TablePagination from "@/components/shared/TablePagination";
 import { Button } from "@/components/ui/button";
 import { Routes } from "@/lib/routes";
+import ConfirmPopover from "@/components/shared/ConfirmPopover";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import toast from "react-hot-toast";
+import Image from "next/image";
 
 // Custom Select Component
 interface CustomSelectProps<T extends string> {
@@ -51,7 +66,7 @@ function CustomSelect<T extends string>({
         type="button"
         onClick={() => setOpen(!open)}
         className={`h-[42px] w-full px-3 text-left bg-white border rounded-lg cursor-pointer transition-all flex items-center justify-between ${
-          open ? "border-2 border-blue-400" : "border-gray-300 hover:border-gray-400"
+          open ? "border-1 border-blue-400" : "border-gray-300 hover:border-gray-400"
         }`}
       >
         <span className="text-sm text-gray-900">
@@ -108,6 +123,19 @@ export default function ReturnsPage() {
   const [loading, setLoading] = useState(true);
   const [hoveredReturnId, setHoveredReturnId] = useState<string | null>(null);
   const [stats, setStats] = useState<any>(null);
+  
+  // Action states
+  const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | null>(null);
+  const [updating, setUpdating] = useState(false);
+  const [selectedReturn, setSelectedReturn] = useState<Return | null>(null);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [showQcDialog, setShowQcDialog] = useState(false);
+  const [qcResult, setQcResult] = useState<'pass' | 'fail'>('pass');
+  const [qcNote, setQcNote] = useState("");
+  const [rejectedReason, setRejectedReason] = useState("");
+  const [shouldRefund, setShouldRefund] = useState(true);
+  const [refundAmount, setRefundAmount] = useState("");
 
   // Fetch statistics
   useEffect(() => {
@@ -212,6 +240,157 @@ export default function ReturnsPage() {
     }
   };
 
+  const fetchData = async () => {
+    let alive = true;
+    setLoading(true);
+    try {
+      const res = await getReturns(apiParams);
+      if (!alive) return;
+      setReturns(res.data);
+      setMeta({
+        totalPages: res.meta?.totalPages,
+        totalItems: res.meta?.totalItems,
+      });
+      setHasNext(!!res.hasNext);
+      setHasPrev(!!res.hasPrev);
+    } catch (e) {
+      console.error("Failed to fetch returns:", e);
+      if (alive) {
+        setReturns([]);
+        setMeta(undefined);
+      }
+    } finally {
+      if (alive) setLoading(false);
+    }
+  };
+
+  const handleStatusUpdate = async (returnData: Return, newStatus: string, additionalData?: { adminNote?: string; rejectedReason?: string; refundAmount?: string }) => {
+    try {
+      setUpdating(true);
+      
+      if (newStatus === "qc_check") {
+        setSelectedReturn(returnData);
+        setShowQcDialog(true);
+        setUpdating(false);
+        return;
+      }
+      
+      if (newStatus === "completed") {
+        await completeRefund(returnData.id);
+        toast.success("Đã hoàn tất yêu cầu trả hàng");
+        await fetchData();
+        setUpdating(false);
+        return;
+      }
+      
+      await updateReturnStatus(
+        returnData.id, 
+        newStatus,
+        additionalData?.adminNote,
+        additionalData?.rejectedReason,
+        additionalData?.refundAmount
+      );
+      toast.success("Đã cập nhật trạng thái");
+      await fetchData();
+      
+      setShowRejectDialog(false);
+      setRejectedReason("");
+    } catch (error: any) {
+      console.error("Failed to update status:", error);
+      const errorMessage = error.response?.data?.detail || error.detail || "Không thể cập nhật trạng thái";
+      toast.error(errorMessage);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleQcCheck = async () => {
+    if (!selectedReturn) return;
+
+    try {
+      setUpdating(true);
+      await performQualityCheck(
+        selectedReturn.id, 
+        qcResult, 
+        qcNote || undefined,
+        shouldRefund,
+        refundAmount || undefined
+      );
+      toast.success(`Đã kiểm tra chất lượng: ${qcResult === 'pass' ? 'Đạt' : 'Không đạt'}`);
+      
+      await fetchData();
+      
+      setShowQcDialog(false);
+      setQcResult('pass');
+      setQcNote("");
+      setShouldRefund(true);
+      setRefundAmount("");
+      setSelectedReturn(null);
+    } catch (error: any) {
+      console.error("Failed to perform QC:", error);
+      const errorMessage = error.response?.data?.detail || error.detail || "Không thể thực hiện kiểm tra chất lượng";
+      toast.error(errorMessage);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const getStatusActions = (returnItem: Return) => {
+    switch (returnItem.status) {
+      case "requested":
+        return [
+          { label: "Duyệt yêu cầu", value: "approved", color: "blue" },
+          { label: "Từ chối", value: "rejected", color: "red" },
+        ];
+      case "approved":
+        return [
+          {
+            label: "Đã nhận hàng",
+            value: "received_at_warehouse",
+            color: "indigo",
+          },
+        ];
+      case "received_at_warehouse":
+        return [
+          {
+            label: "Kiểm tra chất lượng",
+            value: "qc_check",
+            color: "teal",
+          },
+        ];
+      case "qc_pass":
+      case "qc_fail":
+        return [
+          {
+            label: "Hoàn tất yêu cầu",
+            value: "completed",
+            color: "green",
+          },
+        ];
+      default:
+        return [];
+    }
+  };
+
+  // Click-outside handler for action menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (openActionMenu && !target.closest('.action-menu-container')) {
+        setOpenActionMenu(null);
+        setMenuPosition(null);
+      }
+    };
+    
+    if (openActionMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openActionMenu]);
+
   return (
     <>
       {/* Header */}
@@ -244,7 +423,7 @@ export default function ReturnsPage() {
           <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Tổng trả hàng</p>
+                <p className="text-sm font-medium text-gray-600">Tổng đơn trả hàng</p>
                 <p className="text-2xl font-bold text-gray-900 mt-1">
                   {stats.total ?? 0}
                 </p>
@@ -387,7 +566,7 @@ export default function ReturnsPage() {
             <input
               type="text"
               className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 outline-none"
-              placeholder="Tìm kiếm theo mã đơn hàng..."
+              placeholder="Tìm kiếm theo mã đơn hàng, mã trả hàng, lý do..."
               value={q.search || ""}
               onChange={(e) =>
                 setAndResetPage({ search: e.target.value, page: 1 })
@@ -561,17 +740,26 @@ export default function ReturnsPage() {
 
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-center gap-2">
-                        <Button
-                          size="icon-sm"
-                          className="p-2 hover:bg-blue-100 rounded-lg transition-colors"
-                          title="Xem chi tiết"
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            router.push(Routes.orders.returnDetails(returnItem.id));
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            if (openActionMenu === returnItem.id) {
+                              setOpenActionMenu(null);
+                              setMenuPosition(null);
+                            } else {
+                              setOpenActionMenu(returnItem.id);
+                              setMenuPosition({
+                                top: rect.bottom + window.scrollY + 4,
+                                left: rect.right + window.scrollX - 192, 
+                              });
+                            }
                           }}
+                          className="p-2 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Thao tác"
                         >
-                          <Eye className="text-blue-600 size-5" />
-                        </Button>
+                          <MoreVertical className="text-gray-600 size-5" />
+                        </button>
                       </div>
                     </td>
                   </motion.tr>
@@ -594,6 +782,340 @@ export default function ReturnsPage() {
           />
         </motion.div>
       )}
+
+      {/* Action Menu - Rendered outside table to avoid overflow issues */}
+      {openActionMenu && menuPosition && (
+        <div 
+          className="fixed w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 action-menu-container"
+          style={{
+            top: `${menuPosition.top}px`,
+            left: `${menuPosition.left}px`,
+          }}
+        >
+          <div className="py-1">
+            {/* View Details */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const currentReturn = returns.find(r => r.id === openActionMenu);
+                if (currentReturn) {
+                  router.push(Routes.orders.returnDetails(currentReturn.id));
+                }
+                setOpenActionMenu(null);
+                setMenuPosition(null);
+              }}
+              className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-blue-600"
+            >
+              <Eye className="w-4 h-4" />
+              Xem chi tiết
+            </button>
+
+            {(() => {
+              const currentReturn = returns.find(r => r.id === openActionMenu);
+              if (!currentReturn) return null;
+              const actions = getStatusActions(currentReturn);
+              if (actions.length === 0) return null;
+
+              return (
+                <>
+                  {actions.map((action) => {
+                    if (action.value === "approved") {
+                      return (
+                        <button
+                          key={action.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusUpdate(currentReturn, action.value);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
+                          }}
+                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-green-600"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          {action.label}
+                        </button>
+                      );
+                    }
+
+                    if (action.value === "rejected") {
+                      return (
+                        <button
+                          key={action.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedReturn(currentReturn);
+                            setShowRejectDialog(true);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
+                          }}
+                          className="w-full px-4 cursor-pointer py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-red-600"
+                        >
+                          <XCircle className="w-4 h-4" />
+                          {action.label}
+                        </button>
+                      );
+                    }
+
+                    if (action.value === "received_at_warehouse") {
+                      return (
+                        <button
+                          key={action.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusUpdate(currentReturn, action.value);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
+                          }}
+                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-indigo-600"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          {action.label}
+                        </button>
+                      );
+                    }
+
+                    if (action.value === "qc_check") {
+                      return (
+                        <button
+                          key={action.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusUpdate(currentReturn, action.value);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
+                          }}
+                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-teal-600"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          {action.label}
+                        </button>
+                      );
+                    }
+
+                    if (action.value === "completed") {
+                      return (
+                        <button
+                          key={action.value}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStatusUpdate(currentReturn, action.value);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
+                          }}
+                          className="w-full px-4 py-2 cursor-pointer text-left text-sm hover:bg-gray-100 flex items-center gap-2 text-green-600"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                          {action.label}
+                        </button>
+                      );
+                    }
+
+                    return null;
+                  })}
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* Reject Dialog */}
+      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Từ chối yêu cầu trả hàng
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Lý do từ chối <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none min-h-[120px]"
+                placeholder="Nhập lý do từ chối..."
+                value={rejectedReason}
+                onChange={(e) => setRejectedReason(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="flex items-center gap-3">
+            <Button
+              onClick={() => {
+                setShowRejectDialog(false);
+                setRejectedReason("");
+              }}
+              disabled={updating}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={() => {
+                if (!rejectedReason.trim()) {
+                  toast.error("Vui lòng nhập lý do từ chối");
+                  return;
+                }
+                if (selectedReturn) {
+                  handleStatusUpdate(selectedReturn, "rejected", {
+                    rejectedReason,
+                  });
+                }
+              }}
+              disabled={updating || !rejectedReason.trim()}
+              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 rounded-lg"
+            >
+              {updating ? "Đang xử lý..." : "Xác nhận từ chối"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* QC Dialog */}
+      <Dialog open={showQcDialog} onOpenChange={setShowQcDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-gray-800">
+              Kiểm tra chất lượng hàng trả
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kết quả kiểm tra <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setQcResult('pass')}
+                  className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all cursor-pointer ${
+                    qcResult === 'pass'
+                      ? 'border-teal-500 bg-teal-50 text-teal-700'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  <CheckCircle className="w-5 h-5 inline mr-2" />
+                  Đạt
+                </button>
+                <button
+                  onClick={() => setQcResult('fail')}
+                  className={`flex-1 py-3 px-4 rounded-lg border-2 font-medium transition-all cursor-pointer ${
+                    qcResult === 'fail'
+                      ? 'border-red-500 bg-red-50 text-red-700'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  <XCircle className="w-5 h-5 inline mr-2" />
+                  Không đạt
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Ghi chú kiểm tra
+              </label>
+              <textarea
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 outline-none min-h-[120px]"
+                placeholder="Nhập ghi chú về tình trạng hàng..."
+                value={qcNote}
+                onChange={(e) => setQcNote(e.target.value)}
+              />
+            </div>
+
+            {qcResult === 'pass' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hoàn tiền <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setShouldRefund(true)}
+                      className={`flex items-center justify-center cursor-pointer gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                        shouldRefund
+                          ? 'border-teal-500 bg-teal-50 text-teal-700'
+                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                      }`}
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      Có
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShouldRefund(false)}
+                      className={`flex items-center justify-center cursor-pointer gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                        !shouldRefund
+                          ? 'border-red-500 bg-red-50 text-red-700'
+                          : 'border-gray-300 bg-white text-gray-600 hover:border-gray-400'
+                      }`}
+                    >
+                      <XCircle className="w-5 h-5" />
+                      Không
+                    </button>
+                  </div>
+                </div>
+
+                {shouldRefund && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Số tiền hoàn lại
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-8 focus:border-blue-500 outline-none"
+                        placeholder="0"
+                        value={refundAmount ? parseFloat(refundAmount.replace(/,/g, '')).toLocaleString('en-US') : ''}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/,/g, '');
+                          if (value === '' || /^\d+$/.test(value)) {
+                            setRefundAmount(value);
+                          }
+                        }}
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+                        đ
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <DialogFooter className="flex items-center gap-3">
+            <Button
+              onClick={() => {
+                setShowQcDialog(false);
+                setQcResult('pass');
+                setQcNote("");
+                setShouldRefund(true);
+                setRefundAmount("");
+              }}
+              disabled={updating}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-lg"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleQcCheck}
+              disabled={updating}
+              className={`flex-1 ${
+                qcResult === 'pass'
+                  ? 'bg-teal-600 hover:bg-teal-700'
+                  : 'bg-red-600 hover:bg-red-700'
+              } text-white font-medium py-2 rounded-lg`}
+            >
+              {updating ? "Đang xử lý..." : "Xác nhận"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

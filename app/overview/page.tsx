@@ -73,7 +73,7 @@ const OverviewPage = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Tổng quan</h1>
             <p className="text-sm text-gray-500 mt-1">
               Tổng quan về hoạt động kinh doanh
             </p>
@@ -83,6 +83,15 @@ const OverviewPage = () => {
 
         {/* Overview Cards */}
         <OverviewCards data={data?.overview || null} loading={loading} />
+
+        {/* Additional Stats Cards */}
+        <AdditionalStatsCards
+          returns={data?.returns || null}
+          refunds={data?.refunds || null}
+          promotions={data?.promotions || null}
+          inventory={data?.inventory || null}
+          loading={loading}
+        />
 
         {/* Charts Row 1 */}
         <div className={GRID_LAYOUTS.twoColumns}>
@@ -131,15 +140,6 @@ const OverviewPage = () => {
             loading={loading}
           />
         </div>
-
-        {/* Additional Stats Cards */}
-        <AdditionalStatsCards
-          returns={data?.returns || null}
-          refunds={data?.refunds || null}
-          promotions={data?.promotions || null}
-          inventory={data?.inventory || null}
-          loading={loading}
-        />
       </main>
     </div>
   );

@@ -46,10 +46,7 @@ export default function Header() {
 
   return (
     <header className="bg-gradient-to-br from-blue-50 via-slate-50 to-gray-50 border-b mx-4 sm:sm-6 lg:mx-8 mt-4 mb-2 rounded-lg">
-      <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 flex items-center justify-between">
-        <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800">
-          Tổng quan
-        </h1>
+      <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 flex items-center justify-end">
 
         <div className="flex items-center space-x-3 sm:space-x-6">
 

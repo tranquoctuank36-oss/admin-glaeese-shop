@@ -68,6 +68,7 @@ function RefundDetailsPage() {
   const getTriggerLabel = (trigger: string) => {
     const triggerLabels: Record<string, string> = {
       return: "Trả hàng",
+      cancel_order: "Hủy đơn",
       goodwill: "Thiện chí",
       error: "Lỗi",
       promotion: "Khuyến mãi",
@@ -78,8 +79,8 @@ function RefundDetailsPage() {
 
   const getRefundTypeLabel = (type: string) => {
     const typeLabels: Record<string, string> = {
-      vnpay: "VNPAY",
-      bank_transfer: "Chuyển khoản",
+      online_payment: "Thanh toán trực tuyến",
+      bank_transfer: "Chuyển khoản ngân hàng",
     };
     return typeLabels[type] || type;
   };
@@ -190,13 +191,15 @@ function RefundDetailsPage() {
                   <p className="text-gray-900">{getTriggerLabel(refund.trigger)}</p>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-gray-600 mb-1">
-                    Mã giao dịch
-                  </label>
-                  <p className="text-gray-900 font-mono">{refund.providerTransactionId || "-"}</p>
-                </div>
-              </div>
+                {refund.providerTransactionId && (
+                  <div>
+                    <label className="block text-sm font-bold text-gray-600 mb-1">
+                      Mã giao dịch
+                    </label>
+                    <p className="text-gray-900 font-mono">{refund.providerTransactionId}</p>
+                  </div>
+                )}
+              </div> 
             </div>
 
             {/* Bank Information */}
