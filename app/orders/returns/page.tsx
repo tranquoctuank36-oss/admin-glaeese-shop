@@ -403,6 +403,11 @@ export default function ReturnsPage() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+      // Không đóng menu nếu click vào ConfirmPopover
+      if (target.closest('[data-radix-popper-content-wrapper]') || 
+          target.closest('[role="dialog"]')) {
+        return;
+      }
       if (openActionMenu && !target.closest('.action-menu-container')) {
         setOpenActionMenu(null);
         setMenuPosition(null);
@@ -861,13 +866,9 @@ export default function ReturnsPage() {
                           confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
                           confirmLoading={updating}
                           onConfirm={async () => {
-                            try {
-                              await handleStatusUpdate(currentReturn, action.value);
-                              setOpenActionMenu(null);
-                              setMenuPosition(null);
-                            } catch (error) {
-                              // Error already handled in handleStatusUpdate
-                            }
+                            await handleStatusUpdate(currentReturn, action.value);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
                           }}
                         >
                           <button
@@ -915,13 +916,9 @@ export default function ReturnsPage() {
                           confirmClassName="h-10 bg-indigo-600 hover:bg-indigo-700 text-white"
                           confirmLoading={updating}
                           onConfirm={async () => {
-                            try {
-                              await handleStatusUpdate(currentReturn, action.value);
-                              setOpenActionMenu(null);
-                              setMenuPosition(null);
-                            } catch (error) {
-                              // Error already handled in handleStatusUpdate
-                            }
+                            await handleStatusUpdate(currentReturn, action.value);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
                           }}
                         >
                           <button
@@ -992,13 +989,9 @@ export default function ReturnsPage() {
                           confirmClassName="h-10 bg-green-600 hover:bg-green-700 text-white"
                           confirmLoading={updating}
                           onConfirm={async () => {
-                            try {
-                              await handleStatusUpdate(currentReturn, action.value);
-                              setOpenActionMenu(null);
-                              setMenuPosition(null);
-                            } catch (error) {
-                              // Error already handled in handleStatusUpdate
-                            }
+                            await handleStatusUpdate(currentReturn, action.value);
+                            setOpenActionMenu(null);
+                            setMenuPosition(null);
                           }}
                         >
                           <button

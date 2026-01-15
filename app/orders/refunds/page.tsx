@@ -144,6 +144,11 @@ function RefundsPage() {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
+      // Không đóng menu nếu click vào ConfirmPopover
+      if (target.closest('[data-radix-popper-content-wrapper]') || 
+          target.closest('[role="dialog"]')) {
+        return;
+      }
       if (openActionMenu && !target.closest('.action-menu-container')) {
         setOpenActionMenu(null);
       }
@@ -712,8 +717,7 @@ function RefundsPage() {
                                     title="Duyệt hoàn tiền"
                                     message={
                                       <>
-                                        Bạn có chắc chắn muốn <span className="font-semibold">duyệt hoàn tiền?</span>
-                                      </>
+                                        Bạn có chắc chắn muốn <span className="font-semibold">duyệt hoàn tiền?</span>                                     </>
                                     }
                                     confirmText="Xác nhận"
                                     cancelText="Hủy"
@@ -724,8 +728,8 @@ function RefundsPage() {
                                         setActionLoading(true);
                                         await approveRefund(refund.id, { note: "" });
                                         toast.success("Đã duyệt hoàn tiền thành công");
+                                        await fetchRefunds();
                                         setOpenActionMenu(null);
-                                        fetchRefunds();
                                       } catch (error: any) {
                                         toast.error(error?.response?.data?.detail || "Không thể thực hiện thao tác");
                                       } finally {
@@ -733,10 +737,7 @@ function RefundsPage() {
                                       }
                                     }}
                                   >
-                                    <button
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="w-full px-4 py-2 text-left text-sm cursor-pointer hover:bg-gray-50 flex items-center gap-2 text-green-600"
-                                    >
+                                    <button className="w-full px-4 py-2 text-left text-sm cursor-pointer hover:bg-gray-50 flex items-center gap-2 text-green-600">
                                       <CheckCircle size={16} />
                                       Duyệt hoàn tiền
                                     </button>
