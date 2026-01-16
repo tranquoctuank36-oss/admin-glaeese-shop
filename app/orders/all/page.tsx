@@ -721,7 +721,7 @@ export default function AllOrdersPage() {
                           {order.status === "pending"
                             ? "Chờ xác nhận"
                             : order.status === "processing"
-                            ? "Đang đóng gói"
+                            ? "Đang xử lý"
                             : order.status === "shipping"
                             ? "Đang giao"
                             : order.status === "delivered"

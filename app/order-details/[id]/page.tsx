@@ -69,7 +69,7 @@ export default function OrderDetailPage() {
       case "pending":
         return "Chờ xác nhận";
       case "processing":
-        return "Đang đóng gói";
+        return "Đang xử lý";
       case "shipping":
         return "Đang giao";
       case "delivered":
