@@ -370,13 +370,13 @@ function RefundsPage() {
                   Quản lý và theo dõi tất cả hoàn tiền
                 </p>
               </div>
-              <Button
+              {/* <Button
                 onClick={() => router.push(Routes.orders.refundAdd)}
                 className="flex h-12 items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-base"
               >
                 <Plus size={20} />
                 Tạo hoàn tiền
-              </Button>
+              </Button> */}
             </div>
           </div>
 
