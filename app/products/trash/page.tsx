@@ -781,7 +781,7 @@ function ProductsTrashPage() {
                               <RotateCcw className="text-green-600 size-5" />
                             </Button>
                           </ConfirmPopover>
-                          <span className="text-gray-500 text-sm leading-none">
+                          {/* <span className="text-gray-500 text-sm leading-none">
                             |
                           </span>
                           <ConfirmPopover
@@ -807,7 +807,7 @@ function ProductsTrashPage() {
                             >
                               <Trash2 className="text-red-600 size-5" />
                             </Button>
-                          </ConfirmPopover>
+                          </ConfirmPopover> */}
                         </div>
                       </td>
                     </motion.tr>

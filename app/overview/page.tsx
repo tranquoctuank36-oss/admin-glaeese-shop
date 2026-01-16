@@ -119,10 +119,14 @@ const OverviewPage = () => {
 
         {/* Tables */}
         <div className={GRID_LAYOUTS.twoColumns}>
-          <TopProductsTable
-            data={data?.products.topSellingProducts || []}
+          <RecentOrdersList
+            data={data?.recentOrders || []}
             loading={loading}
           />
+          {/* <TopProductsTable
+            data={data?.products.topSellingProducts || []}
+            loading={loading}
+          /> */}
           <LowStockTable
             data={data?.products.lowStockAlerts || []}
             loading={loading}
@@ -131,10 +135,7 @@ const OverviewPage = () => {
 
         {/* Recent Activities */}
         <div className={GRID_LAYOUTS.twoColumns}>
-          <RecentOrdersList
-            data={data?.recentOrders || []}
-            loading={loading}
-          />
+          
           <RecentReviewsList
             data={data?.recentReviews || []}
             loading={loading}
